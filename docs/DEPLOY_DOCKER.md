@@ -70,6 +70,37 @@ docker compose exec app php artisan route:cache
 docker compose exec app php artisan view:cache
 ```
 
+## Si no abre en el navegador
+
+1. **Usa HTTP, no HTTPS**  
+   Solo está expuesto el puerto 80: **http://TU_IP/install** (no https://).
+
+2. **Firewall en la VPS**  
+   ```bash
+   sudo ufw allow 80
+   sudo ufw allow 443
+   sudo ufw status
+   sudo ufw enable   # si aún no está activo
+   ```
+
+3. **Comprobar que los contenedores están arriba**  
+   ```bash
+   docker compose ps
+   ```  
+   Deben estar "Up" los tres: app, nginx, db.
+
+4. **Ver logs por si hay error**  
+   ```bash
+   docker compose logs nginx
+   docker compose logs app
+   ```
+
+5. **Probar desde la misma VPS**  
+   ```bash
+   curl -I http://localhost/install
+   ```  
+   Debe devolver `HTTP/1.1 200` o `302`.
+
 ## Comandos útiles
 
 | Acción            | Comando                                     |
