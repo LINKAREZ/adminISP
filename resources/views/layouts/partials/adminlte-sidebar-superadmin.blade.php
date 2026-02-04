@@ -30,14 +30,6 @@
                     </a>
                 </li>
 
-                <!-- Crear administrador -->
-                <li class="nav-item">
-                    <a href="{{ route('superadmin.create-admin-user') }}" class="nav-link {{ request()->is('superadmin/create-admin-user*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-user-plus"></i>
-                        <p>Crear administrador</p>
-                    </a>
-                </li>
-
                 <!-- Control de Acceso -->
                 <li class="nav-item">
                     <a href="{{ route('roles.index') }}" class="nav-link {{ request()->is('roles*') || request()->is('permissions*') ? 'active' : '' }}">

@@ -58,6 +58,11 @@ El usuario ha aceptado globalmente los siguientes permisos:
 - **Al iniciar trabajo en el proyecto o al comenzar una tarea**: ejecutar `git pull` primero para tener el código actualizado.
 - No preguntar: hacer pull de forma automática antes de editar o al empezar la sesión cuando sea relevante.
 
+## Despliegue en VPS - Aplicar cambios directo en panel.wan.pe
+- **Cuando el usuario pida cualquier cambio**: después de modificar el código, desplegar en la VPS para que quede aplicado en vivo.
+- **Pasos**: 1) Hacer los cambios en el repo local. 2) Commit y push a origin main (excluyendo storage/logs, storage/installed). 3) Conectar por SSH a panel.wan.pe (root, plink con hostkey conocido) y ejecutar en /root/adminisp: `git fetch origin && git reset --hard origin/main && docker compose restart app`.
+- **Objetivo**: que todo lo que se pida quede reflejado directamente en https://panel.wan.pe sin que el usuario tenga que desplegar a mano.
+
 ## INSTRUCCIONES CRÍTICAS - CONFIRMACIONES
 
 ### 🚨 REGLA ABSOLUTA: CERO CONFIRMACIONES INNECESARIAS
