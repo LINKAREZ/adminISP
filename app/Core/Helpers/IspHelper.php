@@ -65,7 +65,8 @@ class IspHelper
         ];
 
         if (isset($mapping[$key])) {
-            return $isp->{$mapping[$key]} ?? $default;
+            $val = $isp->{$mapping[$key]} ?? null;
+            return $val !== null && $val !== '' ? $val : config("isp.{$key}", $default);
         }
 
         return config("isp.{$key}", $default);
