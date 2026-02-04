@@ -41,9 +41,12 @@ docker compose build --no-cache
 docker compose up -d
 ```
 
-### 4. Configurar Laravel dentro del contenedor
+### 4. Instalar dependencias PHP (vendor) y configurar Laravel
+
+El volumen montado oculta la carpeta `vendor` de la imagen. Hay que generarla en el contenedor (queda en tu proyecto):
 
 ```bash
+docker compose exec app composer install --no-dev --optimize-autoloader
 docker compose exec app php artisan key:generate
 docker compose exec app php artisan storage:link
 docker compose exec app chown -R www-data:www-data storage bootstrap/cache
