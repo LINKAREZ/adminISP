@@ -114,8 +114,8 @@ Espera 30–60 segundos y comprueba: `docker compose ps`. Los tres contenedores 
 
 ## Si no abre en el navegador
 
-1. **Usa HTTP, no HTTPS**
-   Solo está expuesto el puerto 80: **http://TU_IP/install** (no https://).
+1. **HTTP y HTTPS**
+   Por defecto Nginx está configurado para HTTPS; si aún no has generado el certificado (ver sección **Usar HTTPS** más abajo), usa **http://TU_IP/install**. Una vez configurado el certificado, **https://TU_IP/install** funcionará y HTTP redirigirá a HTTPS.
 
 2. **Firewall en la VPS**
 
@@ -158,7 +158,7 @@ Espera 30–60 segundos y comprueba: `docker compose ps`. Los tres contenedores 
 ## Estructura
 
 - **app** → PHP 8.2 FPM (Laravel)
-- **nginx** → puerto 80
+- **nginx** → puertos 80 (redirige a HTTPS) y 443 (HTTPS)
 - **db** → MySQL 8.0 (volumen persistente)
 
 La conexión a MikroTik (RouterOS API) se hace desde el contenedor **app** hacia tu router (IP/puerto configurados en la app).
@@ -167,36 +167,37 @@ La conexión a MikroTik (RouterOS API) se hace desde el contenedor **app** hacia
 
 ## Usar HTTPS
 
+Nginx ya está configurado para escuchar en 443 y redirigir HTTP → HTTPS. Solo falta **generar el certificado** y asegurar que el **puerto 443 esté abierto** en el firewall del proveedor (Elastika) y en la VPS (`ufw allow 443`).
+
 ### Opción A: Certificado autofirmado (IP o pruebas)
 
-En la VPS:
+En la VPS, desde la raíz del proyecto:
 
 ```bash
 cd ~/adminisp
-chmod +x scripts/ssl-selfsigned.sh
-./scripts/ssl-selfsigned.sh
-docker compose -f docker-compose.yml -f docker-compose.https.yml up -d
+bash docker/nginx/gen-ssl-selfsigned.sh
+docker compose restart nginx
 ```
 
-Abre **https://TU_IP/install**. El navegador mostrará una advertencia (certificado no confiable); en Chrome/Edge puedes usar "Avanzado" → "Acceder a la IP (no seguro)".
+Abre **https://TU_IP/install**. El navegador mostrará una advertencia (certificado no confiable); en Chrome/Edge: "Avanzado" → "Acceder a la IP (no seguro)".
 
 En `.env` pon `APP_URL=https://TU_IP`.
 
-### Opción B: Let's Encrypt (dominio recomendado)
+### Opción B: Let's Encrypt (si tienes dominio)
 
-1. Apunta un dominio (ej. `panel.tudominio.com`) al servidor (A record → IP de la VPS).
+1. Apunta un dominio (ej. `panel.tudominio.com`) al servidor (registro A → IP de la VPS).
 2. En la VPS instala Certbot y obtén el certificado:
    ```bash
    sudo apt install certbot
    sudo certbot certonly --standalone -d panel.tudominio.com
    ```
-3. Copia los certificados al proyecto y usa el override HTTPS:
+3. Copia los certificados al proyecto y reinicia Nginx:
    ```bash
-   sudo cp /etc/letsencrypt/live/panel.tudominio.com/fullchain.pem docker/certs/
-   sudo cp /etc/letsencrypt/live/panel.tudominio.com/privkey.pem docker/certs/
-   sudo chown $USER:$USER docker/certs/*
-   docker compose -f docker-compose.yml -f docker-compose.https.yml up -d
+   sudo cp /etc/letsencrypt/live/panel.tudominio.com/fullchain.pem ~/adminisp/docker/nginx/ssl/
+   sudo cp /etc/letsencrypt/live/panel.tudominio.com/privkey.pem ~/adminisp/docker/nginx/ssl/
+   sudo chown -R $USER:$USER ~/adminisp/docker/nginx/ssl
+   docker compose restart nginx
    ```
-4. Renovación: Certbot renueva en `/etc/letsencrypt/`. Tras renovar, copia de nuevo a `docker/certs/` y `docker compose restart nginx`.
+4. Renovación: tras `sudo certbot renew`, vuelve a copiar los `.pem` a `docker/nginx/ssl/` y `docker compose restart nginx`.
 
 En `.env` pon `APP_URL=https://panel.tudominio.com`.
