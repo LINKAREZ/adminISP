@@ -1,0 +1,12 @@
+/**
+ * Source Sans Pro - Local Font Files
+ *
+ * Para mejor rendimiento y privacidad, se recomienda descargar las fuentes
+ * desde https://fonts.google.com/specimen/Source+Sans+Pro y colocarlas en
+ * public/fonts/source-sans-pro/
+ *
+ * Por ahora, este archivo carga las fuentes desde Google Fonts como fallback.
+ * TODO: Descargar y localizar las fuentes en public/fonts/source-sans-pro/
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,300;0,400;0,700;1,400&display=swap');

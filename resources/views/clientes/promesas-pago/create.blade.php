@@ -1,0 +1,31 @@
+@extends('layouts.adminlte')
+
+@section('title', 'Nueva Promesa de Pago')
+@section('page-title', 'Nueva Promesa de Pago')
+
+@section('breadcrumb')
+    <x-breadcrumb :items="[
+        ['label' => 'Clientes', 'route' => 'clientes.index'],
+        ['label' => $cliente->nombre, 'route' => 'clientes.show', 'params' => $cliente],
+        ['label' => 'Nueva Promesa de Pago']
+    ]" />
+@endsection
+
+@section('content')
+    <div class="row">
+        <div class="col-12">
+            <x-card title="Nueva Promesa de Pago" icon="fa-handshake" variant="primary">
+                <x-slot name="actions">
+                    <x-btn :route="route('clientes.show', $cliente)" variant="secondary" size="sm" icon="fa-times">
+                        Cancelar
+                    </x-btn>
+                </x-slot>
+                    @include('clientes._form-promesa-pago', [
+                        'cliente' => $cliente,
+                        'recibo' => $recibo,
+                        'promesa' => null
+                    ])
+            </x-card>
+        </div>
+    </div>
+@endsection

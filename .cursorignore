@@ -1,0 +1,108 @@
+# ============================================
+# ARCHIVOS A IGNORAR PARA INDEXACIÓN RÁPIDA
+# ============================================
+
+# Dependencias
+node_modules/
+vendor/
+bower_components/
+
+# Build y compilación
+public/build/
+public/hot
+public/mix-manifest.json
+dist/
+build/
+
+# Caché y logs
+storage/framework/cache/
+storage/framework/sessions/
+storage/framework/views/
+storage/logs/
+bootstrap/cache/
+.cache/
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Archivos de configuración grandes
+composer.lock
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Archivos temporales
+*.tmp
+*.temp
+*.log
+*.cache
+
+# Archivos de backup
+*.bak
+*.backup
+*.old
+
+# Archivos de prueba y coverage
+.phpunit.result.cache
+coverage/
+.nyc_output/
+tests/_output/
+
+# Archivos de IDE
+*.sublime-*
+.vscode/
+.idea/
+*.iml
+
+# Archivos de Git
+.git/
+.gitignore
+.gitattributes
+
+# Archivos de entorno
+.env
+.env.backup
+.env.production
+.env.local
+.env.*.local
+
+# Archivos de documentación grandes
+*.pdf
+*.doc
+*.docx
+
+# Archivos multimedia
+*.mp4
+*.avi
+*.mov
+*.mp3
+*.wav
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.svg
+*.ico
+
+# Archivos comprimidos
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# Archivos de base de datos
+*.sql
+*.db
+*.sqlite
+*.sqlite3
+
+# Archivos de capturas de pago (si son muchos)
+public/pagos/capturas/

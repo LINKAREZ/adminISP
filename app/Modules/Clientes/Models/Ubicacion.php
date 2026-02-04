@@ -1,0 +1,74 @@
+<?php
+
+namespace App\Modules\Clientes\Models;
+
+use App\Core\Traits\Auditable;
+use App\Core\Traits\BelongsToIsp;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Ubicacion extends Model
+{
+    use Auditable, BelongsToIsp;
+
+    protected $table = 'ubicaciones';
+    protected $fillable = [
+        'cliente_id',
+        'router_id',
+        'direccion',
+        'referencia',
+        'distrito',
+        'provincia',
+        'departamento',
+        'latitud',
+        'longitud',
+        'notas',
+        'isp_id',
+    ];
+
+    protected $casts = [
+        'latitud' => 'decimal:8',
+        'longitud' => 'decimal:8',
+    ];
+
+    /**
+     * Relación con cliente
+     */
+    public function cliente(): BelongsTo
+    {
+        return $this->belongsTo(Cliente::class);
+    }
+
+    /**
+     * Relación con router
+     */
+    public function router(): BelongsTo
+    {
+        return $this->belongsTo(\App\Modules\Red\Models\Router::class);
+    }
+
+    /**
+     * Relación con servicios
+     */
+    public function servicios(): HasMany
+    {
+        return $this->hasMany(\App\Modules\Servicios\Models\Servicio::class);
+    }
+
+    /**
+     * Obtener dirección completa
+     */
+    public function getDireccionCompletaAttribute(): string
+    {
+        $partes = array_filter([
+            $this->direccion,
+            $this->referencia,
+            $this->distrito,
+            $this->provincia,
+            $this->departamento,
+        ]);
+
+        return implode(', ', $partes);
+    }
+}

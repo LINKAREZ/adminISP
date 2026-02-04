@@ -1,0 +1,163 @@
+@extends('layouts.adminlte')
+
+@section('title', 'Sistema - Medios de Pago')
+@section('page-title', 'Medios de Pago')
+
+@section('breadcrumb')
+    <x-breadcrumb :items="[
+        ['label' => 'Sistema', 'route' => 'sistema.medios-pago.index'],
+        ['label' => 'Medios de Pago']
+    ]" />
+@endsection
+
+@section('content')
+    <!-- Pestañas del Módulo Sistema -->
+    @include('sistema.tabs')
+
+    <div class="row">
+        <div class="col-12">
+            <x-card title="Medios de Pago" icon="fa-money-bill-wave" variant="primary">
+                <x-slot name="actions">
+                    <x-btn :route="route('sistema.medios-pago.create')" variant="primary" size="sm" icon="fa-plus">
+                        Agregar Medio de Pago
+                    </x-btn>
+                </x-slot>
+                <!-- Buscador -->
+                <form method="GET" action="{{ route('sistema.medios-pago.index') }}" id="form-buscar-medios-pago">
+                    <div class="row mb-3">
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <div class="input-group">
+                                <input
+                                    type="text"
+                                    name="buscar"
+                                    id="buscar-medios-pago"
+                                    value="{{ request('buscar') }}"
+                                    placeholder="Buscar por nombre, tipo o banco..."
+                                    class="form-control"
+                                />
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                    @if(request('buscar'))
+                                        <a href="{{ route('sistema.medios-pago.index') }}" class="btn btn-outline-secondary">
+                                            <i class="fas fa-times"></i>
+                                        </a>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <!-- Vista móvil: Cards -->
+                    <div class="d-md-none">
+                        @forelse($mediosPago as $medio)
+                            <div class="card card-outline card-primary mb-2">
+                                <div class="card-header">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h6 class="card-title mb-0">
+                                            <strong>{{ $medio->nombre }}</strong>
+                                        </h6>
+                                        @if($medio->activo)
+                                            <span class="badge badge-success">Activo</span>
+                                        @else
+                                            <span class="badge badge-danger">Inactivo</span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <p class="mb-1"><span class="badge badge-info">{{ ucfirst($medio->tipo) }}</span></p>
+                                    @if($medio->numero_cuenta)
+                                        <p class="mb-1 small"><i class="fas fa-credit-card mr-2 text-muted"></i>{{ $medio->numero_cuenta }}</p>
+                                    @endif
+                                    @if($medio->banco)
+                                        <p class="mb-2 small"><i class="fas fa-university mr-2 text-muted"></i>{{ $medio->banco }}</p>
+                                    @endif
+                                    <div class="btn-group btn-group-sm w-100 mt-2">
+                                        <x-action-buttons
+                                            :show-route="'sistema.medios-pago.show'"
+                                            :show-params="[$medio]"
+                                            :edit-route="'sistema.medios-pago.edit'"
+                                            :edit-params="[$medio]"
+                                            :delete-route="'sistema.medios-pago.destroy'"
+                                            :delete-params="[$medio]"
+                                            size="sm"
+                                            delete-message="¿Está seguro de eliminar este medio de pago?"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <x-empty-state
+                                icon="fa-money-bill-wave"
+                                title="No hay medios de pago registrados"
+                                description="Aún no hay medios de pago en el sistema"
+                                action-label="Agregar Medio de Pago"
+                                action-route="sistema.medios-pago.create"
+                            />
+                        @endforelse
+                    </div>
+
+                    <!-- Vista desktop: Tabla -->
+                    <div class="table-responsive d-none d-md-block">
+                        <table id="tablaMediosPago" class="table table-hover" data-datatable="true">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Tipo</th>
+                                    <th>Número de Cuenta</th>
+                                    <th>Banco</th>
+                                    <th>Estado</th>
+                                    <th width="100"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($mediosPago as $medio)
+                                    <tr>
+                                        <td><strong>{{ $medio->nombre }}</strong></td>
+                                        <td>
+                                            <span class="badge badge-info">{{ ucfirst($medio->tipo) }}</span>
+                                        </td>
+                                        <td><small class="text-muted">{{ $medio->numero_cuenta ?? '-' }}</small></td>
+                                        <td><small class="text-muted">{{ $medio->banco ?? '-' }}</small></td>
+                                        <td>
+                                            <x-status-badge :status="$medio->activo ? 'activo' : 'inactivo'" type="usuario" />
+                                        </td>
+                                        <td class="text-right">
+                                            <x-action-buttons
+                                                :show-route="'sistema.medios-pago.show'"
+                                                :show-params="[$medio]"
+                                                :edit-route="'sistema.medios-pago.edit'"
+                                                :edit-params="[$medio]"
+                                                :delete-route="'sistema.medios-pago.destroy'"
+                                                :delete-params="[$medio]"
+                                                size="sm"
+                                                layout="dropdown"
+                                                delete-message="¿Está seguro de eliminar este medio de pago?"
+                                            />
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <x-empty-state
+                                        icon="fa-money-bill-wave"
+                                        title="No hay medios de pago registrados"
+                                        description="Aún no hay medios de pago en el sistema"
+                                        action-label="Agregar Medio de Pago"
+                                        action-route="sistema.medios-pago.create"
+                                        colspan="6"
+                                    />
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+            </x-card>
+        </div>
+    </div>
+
+    <!-- Script para acciones del menú -->
+    @include('components.crud-actions-script', [
+        'baseRoute' => route('sistema.medios-pago.index'),
+        'entityName' => 'medio de pago',
+        'confirmMessage' => '¿Está seguro de eliminar este medio de pago?'
+    ])
+@endsection

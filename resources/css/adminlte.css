@@ -1,0 +1,161 @@
+/* AdminLTE 3 Styles */
+@import 'admin-lte/dist/css/adminlte.min.css';
+
+/* Font Awesome - Usar CDN en lugar de import local para evitar problemas con webfonts */
+/* Las fuentes se cargan desde el CDN agregado en el layout */
+/* @import '@fortawesome/fontawesome-free/css/all.min.css'; */
+
+/* DataTables Bootstrap 4 Styles */
+@import 'datatables.net-bs4/css/dataTables.bootstrap4.min.css';
+
+/* Importar estilos del drawer PPPoE */
+@import './pppoe-drawer.css';
+
+/* Colores adicionales para AdminLTE */
+.bg-orange {
+    background-color: #fd7e14 !important;
+}
+
+.bg-purple {
+    background-color: #6f42c1 !important;
+}
+
+.bg-indigo {
+    background-color: #6610f2 !important;
+}
+
+/* Ribbons personalizados */
+.ribbon-wrapper {
+    position: relative;
+    display: inline-block;
+    margin-left: 8px;
+}
+
+.ribbon {
+    position: relative;
+    padding: 4px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    text-transform: uppercase;
+    z-index: 1;
+    box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.125);
+}
+
+.ribbon-wrapper .ribbon {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+}
+
+/* Botón Icono - Estilo AdminLTE3 */
+.btn-icon {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    border: 1px solid #dee2e6;
+    background-color: #fff;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.btn-icon:hover {
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+    background-color: #f8f9fa;
+}
+
+.btn-icon:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Overlay para Drawer */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 1040;
+    display: none;
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    transition: opacity 0.3s;
+}
+
+.overlay.overlay-active {
+    display: block;
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+}
+
+/* Drawer - Estilo AdminLTE3 */
+.drawer {
+    position: fixed;
+    height: 100%;
+    background-color: #fff;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    z-index: 1050;
+    transform: translateY(100%);
+    transition: transform 0.3s ease-in-out;
+    /* Móvil: desde abajo, 100% ancho */
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+}
+
+@media (min-width: 640px) {
+    .drawer {
+        /* Desktop: desde la derecha, ancho fijo */
+        top: 0;
+        right: 0;
+        left: auto;
+        width: 24rem;
+        border-radius: 0;
+        border-top-left-radius: 1rem;
+        border-bottom-left-radius: 1rem;
+        bottom: auto;
+        transform: translateX(100%);
+    }
+}
+
+@media (min-width: 1024px) {
+    .drawer {
+        width: 30rem;
+    }
+}
+
+.drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.drawer-body {
+    padding: 1rem;
+    overflow-y: auto;
+    max-height: calc(100vh - 8rem);
+}
+
+.drawer-footer {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.h-drawer-content {
+    max-height: calc(100vh - 8rem);
+}
+
+/* Personalizaciones adicionales si son necesarias */

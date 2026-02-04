@@ -1,0 +1,87 @@
+<?php
+
+use Illuminate\Foundation\Application;
+use Illuminate\Foundation\Configuration\Exceptions;
+use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
+
+return Application::configure(basePath: dirname(__DIR__))
+    ->withRouting(
+        web: __DIR__ . '/../routes/web.php',
+        commands: __DIR__ . '/../routes/console.php',
+        health: '/up',
+        then: function () {
+            // Cargar rutas API centralizadas
+            require __DIR__ . '/../routes/api.php';
+        },
+    )
+    ->withMiddleware(function (Middleware $middleware) {
+        $middleware->redirectGuestsTo('/login');
+        // Comentado para evitar bucles - se maneja manualmente en el controlador
+        // $middleware->redirectUsersTo('/dashboard');
+        $middleware->web(append: [
+            \App\Http\Middleware\RedirectIfNotInstalled::class,
+            \App\Core\Middleware\SetIspContext::class,
+        ]);
+        $middleware->alias([
+            'permission' => \App\Core\Middleware\CheckPermission::class,
+            'superadmin' => \App\Core\Middleware\EnsureSuperAdmin::class,
+            'installer' => \App\Http\Middleware\EnsureNotInstalled::class,
+        ]);
+    })
+    ->withProviders([
+        \App\Providers\AppServiceProvider::class,
+        \App\Providers\AuthServiceProvider::class,
+        \App\Core\Providers\ViewServiceProvider::class,
+        \App\Modules\ControlAcceso\ModuleServiceProvider::class,
+        \App\Modules\Clientes\ModuleServiceProvider::class,
+        \App\Modules\Servicios\ModuleServiceProvider::class,
+        \App\Modules\Comprobantes\ModuleServiceProvider::class,
+        \App\Modules\Red\ModuleServiceProvider::class,
+        \App\Modules\Sistema\ModuleServiceProvider::class,
+        \App\Modules\Dashboard\ModuleServiceProvider::class,
+        \App\Modules\Auth\ModuleServiceProvider::class,
+        \App\Modules\Notificaciones\ModuleServiceProvider::class,
+        \App\Modules\Auditoria\ModuleServiceProvider::class,
+    ])
+    ->withExceptions(function (Exceptions $exceptions) {
+        // Manejo de excepciones para respuestas AJAX/JSON
+        $exceptions->render(function (\Throwable $exception, \Illuminate\Http\Request $request) {
+            if ($request->expectsJson() || $request->ajax()) {
+                // Obtener código de estado HTTP de la excepción si está disponible
+                $status = 500;
+                if ($exception instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface) {
+                    $status = $exception->getStatusCode();
+                } elseif ($exception instanceof \Illuminate\Http\Exceptions\HttpResponseException) {
+                    $status = $exception->getResponse()->getStatusCode();
+                }
+                $message = $exception->getMessage();
+
+                // En producción, no exponer mensajes de error detallados
+                if (!config('app.debug') && $status >= 500) {
+                    $message = 'Ocurrió un error interno. Por favor, intenta nuevamente.';
+                }
+
+                // Log del error para debugging
+                Log::error('Excepción no manejada', [
+                    'message' => $exception->getMessage(),
+                    'file' => $exception->getFile(),
+                    'line' => $exception->getLine(),
+                    'trace' => config('app.debug') ? $exception->getTraceAsString() : null,
+                    'request_url' => $request->fullUrl(),
+                    'request_method' => $request->method(),
+                ]);
+
+                return response()->json([
+                    'success' => false,
+                    'message' => $message,
+                    'errors' => config('app.debug') ? [
+                        'exception' => get_class($exception),
+                        'file' => $exception->getFile(),
+                        'line' => $exception->getLine(),
+                    ] : [],
+                ], $status);
+            }
+        });
+    })->create();

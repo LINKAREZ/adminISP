@@ -1,0 +1,157 @@
+<?php
+
+use App\Modules\Comprobantes\Controllers\ReciboController;
+use App\Modules\Comprobantes\Controllers\PagoController;
+use App\Modules\Comprobantes\Controllers\PromesaPagoController;
+use App\Modules\Comprobantes\Controllers\ComprobanteController;
+use App\Modules\Comprobantes\Controllers\ReporteController;
+use Illuminate\Support\Facades\Route;
+
+// Rutas API movidas a routes/api.php
+
+// Rutas de recibos (directas, no anidadas - solo delete)
+Route::middleware(['web', 'auth', 'permission:comprobantes.delete'])
+    ->delete('recibos/{recibo}', [ReciboController::class, 'destroy'])
+    ->name('recibos.destroy');
+
+// Rutas de pagos (directas, no anidadas - solo delete)
+Route::middleware(['web', 'auth', 'permission:comprobantes.delete'])
+    ->delete('pagos/{pago}', [PagoController::class, 'destroy'])
+    ->name('pagos.destroy');
+
+// Rutas de comprobantes
+Route::middleware(['web', 'auth'])->group(function () {
+    Route::get('comprobantes', [ComprobanteController::class, 'index'])
+        ->middleware('permission:comprobantes.read')
+        ->name('comprobantes.index');
+    Route::get('comprobantes/create', [ComprobanteController::class, 'create'])
+        ->middleware('permission:comprobantes.create')
+        ->name('comprobantes.create');
+    Route::post('comprobantes', [ComprobanteController::class, 'store'])
+        ->middleware('permission:comprobantes.create')
+        ->name('comprobantes.store');
+    Route::get('comprobantes/{comprobante}', [ComprobanteController::class, 'show'])
+        ->middleware('permission:comprobantes.read')
+        ->name('comprobantes.show');
+    Route::get('comprobantes/{comprobante}/edit', [ComprobanteController::class, 'edit'])
+        ->middleware('permission:comprobantes.update')
+        ->name('comprobantes.edit');
+    Route::put('comprobantes/{comprobante}', [ComprobanteController::class, 'update'])
+        ->middleware('permission:comprobantes.update')
+        ->name('comprobantes.update');
+    Route::delete('comprobantes/{comprobante}', [ComprobanteController::class, 'destroy'])
+        ->middleware('permission:comprobantes.delete')
+        ->name('comprobantes.destroy');
+    Route::post('comprobantes/{comprobante}/anular', [ComprobanteController::class, 'anular'])
+        ->middleware('permission:comprobantes.delete')
+        ->name('comprobantes.anular');
+    Route::get('comprobantes/{comprobante}/ver', [ComprobanteController::class, 'ver'])
+        ->middleware('permission:comprobantes.read')
+        ->name('comprobantes.ver');
+    Route::get('comprobantes/{comprobante}/descargar', [ComprobanteController::class, 'descargarRecibo'])
+        ->middleware('permission:comprobantes.read')
+        ->name('comprobantes.descargar');
+
+    Route::get('pagos/{pago}/comprobante', [ComprobanteController::class, 'generar'])
+        ->middleware('permission:comprobantes.read')
+        ->name('pagos.comprobante');
+    Route::get('pagos/{pago}/comprobante/descargar', [ComprobanteController::class, 'descargar'])
+        ->middleware('permission:comprobantes.read')
+        ->name('pagos.comprobante.descargar');
+
+    Route::post('comprobantes/masivos', [ComprobanteController::class, 'generarMasivos'])
+        ->middleware('permission:comprobantes.create')
+        ->name('comprobantes.generar-masivos');
+    
+    // Ruta para eliminar recibos masivos - usar ruta separada para evitar conflictos
+    Route::post('comprobantes/masivos/eliminar', [ComprobanteController::class, 'eliminarMasivos'])
+        ->middleware('permission:comprobantes.delete')
+        ->name('comprobantes.eliminar-masivos');
+
+    Route::get('comprobantes/series', [ComprobanteController::class, 'series'])
+        ->middleware('permission:comprobantes.read')
+        ->name('comprobantes.series');
+    Route::get('comprobantes-series', [ComprobanteController::class, 'series'])
+        ->middleware('permission:comprobantes.read');
+});
+
+// Rutas de reportes (módulo Comprobantes)
+Route::middleware(['web', 'auth', 'permission:comprobantes.read'])
+    ->prefix('reportes')
+    ->name('comprobantes.reportes.')
+    ->group(function () {
+        Route::get('cuadre-caja', [ReporteController::class, 'cuadreCaja'])->name('cuadre-caja');
+        Route::get('detalle-medio-pago', [ReporteController::class, 'detalleMedioPago'])->name('detalle-medio-pago');
+    });
+
+// Rutas anidadas de recibos, pagos y promesas bajo clientes
+Route::middleware(['web', 'auth'])
+    ->prefix('clientes/{cliente}')
+    ->name('clientes.')
+    ->group(function () {
+        // API: Obtener recibos del cliente (AJAX para formularios)
+        Route::get('recibos/por-servicio', [ReciboController::class, 'getRecibosByServicioId'])
+            ->middleware('permission:comprobantes.read')
+            ->name('recibos-cliente');
+
+        Route::get('recibos/create', [ReciboController::class, 'create'])
+            ->middleware('permission:comprobantes.create')
+            ->name('recibos.create');
+        Route::get('recibos/{recibo}', [ReciboController::class, 'show'])
+            ->middleware('permission:comprobantes.read')
+            ->name('recibos.show');
+        Route::get('recibos/{recibo}/edit', [ReciboController::class, 'edit'])
+            ->middleware('permission:comprobantes.update')
+            ->name('recibos.edit');
+        Route::post('recibos', [ReciboController::class, 'store'])
+            ->middleware('permission:comprobantes.create')
+            ->name('recibos.store');
+        Route::put('recibos/{recibo}', [ReciboController::class, 'update'])
+            ->middleware('permission:comprobantes.update')
+            ->name('recibos.update');
+
+        // Pagos
+        Route::get('pagos/create', [PagoController::class, 'create'])
+            ->middleware('permission:comprobantes.create')
+            ->name('pagos.create');
+        Route::get('pagos/{pago}', [PagoController::class, 'show'])
+            ->middleware('permission:comprobantes.read')
+            ->name('pagos.show');
+        Route::get('pagos/{pago}/edit', [PagoController::class, 'edit'])
+            ->middleware('permission:comprobantes.update')
+            ->name('pagos.edit');
+        Route::post('pagos', [PagoController::class, 'store'])
+            ->middleware('permission:comprobantes.create')
+            ->name('pagos.store');
+        Route::put('pagos/{pago}', [PagoController::class, 'update'])
+            ->middleware('permission:comprobantes.update')
+            ->name('pagos.update');
+        Route::get('pagos/{pago}/captura', [PagoController::class, 'mostrarCaptura'])
+            ->middleware('permission:comprobantes.read')
+            ->name('pagos.captura');
+
+        // Promesas de Pago (anidadas en recibos)
+        Route::prefix('recibos/{recibo}')->name('promesas-pago.')->group(function () {
+            Route::get('promesas-pago/create', [PromesaPagoController::class, 'create'])
+                ->middleware('permission:comprobantes.create')
+                ->name('create');
+            Route::get('promesas-pago/{promesa}/edit', [PromesaPagoController::class, 'edit'])
+                ->middleware('permission:comprobantes.update')
+                ->name('edit');
+            Route::post('promesas-pago', [PromesaPagoController::class, 'store'])
+                ->middleware('permission:comprobantes.create')
+                ->name('store');
+            Route::put('promesas-pago/{promesa}', [PromesaPagoController::class, 'update'])
+                ->middleware('permission:comprobantes.update')
+                ->name('update');
+            Route::post('promesas-pago/{promesa}/cumplir', [PromesaPagoController::class, 'cumplir'])
+                ->middleware('permission:comprobantes.update')
+                ->name('cumplir');
+            Route::post('promesas-pago/{promesa}/cancelar', [PromesaPagoController::class, 'cancelar'])
+                ->middleware('permission:comprobantes.update')
+                ->name('cancelar');
+            Route::delete('promesas-pago/{promesa}', [PromesaPagoController::class, 'destroy'])
+                ->middleware('permission:comprobantes.delete')
+                ->name('destroy');
+        });
+    });

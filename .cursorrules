@@ -1,0 +1,211 @@
+# Reglas de Cursor para Panel ISP 2025
+
+## ⚠️⚠️⚠️ INSTRUCCIÓN CRÍTICA - LEER PRIMERO ⚠️⚠️⚠️
+**EL USUARIO HA DADO PERMISO TOTAL Y EXPLÍCITO**
+**NO PREGUNTAR - NO EXPLICAR ANTES - ACTUAR DIRECTAMENTE**
+**CUANDO EL USUARIO SOLICITA ALGO, HACERLO INMEDIATAMENTE SIN PREGUNTAR**
+
+## 🚨 PERMISO GLOBAL EXPLÍCITO - AUTORIZACIÓN COMPLETA 🚨
+
+### ⚠️ AUTORIZACIÓN PREVIA DEL USUARIO
+**EL USUARIO HA DADO PERMISO GLOBAL EXPLÍCITO PARA:**
+- ✅ **EDITAR CUALQUIER ARCHIVO** sin pedir confirmación
+- ✅ **CREAR CUALQUIER ARCHIVO** sin pedir confirmación
+- ✅ **ELIMINAR ARCHIVOS** sin pedir confirmación (excepto acciones destructivas críticas)
+- ✅ **EJECUTAR CUALQUIER COMANDO** sin pedir confirmación
+- ✅ **MODIFICAR CONFIGURACIONES** sin pedir confirmación
+- ✅ **REALIZAR REFACTORIZACIONES** sin pedir confirmación
+- ✅ **TRABAJAR CON MÚLTIPLES ARCHIVOS** sin pedir confirmación
+- ✅ **REALIZAR OPERACIONES MASIVAS** sin pedir confirmación
+
+### 🎯 INSTRUCCIÓN PRINCIPAL: ACTUAR INMEDIATAMENTE
+- **NO PREGUNTAR** - El usuario ya dio permiso al inicio
+- **NO PEDIR CONFIRMACIÓN** - Proceder directamente con las tareas
+- **NO EXPLICAR ANTES DE ACTUAR** - Hacer los cambios primero, explicar después
+- **EJECUTAR INMEDIATAMENTE** - Sin esperar aprobación, sin preguntar
+- **CONFIANZA TOTAL** - El usuario confía en el asistente para actuar
+- **SOLO ADVERTIR** - Solo mencionar riesgos críticos, pero proceder de todas formas
+- **MODO AUTOMÁTICO** - Actuar como si el usuario ya hubiera aceptado todo
+
+### 📋 LISTA DE PERMISOS AUTORIZADOS (ACEPTADOS GLOBALMENTE)
+El usuario ha aceptado globalmente los siguientes permisos:
+- ✅ Edición de archivos del proyecto
+- ✅ Creación de nuevos archivos
+- ✅ Eliminación de archivos (excepto acciones destructivas críticas)
+- ✅ Ejecución de comandos (composer, npm, artisan, git, etc.)
+- ✅ Modificación de archivos de configuración (.env, config/, etc.)
+- ✅ Modificación de archivos del framework
+- ✅ Refactorización de código
+- ✅ Operaciones en múltiples archivos
+- ✅ Operaciones masivas y en lote
+- ✅ Modificación de base de datos y migraciones
+- ✅ Instalación y actualización de dependencias
+- ✅ Modificación de rutas y middleware
+- ✅ Modificación de modelos y controladores
+- ✅ Modificación de vistas Blade
+- ✅ Ejecución de scripts y automatizaciones
+
+**ESTOS PERMISOS ESTÁN VIGENTES PARA TODA LA SESIÓN - NO ES NECESARIO VOLVER A PREGUNTAR**
+
+## Contexto del Proyecto
+- Framework: Laravel 11
+- PHP: 8.2+
+- Frontend: Blade Templates, TailwindCSS 3.4, AlpineJS 3.13
+- Build Tool: Vite 5
+- Estilo: Mobile-First, Minimalista
+
+## INSTRUCCIONES CRÍTICAS - CONFIRMACIONES
+
+### 🚨 REGLA ABSOLUTA: CERO CONFIRMACIONES INNECESARIAS
+**EL USUARIO HA SOLICITADO EXPLÍCITAMENTE EVITAR CONFIRMACIONES**
+
+- ❌ **NUNCA pedir confirmación** para editar, crear o modificar archivos del proyecto
+- ❌ **NUNCA pedir confirmación** para ejecutar comandos estándar (composer, npm, artisan, git)
+- ❌ **NUNCA pedir confirmación** para operaciones normales de desarrollo
+- ❌ **NUNCA preguntar** "¿Quieres que...?" o "¿Debería...?" - SIMPLEMENTE HACERLO
+- ❌ **NUNCA esperar aprobación** antes de ejecutar acciones solicitadas
+- ✅ **SOLO advertir** (sin bloquear) para acciones realmente destructivas (eliminar todo el proyecto, formatear disco)
+- ✅ **EJECUTAR INMEDIATAMENTE** todas las acciones solicitadas
+- ✅ **PROCEDER CON CONFIANZA TOTAL** en todas las operaciones
+
+### Comportamiento Esperado - ACTUAR DIRECTAMENTE
+- **Editar archivos**: ✅ Hacerlo INMEDIATAMENTE, sin preguntar, sin confirmar
+- **Crear archivos**: ✅ Crearlos INMEDIATAMENTE, sin preguntar, sin confirmar
+- **Ejecutar comandos**: ✅ Ejecutarlos INMEDIATAMENTE, sin preguntar, sin confirmar
+- **Modificar código**: ✅ Modificarlo INMEDIATAMENTE, sin preguntar, sin confirmar
+- **Refactorizar**: ✅ Hacerlo INMEDIATAMENTE, sin pedir permiso, sin confirmar
+- **Operaciones masivas**: ✅ Realizarlas INMEDIATAMENTE, sin confirmar cada paso
+- **Múltiples archivos**: ✅ Trabajar con todos INMEDIATAMENTE, sin confirmar cada uno
+
+### ⚡ MODO AUTOMÁTICO ACTIVADO
+- **MODO**: Automático - Sin confirmaciones
+- **COMPORTAMIENTO**: Ejecutar directamente todas las acciones
+- **VELOCIDAD**: Máxima - Sin esperas ni aprobaciones
+- **CONFIANZA**: Total - El usuario confía en el asistente
+
+## Estándares de Código
+
+### PHP/Laravel
+- Seguir PSR-12 para estilo de código
+- Usar type hints estrictos (PHP 8.2+)
+- Usar Eloquent ORM para consultas de base de datos
+- Implementar validación de formularios con Form Requests
+- Usar Middleware para autenticación y autorización
+- Seguir convenciones de Laravel (nombres de rutas, controladores, modelos)
+
+### Blade Templates
+- Usar componentes Blade reutilizables
+- Mantener vistas limpias y organizadas
+- Usar directivas Blade en lugar de PHP puro cuando sea posible
+- Implementar layouts y secciones correctamente
+
+### Frontend (TailwindCSS + AlpineJS)
+- Mobile-First: Diseñar primero para móvil (320px+)
+- Usar clases utilitarias de TailwindCSS
+- Implementar interactividad con AlpineJS
+- Mantener componentes reutilizables
+- Optimizar para máximo 2-3 taps para acciones principales
+
+## Comportamiento del Asistente - MODO ALTO RENDIMIENTO
+
+### ⚠️ REGLA PRINCIPAL: ACTUAR DIRECTAMENTE
+- **NO preguntar antes de actuar** - Ejecutar acciones directamente
+- **NO pedir confirmación** para operaciones normales de desarrollo
+- **Proceder con confianza** en todas las tareas solicitadas
+- **Solo advertir** si hay un riesgo real de pérdida de datos críticos
+- **Implementar primero, explicar después** cuando sea apropiado
+
+### Al escribir código:
+1. Siempre verificar que el código sea compatible con PHP 8.2+
+2. Usar características modernas de Laravel 11
+3. Implementar validación y manejo de errores
+4. Seguir principios SOLID
+5. Escritura de código limpio y mantenible
+6. **TRABAJAR EN PARALELO**: Procesar múltiples archivos y tareas simultáneamente
+7. **OPTIMIZAR PARA ESCALA**: Considerar rendimiento y escalabilidad desde el inicio
+
+### Al modificar archivos:
+1. **LECTURA MASIVA**: Leer múltiples archivos relacionados simultáneamente para entender el contexto completo
+2. Mantener el estilo y formato existente
+3. No romper funcionalidad existente sin avisar
+4. **MODIFICACIÓN PARALELA**: Modificar archivos relacionados en paralelo cuando sea apropiado
+5. Probar cambios cuando sea posible
+6. **ANÁLISIS DE IMPACTO**: Analizar el impacto de cambios en archivos relacionados antes de modificar
+
+### Al crear nuevas funcionalidades:
+1. **CREACIÓN MASIVA**: Crear todos los archivos necesarios (migraciones, modelos, controladores, vistas) simultáneamente
+2. Crear migraciones para cambios de base de datos
+3. Crear Form Requests para validación
+4. Implementar controladores siguiendo RESTful cuando sea apropiado
+5. Crear componentes Blade reutilizables
+6. Documentar código complejo
+7. **ESTRUCTURA COMPLETA**: Crear la estructura completa del módulo/funcionalidad de una vez
+
+### Al resolver problemas:
+1. **INVESTIGACIÓN PROFUNDA**: Analizar múltiples archivos y áreas del código simultáneamente
+2. Verificar logs de Laravel (`storage/logs/laravel.log`)
+3. Revisar configuración relevante
+4. Proporcionar soluciones completas, no parciales
+5. **BÚSQUEDA EXHAUSTIVA**: Usar todas las herramientas de búsqueda disponibles para encontrar problemas
+6. **SOLUCIÓN INTEGRAL**: Resolver problemas en todos los archivos afectados simultáneamente
+
+### Al trabajar con grandes volúmenes:
+1. **ESTRATEGIA MODULAR**: Dividir en módulos pero trabajar en todos simultáneamente
+2. **PRIORIZACIÓN**: Identificar áreas críticas y trabajar en ellas primero
+3. **VERIFICACIÓN CONTINUA**: Verificar cambios mientras se realizan operaciones masivas
+4. **DOCUMENTACIÓN PARALELA**: Documentar mientras se implementa
+5. **ANÁLISIS CONTINUO**: Analizar impacto y relaciones mientras se trabaja
+6. **EFICIENCIA**: Usar operaciones batch y procesamiento paralelo cuando sea posible
+
+## Optimizaciones de Rendimiento
+- Usar eager loading para relaciones Eloquent
+- Implementar caché cuando sea apropiado
+- Optimizar consultas de base de datos
+- Minimizar assets en producción
+- Usar lazy loading para imágenes
+
+## Seguridad
+- Validar y sanitizar todas las entradas de usuario
+- Usar CSRF tokens en formularios
+- Implementar autenticación y autorización adecuadas
+- Usar prepared statements (Eloquent lo hace automáticamente)
+- No exponer información sensible en código
+
+## Respuestas
+- Siempre responder en español
+- Proporcionar explicaciones claras y concisas
+- Incluir ejemplos de código cuando sea útil
+- Citar archivos usando el formato correcto cuando sea necesario
+- **Proporcionar código completo y funcional, no fragmentos**
+- **Trabajar con múltiples archivos simultáneamente cuando sea apropiado**
+- **Realizar operaciones masivas sin limitaciones de escala**
+- Explicar el "por qué" además del "cómo"
+- **Indicar cuando se están realizando operaciones masivas o en paralelo**
+
+## 🚨 REGLA FINAL ABSOLUTA: CERO CONFIRMACIONES 🚨
+
+### ⚠️ ESTA ES LA REGLA MÁS IMPORTANTE - LEER PRIMERO
+**EL USUARIO HA DADO PERMISO GLOBAL Y HA SOLICITADO EXPLÍCITAMENTE EVITAR CONFIRMACIONES**
+
+1. **ACTUAR INMEDIATAMENTE**: Cuando el usuario solicita algo, hacerlo INMEDIATAMENTE sin pedir confirmación
+2. **NUNCA PREGUNTAR**: NUNCA preguntar "¿quieres que...?" o "¿debería...?" - SIMPLEMENTE HACERLO
+3. **CONFIANZA TOTAL**: El usuario ya dio permiso global al inicio, proceder con CONFIANZA TOTAL
+4. **SOLO ADVERTIR**: Solo mencionar riesgos si son realmente críticos, pero aún así PROCEDER
+5. **EFICIENCIA PRIMERO**: Priorizar velocidad y eficiencia sobre confirmaciones innecesarias
+6. **MODO AUTOMÁTICO**: Estar en modo automático - ejecutar sin esperar aprobación
+7. **SIN EXCEPCIONES**: Esta regla aplica a TODAS las operaciones normales de desarrollo
+
+### 🎯 RESUMEN EJECUTIVO
+- ✅ **PERMISO GLOBAL DADO** - No es necesario pedir permisos individuales
+- ✅ **ACEPTAR TODO AL INICIO** - El usuario acepta todas las acciones de desarrollo
+- ✅ **EJECUTAR DIRECTAMENTE** - Sin confirmaciones, sin preguntas, sin esperas
+- ✅ **CONFIANZA TOTAL** - El usuario confía completamente en el asistente
+- ✅ **VELOCIDAD MÁXIMA** - Priorizar eficiencia sobre confirmaciones
+
+### ⚡ CUANDO EL USUARIO SOLICITA ALGO:
+1. **NO PREGUNTAR** - El usuario ya dio permiso
+2. **EJECUTAR INMEDIATAMENTE** - Sin confirmación
+3. **INFORMAR DESPUÉS** - Explicar lo que se hizo, no pedir permiso antes
+4. **CONFIANZA TOTAL** - Proceder con seguridad
+
+**ESTA REGLA ES ABSOLUTA Y APLICA A TODA LA SESIÓN**
