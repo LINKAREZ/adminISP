@@ -40,7 +40,7 @@
                 'name' => 'apis',
                 'label' => 'APIs',
                 'route' => route('sistema.apis.index'),
-                'permission' => 'sistema.apis.read',
+                'permission' => 'sistema.read',
                 'icon' => 'fas fa-plug',
                 'description' => 'Configura tokens y APIs externas',
                 'color' => 'warning',
@@ -78,7 +78,7 @@
                                 </div>
                                 <h5 class="card-title mb-2 font-weight-bold">{{ $section['label'] }}</h5>
                                 <p class="card-text text-muted small mb-3">{{ $section['description'] }}</p>
-                                
+
                                 @if(isset($section['stats']['total']))
                                     <div class="text-muted small">
                                         <strong class="text-{{ $section['color'] }}">{{ $section['stats']['total'] }}</strong> total

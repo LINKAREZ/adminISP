@@ -5,13 +5,14 @@ namespace App\Modules\Comprobantes\Models;
 use App\Core\Enums\EstadoPromesaPago;
 use App\Core\Traits\Auditable;
 use App\Core\Traits\BelongsToIsp;
+use App\Core\Traits\UsesTenantConnection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Carbon\Carbon;
 
 class PromesaPago extends Model
 {
-    use Auditable, BelongsToIsp;
+    use Auditable, BelongsToIsp, UsesTenantConnection;
     // Constantes para estados de promesa de pago (usar EstadoPromesaPago enum en código nuevo)
     public const ESTADO_PENDIENTE = 'pendiente';
     public const ESTADO_VENCIDA = 'vencida';

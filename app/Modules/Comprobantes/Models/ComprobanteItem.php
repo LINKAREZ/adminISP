@@ -4,12 +4,13 @@ namespace App\Modules\Comprobantes\Models;
 
 use App\Core\Traits\Auditable;
 use App\Core\Traits\BelongsToIsp;
+use App\Core\Traits\UsesTenantConnection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ComprobanteItem extends Model
 {
-    use Auditable, BelongsToIsp;
+    use Auditable, BelongsToIsp, UsesTenantConnection;
 
     protected $table = 'comprobante_items';
 

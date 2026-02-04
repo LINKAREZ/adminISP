@@ -12,6 +12,8 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable, Auditable, BelongsToIsp;
 
+    protected $connection = 'mysql';
+
     /**
      * The attributes that are mass assignable.
      *

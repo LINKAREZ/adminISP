@@ -5,6 +5,7 @@ namespace App\Modules\Auditoria\Controllers;
 use App\Http\Controllers\Controller;
 use App\Core\Models\AuditLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class AuditoriaController extends Controller
 {
@@ -13,6 +14,7 @@ class AuditoriaController extends Controller
      */
     public function index(Request $request)
     {
+        Gate::authorize('auditoria.read');
         $request->validate([
             'user_id' => ['sometimes', 'integer', 'exists:users,id'],
             'action' => ['sometimes', 'string', 'max:100'],
@@ -51,11 +53,11 @@ class AuditoriaController extends Controller
             $query->where(function ($q) use ($buscar) {
                 $q->whereHas('user', function ($userQuery) use ($buscar) {
                     $userQuery->where('name', 'like', "%{$buscar}%")
-                              ->orWhere('email', 'like', "%{$buscar}%");
+                        ->orWhere('email', 'like', "%{$buscar}%");
                 })
-                ->orWhere('action', 'like', "%{$buscar}%")
-                ->orWhere('model_type', 'like', "%{$buscar}%")
-                ->orWhere('ip_address', 'like', "%{$buscar}%");
+                    ->orWhere('action', 'like', "%{$buscar}%")
+                    ->orWhere('model_type', 'like', "%{$buscar}%")
+                    ->orWhere('ip_address', 'like', "%{$buscar}%");
             });
         }
 
@@ -74,6 +76,7 @@ class AuditoriaController extends Controller
      */
     public function show(AuditLog $auditLog)
     {
+        Gate::authorize('auditoria.read');
         $auditLog->load('user');
 
         return view('auditoria.show', compact('auditLog'));

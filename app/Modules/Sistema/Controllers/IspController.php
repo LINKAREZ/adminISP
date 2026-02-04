@@ -2,12 +2,18 @@
 
 namespace App\Modules\Sistema\Controllers;
 
+use App\Core\Services\TenantConnectionService;
+use App\Core\Services\TenantDatabaseService;
 use App\Http\Controllers\Controller;
 use App\Modules\Sistema\Models\Isp;
+use App\Modules\Sistema\Requests\IndexIspRequest;
 use App\Modules\Sistema\Requests\StoreIspRequest;
 use App\Modules\Sistema\Requests\UpdateIspRequest;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
 
 class IspController extends Controller
 {
@@ -21,20 +27,16 @@ class IspController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * Listado de ISPs (solo superadmin). Soporta filtros y respuesta AJAX.
+     *
+     * @param IndexIspRequest $request
+     * @return View|JsonResponse
      */
-    public function index(Request $request)
+    public function index(IndexIspRequest $request): View|JsonResponse
     {
-        // Solo super admin puede ver todos los ISPs
         if (!$this->isSuperAdmin()) {
             abort(403, 'Solo los super administradores pueden gestionar ISPs.');
         }
-
-        $request->validate([
-            'buscar' => ['sometimes', 'string', 'max:100'],
-            'estado' => ['sometimes', 'in:activo,inactivo'],
-            'orden' => ['sometimes', 'in:nombre_asc,nombre_desc,recientes,antiguos'],
-        ]);
 
         $query = Isp::withoutGlobalScope(\App\Core\Scopes\IspScope::class)
             ->withCount(['users', 'clientes', 'nodos']);
@@ -89,9 +91,11 @@ class IspController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Formulario de creación de ISP.
+     *
+     * @return View
      */
-    public function create()
+    public function create(): View
     {
         if (!$this->isSuperAdmin()) {
             abort(403, 'Solo los super administradores pueden crear ISPs.');
@@ -101,9 +105,14 @@ class IspController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Guardar nuevo ISP y crear su base de datos tenant.
+     * Al crear un ISP se crea automáticamente la BD física, se ejecutan
+     * migraciones tenant y seeders (configuración inicial del ISP).
+     *
+     * @param StoreIspRequest $request
+     * @return RedirectResponse
      */
-    public function store(StoreIspRequest $request)
+    public function store(StoreIspRequest $request): RedirectResponse
     {
         if (!$this->isSuperAdmin()) {
             abort(403, 'Solo los super administradores pueden crear ISPs.');
@@ -116,14 +125,26 @@ class IspController extends Controller
 
         $isp = Isp::create($validated);
 
+        try {
+            TenantDatabaseService::createDatabaseForIsp($isp);
+        } catch (\Throwable $e) {
+            $isp->delete();
+            return redirect()->route('superadmin.isps.create')
+                ->withInput($request->except('_token'))
+                ->with('error', 'No se pudo crear la base de datos del ISP: ' . $e->getMessage());
+        }
+
         return redirect()->route('superadmin.isps.index')
-            ->with('success', 'ISP creado exitosamente.');
+            ->with('success', 'ISP creado exitosamente. Base de datos tenant creada y migrada.');
     }
 
     /**
-     * Display the specified resource.
+     * Ver detalle de un ISP.
+     *
+     * @param Isp $isp
+     * @return View
      */
-    public function show(Isp $isp)
+    public function show(Isp $isp): View
     {
         if (!$this->isSuperAdmin()) {
             abort(403);
@@ -133,7 +154,7 @@ class IspController extends Controller
         $isp = Isp::withoutGlobalScope(\App\Core\Scopes\IspScope::class)
             ->findOrFail($isp->id);
 
-        // Cargar usuarios administradores de este ISP (rol 'administrador')
+        // Cargar usuarios administradadores de este ISP (rol 'administrador') desde BD central
         $defaultAdmins = \App\Modules\ControlAcceso\Models\User::withoutGlobalScope(\App\Core\Scopes\IspScope::class)
             ->where('isp_id', $isp->id)
             ->whereHas('role', function ($q) {
@@ -142,20 +163,24 @@ class IspController extends Controller
             ->with('role')
             ->get();
 
-        // Estadísticas del ISP
-        $stats = [
-            'usuarios' => $isp->users()->count(),
-            'clientes' => $isp->clientes()->count(),
-            'nodos' => $isp->nodos()->count(),
-        ];
+        // Estadísticas del ISP (desde BD tenant si tiene database_name)
+        $stats = ['usuarios' => $defaultAdmins->count(), 'clientes' => 0, 'nodos' => 0];
+        if ($isp->database_name) {
+            TenantConnectionService::setCurrentIspId($isp->id);
+            $stats['clientes'] = \App\Modules\Clientes\Models\Cliente::count();
+            $stats['nodos'] = \App\Modules\Red\Models\Nodo::count();
+        }
 
         return view('sistema.isps.show', compact('isp', 'defaultAdmins', 'stats'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Formulario de edición de ISP.
+     *
+     * @param Isp $isp
+     * @return View
      */
-    public function edit(Isp $isp)
+    public function edit(Isp $isp): View
     {
         if (!$this->isSuperAdmin()) {
             abort(403);
@@ -169,9 +194,13 @@ class IspController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualizar ISP.
+     *
+     * @param UpdateIspRequest $request
+     * @param Isp $isp
+     * @return RedirectResponse
      */
-    public function update(UpdateIspRequest $request, Isp $isp)
+    public function update(UpdateIspRequest $request, Isp $isp): RedirectResponse
     {
         if (!$this->isSuperAdmin()) {
             abort(403);
@@ -193,9 +222,12 @@ class IspController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Eliminar ISP (si no tiene usuarios asociados).
+     *
+     * @param Isp $isp
+     * @return RedirectResponse
      */
-    public function destroy(Isp $isp)
+    public function destroy(Isp $isp): RedirectResponse
     {
         if (!$this->isSuperAdmin()) {
             abort(403);
@@ -222,9 +254,13 @@ class IspController extends Controller
     }
 
     /**
-     * Alternar estado activo/inactivo.
+     * Alternar estado activo/inactivo del ISP.
+     *
+     * @param Request $request
+     * @param Isp $isp
+     * @return RedirectResponse|JsonResponse
      */
-    public function toggleStatus(Request $request, Isp $isp)
+    public function toggleStatus(Request $request, Isp $isp): RedirectResponse|JsonResponse
     {
         if (!$this->isSuperAdmin()) {
             abort(403);

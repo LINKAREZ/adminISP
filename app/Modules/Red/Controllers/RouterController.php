@@ -29,6 +29,11 @@ class RouterController extends Controller
 {
     use LogsContext;
 
+    public function __construct()
+    {
+        $this->authorizeResource(Router::class, 'router');
+    }
+
     public function index()
     {
         $routers = \App\Modules\Red\Models\Router::with('nodo')->latest()->paginate(15);
@@ -138,6 +143,7 @@ class RouterController extends Controller
 
     public function conexionesPppoe(Router $router, RouterOSPppoeService $pppoeService)
     {
+        $this->authorize('view', $router);
         try {
             $conexiones = $pppoeService->getActiveConnections($router);
 
@@ -187,6 +193,7 @@ class RouterController extends Controller
 
     public function detalleConexionPppoe(Router $router, string $sessionId, RouterOSPppoeService $pppoeService)
     {
+        $this->authorize('view', $router);
         try {
             $detalle = $pppoeService->getConnectionDetails($router, $sessionId);
 
@@ -211,6 +218,7 @@ class RouterController extends Controller
 
     public function desconectarPppoe(Router $router, DesconectarPppoeRequest $request, RouterOSPppoeService $pppoeService)
     {
+        $this->authorize('update', $router);
         try {
             $pppoeService->disconnectSession($router, $request->session_id);
 
@@ -232,6 +240,7 @@ class RouterController extends Controller
      */
     public function crearNatOnu(Router $router, CrearNatOnuRequest $request, RouterOSNatService $natService)
     {
+        $this->authorize('update', $router);
         try {
             $internalIp = $request->ip;
             $internalPort = 443; // Puerto HTTPS de la ONU
@@ -288,6 +297,7 @@ class RouterController extends Controller
 
     public function eliminarNatOnu(Router $router, EliminarNatOnuRequest $request, RouterOSNatService $natService)
     {
+        $this->authorize('update', $router);
         try {
             $ruleId = $request->input('rule_id');
             $comment = $request->input('comment');
@@ -359,6 +369,7 @@ class RouterController extends Controller
 
     public function getReglasBloqueo(Router $router, RouterOSFirewallService $firewallService)
     {
+        $this->authorize('view', $router);
         try {
             $reglas = $firewallService->getBlockRules($router);
 
@@ -376,6 +387,7 @@ class RouterController extends Controller
 
     public function getAddressLists(Router $router, RouterOSFirewallService $firewallService)
     {
+        $this->authorize('view', $router);
         try {
             $addressLists = $firewallService->getAddressLists($router);
 
@@ -393,6 +405,7 @@ class RouterController extends Controller
 
     public function getAddressListItems(Router $router, RouterOSFirewallService $firewallService, Request $request)
     {
+        $this->authorize('view', $router);
         try {
             $validated = $request->validate([
                 'list' => ['required', 'string', 'max:64'],
@@ -415,6 +428,7 @@ class RouterController extends Controller
 
     public function addAddressListItem(Router $router, RouterOSFirewallService $firewallService, AddAddressListItemRequest $request)
     {
+        $this->authorize('update', $router);
         try {
             $firewallService->addAddressListItem(
                 $router,
@@ -437,6 +451,7 @@ class RouterController extends Controller
 
     public function crearReglaBloqueo(CrearReglaBloqueoRequest $request, Router $router, RouterOSFirewallService $firewallService)
     {
+        $this->authorize('update', $router);
         try {
             $regla = $firewallService->createBlockRule(
                 $router,
@@ -460,6 +475,7 @@ class RouterController extends Controller
 
     public function getReglas(Router $router)
     {
+        $this->authorize('view', $router);
         $reglas = $router->reglas()->latest()->limit(200)->get();
 
         return response()->json([
@@ -470,6 +486,7 @@ class RouterController extends Controller
 
     public function storeRegla(StoreReglaRequest $request, Router $router)
     {
+        $this->authorize('update', $router);
         $regla = \App\Modules\Red\Models\Regla::create([
             'router_id' => $router->id,
             'nombre' => $request->nombre,
@@ -489,6 +506,7 @@ class RouterController extends Controller
 
     public function updateRegla(UpdateReglaRequest $request, Router $router, Regla $regla)
     {
+        $this->authorize('update', $router);
         if ($regla->router_id !== $router->id) {
             return response()->json([
                 'success' => false,
@@ -517,6 +535,7 @@ class RouterController extends Controller
         RouterOSConnectionService $connectionService,
         RouterOSFirewallService $firewallService
     ) {
+        $this->authorize('update', $router);
         try {
             /** @var \App\Modules\ControlAcceso\Models\User|null $user */
             $user = Auth::user();
@@ -654,6 +673,7 @@ class RouterController extends Controller
         RouterOSConnectionService $connectionService,
         RouterOSFirewallService $firewallService
     ) {
+        $this->authorize('update', $router);
         if ($regla->router_id !== $router->id) {
             return response()->json([
                 'success' => false,
@@ -714,6 +734,7 @@ class RouterController extends Controller
 
     public function testSnmp(Router $router, \App\Modules\Red\Services\SnmpService $snmpService)
     {
+        $this->authorize('view', $router);
         try {
             // Verificación detallada
             $extensionLoaded = extension_loaded('snmp');
@@ -806,6 +827,7 @@ class RouterController extends Controller
 
     public function getSnmpInterfaceInfo(Router $router, string $interfaceName, SnmpService $snmpService)
     {
+        $this->authorize('view', $router);
         try {
             $this->logDebug('getSnmpInterfaceInfo llamado', [
                 'router_id' => $router->id,

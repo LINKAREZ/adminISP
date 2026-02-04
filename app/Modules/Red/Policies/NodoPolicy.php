@@ -17,7 +17,7 @@ class NodoPolicy
 
     public function view(User $user, Nodo $nodo): bool
     {
-        if (!$user->hasPermission('red.nodos.read')) {
+        if (!$user->hasPermission('red.read')) {
             return false;
         }
 

@@ -34,7 +34,7 @@
 
     <a href="{{ route('installer.admin') }}" id="link-admin" class="btn btn-primary btn-block" style="margin-top: 1rem; display: none;">Continuar → Crear administrador</a>
 
-    <a href="{{ route('installer.database') }}" class="btn btn-block" style="margin-top: 1rem; background: #e9ecef; color: #333;">← Volver</a>
+    <a href="{{ route('installer.database') }}" class="btn btn-outline-secondary btn-block" style="margin-top: 1rem;">← Volver</a>
 </div>
 
 @push('scripts')

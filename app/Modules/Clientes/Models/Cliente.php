@@ -6,13 +6,14 @@ use App\Modules\Clientes\Events\ClienteActualizado;
 use App\Core\Traits\Searchable;
 use App\Core\Traits\Auditable;
 use App\Core\Traits\BelongsToIsp;
+use App\Core\Traits\UsesTenantConnection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Cliente extends Model
 {
-    use HasFactory, Searchable, Auditable, BelongsToIsp;
+    use HasFactory, Searchable, Auditable, BelongsToIsp, UsesTenantConnection;
     protected $fillable = [
         'nombre',
         'tipo_documento',

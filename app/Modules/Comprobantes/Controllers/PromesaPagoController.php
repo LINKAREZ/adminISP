@@ -13,6 +13,7 @@ use App\Core\Traits\RespondsWithJson;
 use App\Core\Traits\ValidatesDebtOperations;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Gate;
 
 class PromesaPagoController extends Controller
 {
@@ -24,6 +25,7 @@ class PromesaPagoController extends Controller
 
     public function create(Cliente $cliente, Recibo $recibo)
     {
+        Gate::authorize('comprobantes.create');
         // Verificar si ya existe una promesa de pago activa para este recibo
         $promesaActiva = $recibo->promesaPagoActiva();
 
@@ -64,6 +66,7 @@ class PromesaPagoController extends Controller
 
     public function store(StorePromesaPagoRequest $request, Cliente $cliente, Recibo $recibo)
     {
+        Gate::authorize('comprobantes.create');
         $validacion = $this->validateDebtForPromise($recibo, $cliente);
         if ($validacion) {
             return $validacion;
@@ -113,6 +116,7 @@ class PromesaPagoController extends Controller
 
     public function update(UpdatePromesaPagoRequest $request, Cliente $cliente, Recibo $recibo, PromesaPago $promesa)
     {
+        Gate::authorize('comprobantes.update');
         try {
             $validated = $request->validated();
             $promesa->update($validated);
@@ -144,6 +148,7 @@ class PromesaPagoController extends Controller
 
     public function cumplir(Cliente $cliente, Recibo $recibo, PromesaPago $promesa)
     {
+        Gate::authorize('comprobantes.update');
         try {
             $promesa->marcarComoCumplida();
 
@@ -202,10 +207,11 @@ class PromesaPagoController extends Controller
 
     public function destroy(Cliente $cliente, Recibo $recibo, PromesaPago $promesa)
     {
+        Gate::authorize('comprobantes.delete');
         try {
             // Cargar relaciones necesarias antes de eliminar
             $servicioId = $promesa->servicio_id;
-            
+
             $promesaData = [
                 'id' => $promesa->id,
                 'recibo_id' => $promesa->recibo_id,

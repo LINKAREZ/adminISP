@@ -31,11 +31,17 @@
         </div>
         <div class="form-group">
             <label for="password">Contraseña</label>
-            <input type="password" id="password" name="password" class="form-control" required minlength="8" placeholder="Mínimo 8 caracteres">
+            <span class="password-wrap">
+                <input type="password" id="password" name="password" class="form-control" required minlength="8" placeholder="Mínimo 8 caracteres">
+                <button type="button" class="btn-password-toggle btn btn-outline-secondary" title="Ver contraseña" data-target="password">Ver</button>
+            </span>
         </div>
         <div class="form-group">
             <label for="password_confirmation">Confirmar contraseña</label>
-            <input type="password" id="password_confirmation" name="password_confirmation" class="form-control" required placeholder="Repite la contraseña">
+            <span class="password-wrap">
+                <input type="password" id="password_confirmation" name="password_confirmation" class="form-control" required placeholder="Repite la contraseña">
+                <button type="button" class="btn-password-toggle btn btn-outline-secondary" title="Ver contraseña" data-target="password_confirmation">Ver</button>
+            </span>
         </div>
         <button type="submit" class="btn btn-primary btn-block">Crear y finalizar instalación</button>
     </form>

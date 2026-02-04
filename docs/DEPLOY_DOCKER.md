@@ -86,6 +86,25 @@ docker compose exec app php artisan route:cache
 docker compose exec app php artisan view:cache
 ```
 
+### 8. Permiso para crear y usar BDs tenant (multi-tenant)
+
+Para que al crear un ISP desde Super Admin se cree su base de datos tenant y se ejecuten las migraciones, el usuario MySQL de la app debe poder **crear** bases de datos y **usarlas** (SELECT, INSERT, etc.). En Docker, ejecuta en la VPS (usa la contraseña de root de MySQL; por defecto la de `DB_PASSWORD` en tu `.env`, ej. `secret`):
+
+```bash
+cd ~/adminisp
+docker exec -i adminisp-db mysql -uroot -pSECRET -e "GRANT ALL PRIVILEGES ON *.* TO 'adminisp'@'%'; FLUSH PRIVILEGES;"
+```
+
+Sustituye `SECRET` por tu contraseña real de MySQL root. Con **ALL PRIVILEGES** el usuario puede crear nuevas BDs y ejecutar migraciones en ellas; solo `CREATE` no basta (daría error "SELECT denied" en las migraciones).
+
+Comprueba creando un ISP desde el panel o, si un ISP ya existe pero sin BD:
+
+```bash
+docker compose exec app php artisan isp:create-database 7 --force
+```
+
+(Reemplaza `7` por el ID del ISP. `--force` evita la confirmación si ya tiene `database_name`.)
+
 ## Si el contenedor `adminisp-db` está en "Restarting" (MySQL no arranca)
 
 Suele ser un volumen de datos corrupto o de otra versión. **Borra el volumen y vuelve a levantar** (se pierde la base de datos; si aún no has instalado, no importa):
@@ -170,13 +189,17 @@ Vuelve al paso «Base de datos» en el instalador y envía de nuevo el formulari
    ```
    Debe devolver `HTTP/1.1 200` o `302`.
 
+## Flujo de cambios (local → VPS)
+
+Para saber cómo guardar cambios en Git y desplegarlos en la VPS, ver **[FLUJO_CAMBIOS.md](FLUJO_CAMBIOS.md)**.
+
 ## Comandos útiles
 
 | Acción            | Comando                                     |
 | ----------------- | ------------------------------------------- |
 | Ver logs          | `docker compose logs -f`                    |
 | Parar             | `docker compose down`                       |
-| Actualizar código | `git pull` y `docker compose up -d --build` |
+| Actualizar código | `git pull`; luego `docker compose exec -T app php artisan optimize:clear` y `composer dump-autoload` (ver FLUJO_CAMBIOS.md) |
 
 ## Estructura
 

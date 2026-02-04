@@ -10,6 +10,11 @@ use Illuminate\Http\Request;
 
 class OnuModeloController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(OnuModelo::class, 'modelo');
+    }
+
     public function index(Request $request)
     {
         $query = \App\Modules\Servicios\Models\OnuModelo::with('marca');

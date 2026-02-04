@@ -17,7 +17,13 @@ class RouterPolicy
 
     public function view(User $user, Router $router): bool
     {
-        return $user->hasPermission('red.read');
+        if (!$user->hasPermission('red.read')) {
+            return false;
+        }
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+        return (int) $user->isp_id === (int) $router->isp_id;
     }
 
     public function create(User $user): bool
@@ -27,7 +33,13 @@ class RouterPolicy
 
     public function update(User $user, Router $router): bool
     {
-        return $user->hasPermission('red.update');
+        if (!$user->hasPermission('red.update')) {
+            return false;
+        }
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+        return (int) $user->isp_id === (int) $router->isp_id;
     }
 
     /**
@@ -35,6 +47,12 @@ class RouterPolicy
      */
     public function delete(User $user, Router $router): bool
     {
-        return $user->hasPermission('red.delete');
+        if (!$user->hasPermission('red.delete')) {
+            return false;
+        }
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+        return (int) $user->isp_id === (int) $router->isp_id;
     }
 }

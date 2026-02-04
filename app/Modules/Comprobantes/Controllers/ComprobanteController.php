@@ -19,17 +19,20 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Gate;
 
 class ComprobanteController extends Controller
 {
     public function __construct(
         private ComprobanteService $comprobanteService
     ) {}
+
     /**
      * Listar todos los comprobantes
      */
     public function index(Request $request)
     {
+        Gate::authorize('comprobantes.read');
         $request->validate([
             'tipo' => ['sometimes', 'string', 'max:20'],
             'serie' => ['sometimes', 'string', 'max:10'],
@@ -94,6 +97,7 @@ class ComprobanteController extends Controller
      */
     public function create()
     {
+        Gate::authorize('comprobantes.create');
         $clientes = $this->obtenerClientesParaSelect();
         $series = $this->obtenerSeriesActivas();
 
@@ -105,6 +109,7 @@ class ComprobanteController extends Controller
      */
     public function store(StoreComprobanteRequest $request)
     {
+        Gate::authorize('comprobantes.create');
         try {
             // Preparar datos
             $datos = $request->validated();
@@ -144,6 +149,7 @@ class ComprobanteController extends Controller
      */
     public function show(Comprobante $comprobante)
     {
+        Gate::authorize('comprobantes.read');
         $comprobante->load(['cliente', 'pago', 'items', 'generadoPor', 'comprobanteReferencia']);
 
         return view('comprobantes.comprobantes.show', compact('comprobante'));
@@ -154,6 +160,7 @@ class ComprobanteController extends Controller
      */
     public function edit(Comprobante $comprobante)
     {
+        Gate::authorize('comprobantes.update');
         if ($comprobante->anulado) {
             return back()->with('error', 'No se puede editar un comprobante anulado.');
         }
@@ -169,6 +176,7 @@ class ComprobanteController extends Controller
      */
     public function update(UpdateComprobanteRequest $request, Comprobante $comprobante)
     {
+        Gate::authorize('comprobantes.update');
         if ($comprobante->anulado) {
             return back()->with('error', 'No se puede editar un comprobante anulado.');
         }
@@ -209,6 +217,7 @@ class ComprobanteController extends Controller
      */
     public function destroy(Comprobante $comprobante)
     {
+        Gate::authorize('comprobantes.delete');
         if ($comprobante->enviado_sunat) {
             return back()->with('error', 'No se puede eliminar un comprobante enviado a SUNAT.');
         }
@@ -229,6 +238,7 @@ class ComprobanteController extends Controller
      */
     public function series()
     {
+        Gate::authorize('comprobantes.read');
         $series = Cache::remember('series_comprobantes.todas', 600, function () {
             return SerieComprobante::orderBy('tipo')->orderBy('serie')->get();
         });
@@ -241,6 +251,7 @@ class ComprobanteController extends Controller
      */
     public function ver(Comprobante $comprobante)
     {
+        Gate::authorize('comprobantes.read');
         try {
             // Cargar relaciones necesarias
             $comprobante->load(['cliente', 'generadoPor']);
@@ -289,6 +300,7 @@ class ComprobanteController extends Controller
      */
     public function descargarRecibo(Comprobante $comprobante)
     {
+        Gate::authorize('comprobantes.read');
         try {
             // Cargar relaciones necesarias
             $comprobante->load(['cliente', 'generadoPor']);
@@ -369,6 +381,7 @@ class ComprobanteController extends Controller
      */
     public function generar(Pago $pago)
     {
+        Gate::authorize('comprobantes.read');
         try {
             // Cargar relaciones necesarias (incluyendo código de recibo y ubicación)
             $pago->load([
@@ -413,6 +426,7 @@ class ComprobanteController extends Controller
      */
     public function descargar(Pago $pago)
     {
+        Gate::authorize('comprobantes.read');
         try {
             // Cargar relaciones necesarias (incluyendo código de recibo)
             $pago->load(['cliente', 'recibo.servicio.plan', 'medioPago', 'registradoPor']);
@@ -612,7 +626,7 @@ class ComprobanteController extends Controller
                 })
                 ->whereHas('plan', function ($query) {
                     $query->whereNotNull('precio_mensual')
-                          ->where('precio_mensual', '>', 0);
+                        ->where('precio_mensual', '>', 0);
                 })
                 ->with(['ubicacion.cliente', 'plan'])
                 ->get();
@@ -637,9 +651,9 @@ class ComprobanteController extends Controller
                 $serviciosSinPlan = \App\Modules\Servicios\Models\Servicio::where('estado', 'activo')
                     ->whereDoesntHave('plan', function ($query) {
                         $query->whereNotNull('precio_mensual')
-                              ->where('precio_mensual', '>', 0);
+                            ->where('precio_mensual', '>', 0);
                     })->count();
-                
+
                 $mensaje = "No se encontraron servicios activos válidos para generar recibos del período {$periodo}. ";
                 $mensaje .= "Total de servicios activos: {$totalServicios}. ";
                 if ($serviciosSinUbicacion > 0) {
@@ -733,7 +747,7 @@ class ComprobanteController extends Controller
                     $reciboExistente = \App\Modules\Comprobantes\Models\Recibo::where('periodo', $periodo)
                         ->where('servicio_id', $servicioId)
                         ->first();
-                    
+
                     if ($reciboExistente) {
                         $omitidos++;
                         $this->logDebug('Servicio ya tiene recibo del período, omitiendo', [
@@ -776,7 +790,7 @@ class ComprobanteController extends Controller
 
                     // Usar el servicio ReciboService para crear el recibo (igual que desde la ruta)
                     $reciboService = app(\App\Modules\Comprobantes\Services\ReciboService::class);
-                    
+
                     try {
                         $recibo = \Illuminate\Support\Facades\DB::transaction(function () use ($datosRecibo, $cliente, $reciboService) {
                             return $reciboService->crearRecibo($datosRecibo, $cliente);
@@ -800,8 +814,8 @@ class ComprobanteController extends Controller
                     ]);
                 } catch (\Exception $e) {
                     $errores++;
-                    $clienteNombre = $item->ubicacion && $item->ubicacion->cliente 
-                        ? $item->ubicacion->cliente->nombre 
+                    $clienteNombre = $item->ubicacion && $item->ubicacion->cliente
+                        ? $item->ubicacion->cliente->nombre
                         : 'Sin cliente';
                     $erroresDetalle[] = "Servicio ID {$item->id} (Cliente: {$clienteNombre}): " . $e->getMessage();
                     Log::error('Error al crear recibo masivo', [
@@ -821,8 +835,8 @@ class ComprobanteController extends Controller
             if ($generados > 0) {
                 $clientesAfectados = collect();
                 foreach ($items as $item) {
-                    $clienteId = $item->ubicacion && $item->ubicacion->cliente_id 
-                        ? $item->ubicacion->cliente_id 
+                    $clienteId = $item->ubicacion && $item->ubicacion->cliente_id
+                        ? $item->ubicacion->cliente_id
                         : null;
                     if ($clienteId) {
                         $clientesAfectados->push($clienteId);
@@ -878,6 +892,7 @@ class ComprobanteController extends Controller
      */
     public function eliminarMasivos(EliminarMasivosRequest $request)
     {
+        Gate::authorize('comprobantes.delete');
         // Log completo del request para diagnóstico
         Log::info('=== INICIO ELIMINACIÓN MASIVA ===', [
             'method' => $request->method(),
@@ -901,7 +916,7 @@ class ComprobanteController extends Controller
             $recibos = \App\Modules\Comprobantes\Models\Recibo::where('periodo', $periodo)
                 ->withCount('pagos')
                 ->get();
-            
+
             Log::info('Recibos encontrados después de query', [
                 'periodo' => $periodo,
                 'total' => $recibos->count(),

@@ -54,6 +54,10 @@ El usuario ha aceptado globalmente los siguientes permisos:
 - Build Tool: Vite 5
 - Estilo: Mobile-First, Minimalista
 
+## Git - Siempre hacer pull
+- **Al iniciar trabajo en el proyecto o al comenzar una tarea**: ejecutar `git pull` primero para tener el código actualizado.
+- No preguntar: hacer pull de forma automática antes de editar o al empezar la sesión cuando sea relevante.
+
 ## INSTRUCCIONES CRÍTICAS - CONFIRMACIONES
 
 ### 🚨 REGLA ABSOLUTA: CERO CONFIRMACIONES INNECESARIAS

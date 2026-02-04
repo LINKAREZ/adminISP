@@ -17,7 +17,7 @@ class StoreSuperAdminUserRequest extends FormRequest
             'isp_id' => 'required|exists:isps,id',
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email',
-            'password' => 'required|string|min:12|confirmed',
+            'password' => 'required|string|min:8|confirmed',
             'role_id' => 'required|exists:roles,id',
         ];
     }

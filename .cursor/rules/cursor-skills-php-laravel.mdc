@@ -1,0 +1,46 @@
+---
+description: Aplica mejores prácticas de cursor-skills para PHP/Laravel (referencia github.com/grapelike-class151/cursor-skills)
+globs: '**/*.php,**/*.blade.php'
+alwaysApply: false
+---
+
+# Cursor-Skills: PHP y Laravel
+
+Esta regla integra las guías del proyecto [cursor-skills](https://github.com/grapelike-class151/cursor-skills) para desarrollo PHP/Laravel en Cursor IDE. El repositorio es un hub comunitario de buenas prácticas para varios entornos (PHP, Node, Python, webdesign, DevOps, etc.).
+
+## Cuándo aplicar
+
+- Al escribir o modificar código PHP (controladores, modelos, servicios, requests, policies).
+- Al trabajar con vistas Blade.
+- Al añadir tests, configuraciones o documentación relacionada con Laravel.
+
+## Estándares de calidad (cursor-skills)
+
+- **PSR**: Seguir PSR-1, PSR-2/PSR-12, PSR-4 para autoload y nombres.
+- **Composer**: Gestionar dependencias con Composer; mantener `composer.lock` en control de versiones.
+- **Tests**: PHPUnit para unit/feature; cobertura mínima razonable; tests antes o junto al código nuevo cuando sea posible.
+- **Seguridad**: Validar y sanitizar entradas; prepared statements (Eloquent ya lo hace); protección CSRF; hashing de contraseñas; no exponer datos sensibles.
+- **Documentación**: PHPDoc en clases y métodos públicos; comentarios claros en lógica compleja; README/docs actualizados.
+
+## Laravel (cursor-skills)
+
+- **Convenciones**: Rutas nombradas, controladores en `App\\*` o módulos, modelos Eloquent con convenciones de tabla/nombre.
+- **Eloquent**: Relaciones bien definidas, eager loading para evitar N+1, scopes cuando aplique, casts y accessors/mutators cuando simplifiquen el código.
+- **Form Requests**: Validación en clases dedicadas; no validar solo en el controlador.
+- **Middleware**: Autenticación y autorización vía middleware y policies.
+- **Servicios/Capas**: Servicios para lógica de negocio compleja; controladores delgados; inyección de dependencias.
+- **API**: Respuestas JSON consistentes; recursos/transformers cuando aplique; códigos HTTP correctos; manejo de errores centralizado.
+
+## Estructura y entorno
+
+- **Estructura típica**: `app/` (código), `config/`, `resources/` (views, assets), `routes/`, `tests/`, `database/`.
+- **Configuración**: Usar `.env` para entorno; no hardcodear credenciales ni URLs sensibles.
+- **Debugging**: Logging adecuado; en desarrollo, usar las herramientas de Laravel (dd, dump, telescope si está instalado) sin dejar restos en producción.
+
+## Referencia externa
+
+- Repositorio: **https://github.com/grapelike-class151/cursor-skills**
+- Guía PHP: `php/README.md` (análisis del ambiente PHP y patrones).
+- Guía maestra: `CURSOR_SKILLS_MASTER_GUIDE.md` (fundamentos, entornos, mejores prácticas, seguridad, tests, contribución).
+
+Al proponer código o refactors, alinear con estas prácticas y con las reglas ya definidas en el proyecto (p. ej. `.cursorrules`).

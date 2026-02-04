@@ -14,7 +14,13 @@ class ServicioPolicy
 
     public function view(User $user, Servicio $servicio): bool
     {
-        return $user->hasPermission('servicios.read');
+        if (!$user->hasPermission('servicios.read')) {
+            return false;
+        }
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+        return (int) $user->isp_id === (int) $servicio->isp_id;
     }
 
     public function create(User $user): bool
@@ -24,11 +30,23 @@ class ServicioPolicy
 
     public function update(User $user, Servicio $servicio): bool
     {
-        return $user->hasPermission('servicios.update');
+        if (!$user->hasPermission('servicios.update')) {
+            return false;
+        }
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+        return (int) $user->isp_id === (int) $servicio->isp_id;
     }
 
     public function delete(User $user, Servicio $servicio): bool
     {
-        return $user->hasPermission('servicios.delete');
+        if (!$user->hasPermission('servicios.delete')) {
+            return false;
+        }
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+        return (int) $user->isp_id === (int) $servicio->isp_id;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Core\Middleware;
 
+use App\Core\Services\TenantConnectionService;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,12 +20,13 @@ class SetIspContext
             return $next($request);
         }
 
-        // Si hay usuario autenticado, establecer su ISP en la sesión
+        // Si hay usuario autenticado, establecer su ISP en la sesión y registrar conexión tenant
         if (Auth::check()) {
             try {
                 $user = Auth::user();
                 if ($user && isset($user->isp_id) && $user->isp_id) {
                     session(['current_isp_id' => $user->isp_id]);
+                    TenantConnectionService::registerConnectionForIspId((int) $user->isp_id);
                 } elseif ($user && (!isset($user->isp_id) || $user->isp_id === null)) {
                     // Super admin sin ISP - limpiar sesión
                     session()->forget('current_isp_id');

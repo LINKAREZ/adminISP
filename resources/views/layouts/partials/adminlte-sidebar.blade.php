@@ -80,14 +80,14 @@
                 </li>
 
                 <!-- Sistema -->
-                @hasAnyPermission(['sistema.read', 'sistema.apis.read'])
+                @hasPermission('sistema.read')
                 <li class="nav-item nav-item-mobile">
                     <a href="{{ route('sistema.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('sistema*') || request()->is('medios-pago*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-cog"></i>
                         <p>Sistema</p>
                     </a>
                 </li>
-                @endhasAnyPermission
+                @endhasPermission
 
                 @hasPermission('auditoria.read')
                 <li class="nav-item nav-item-mobile">

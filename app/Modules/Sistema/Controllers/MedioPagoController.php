@@ -11,6 +11,11 @@ use Illuminate\Support\Facades\Cache;
 
 class MedioPagoController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(MedioPago::class, 'mediosPago');
+    }
+
     public function index()
     {
         $mediosPago = \App\Modules\Sistema\Models\MedioPago::orderBy('tipo')->orderBy('nombre')->paginate(15);
@@ -26,12 +31,12 @@ class MedioPagoController extends Controller
     public function store(StoreMedioPagoRequest $request)
     {
         $data = $request->validated();
-        
+
         // Asegurar que isp_id esté asignado si no viene en los datos
         if (empty($data['isp_id']) && auth()->check() && auth()->user()->isp_id) {
             $data['isp_id'] = auth()->user()->isp_id;
         }
-        
+
         $medioPago = \App\Modules\Sistema\Models\MedioPago::create($data);
 
         // Invalidar caché de medios de pago activos

@@ -17,7 +17,9 @@ class PlanController extends Controller
 {
     public function __construct(
         private PlanService $planService
-    ) {}
+    ) {
+        $this->authorizeResource(Plan::class, 'plan');
+    }
 
     public function index(Request $request)
     {
@@ -109,6 +111,7 @@ class PlanController extends Controller
 
     public function importarPerfiles(ImportarPerfilesRequest $request, \App\Modules\Red\Services\RouterOSPppoeService $pppoeService)
     {
+        $this->authorize('viewAny', Plan::class);
         try {
             $router = Router::findOrFail($request->router_id);
 
@@ -137,6 +140,7 @@ class PlanController extends Controller
 
     public function guardarPerfilesImportados(GuardarPerfilesImportadosRequest $request)
     {
+        $this->authorize('viewAny', Plan::class);
         try {
             $resultado = $this->planService->guardarPerfilesImportados(
                 $request->router_id,

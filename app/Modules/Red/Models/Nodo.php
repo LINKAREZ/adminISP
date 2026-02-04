@@ -4,12 +4,13 @@ namespace App\Modules\Red\Models;
 
 use App\Core\Traits\Auditable;
 use App\Core\Traits\BelongsToIsp;
+use App\Core\Traits\UsesTenantConnection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Nodo extends Model
 {
-    use Auditable, BelongsToIsp;
+    use Auditable, BelongsToIsp, UsesTenantConnection;
     protected $fillable = [
         'nombre',
         'ubicacion',

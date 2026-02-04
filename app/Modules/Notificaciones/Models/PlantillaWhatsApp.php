@@ -3,11 +3,12 @@
 namespace App\Modules\Notificaciones\Models;
 
 use App\Core\Traits\Auditable;
+use App\Core\Traits\UsesTenantConnection;
 use Illuminate\Database\Eloquent\Model;
 
 class PlantillaWhatsApp extends Model
 {
-    use Auditable;
+    use Auditable, UsesTenantConnection;
     protected $table = 'plantillas_whatsapp';
 
     protected $fillable = [

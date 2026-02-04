@@ -5,13 +5,14 @@ namespace App\Modules\Comprobantes\Models;
 use App\Modules\Comprobantes\Events\PagoRegistrado;
 use App\Core\Traits\Auditable;
 use App\Core\Traits\BelongsToIsp;
+use App\Core\Traits\UsesTenantConnection;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Pago extends Model
 {
-    use Auditable, BelongsToIsp;
+    use Auditable, BelongsToIsp, UsesTenantConnection;
     protected $fillable = [
         'cliente_id',
         'servicio_id',

@@ -7,13 +7,14 @@ use App\Core\Enums\EstadoServicio;
 use App\Core\Traits\Searchable;
 use App\Core\Traits\Auditable;
 use App\Core\Traits\BelongsToIsp;
+use App\Core\Traits\UsesTenantConnection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Validation\Rule;
 
 class Servicio extends Model
 {
-    use Searchable, Auditable, BelongsToIsp;
+    use Searchable, Auditable, BelongsToIsp, UsesTenantConnection;
 
     // Constantes de estado (legacy - usar EstadoServicio enum)
     public const ESTADO_ACTIVO = 'activo';

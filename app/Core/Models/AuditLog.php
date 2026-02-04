@@ -3,6 +3,7 @@
 namespace App\Core\Models;
 
 use App\Core\Traits\BelongsToIsp;
+use App\Core\Traits\UsesTenantConnection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class AuditLog extends Model
 {
-    use HasFactory, BelongsToIsp;
+    use HasFactory, BelongsToIsp, UsesTenantConnection;
 
     protected $fillable = [
         'user_id',

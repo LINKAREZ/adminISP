@@ -96,7 +96,37 @@ class InstallerController extends Controller
     }
 
     /**
-     * Guardar configuración de BD y probar conexión.
+     * Solo probar conexión a la BD (AJAX). No guarda nada.
+     */
+    public function testDatabase(Request $request)
+    {
+        $validated = $request->validate([
+            'DB_HOST' => ['required', 'string', 'max:255'],
+            'DB_PORT' => ['required', 'string', 'max:10'],
+            'DB_DATABASE' => ['required', 'string', 'max:255'],
+            'DB_USERNAME' => ['required', 'string', 'max:255'],
+            'DB_PASSWORD' => ['nullable', 'string'],
+        ]);
+
+        try {
+            $dsn = "mysql:host={$validated['DB_HOST']};port={$validated['DB_PORT']};dbname={$validated['DB_DATABASE']};charset=utf8mb4";
+            new \PDO(
+                $dsn,
+                $validated['DB_USERNAME'],
+                $validated['DB_PASSWORD'] ?? '',
+                [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION]
+            );
+            return response()->json(['success' => true, 'message' => 'Conexión correcta a la base de datos.']);
+        } catch (\PDOException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se pudo conectar: ' . $e->getMessage(),
+            ], 400);
+        }
+    }
+
+    /**
+     * Guardar configuración de BD (prueba la conexión y escribe .env).
      */
     public function saveDatabase(Request $request)
     {
@@ -144,7 +174,8 @@ class InstallerController extends Controller
     }
 
     /**
-     * Paso 2: Ejecutar migraciones.
+     * Paso 2: Ejecutar migraciones de la BD central (isps, users, roles, permissions).
+     * Las migraciones tenant se ejecutan al crear cada ISP.
      */
     public function migrate(Request $request)
     {
@@ -152,7 +183,7 @@ class InstallerController extends Controller
     }
 
     /**
-     * Ejecutar migraciones (AJAX/POST).
+     * Ejecutar migraciones de la BD central (AJAX/POST).
      */
     public function runMigrations(Request $request)
     {
@@ -175,7 +206,8 @@ class InstallerController extends Controller
     }
 
     /**
-     * Ejecutar seeders (roles, permisos, etc.).
+     * Ejecutar seeders de la BD central (roles y permisos).
+     * Los seeders de datos tenant se ejecutan al crear cada ISP (BD tenant).
      */
     public function runSeeders(Request $request)
     {
@@ -184,30 +216,10 @@ class InstallerController extends Controller
                 '--class' => 'RolePermissionSeeder',
                 '--force' => true,
             ]);
-            Artisan::call('db:seed', [
-                '--class' => 'ApiConfigSeeder',
-                '--force' => true,
-            ]);
-            Artisan::call('db:seed', [
-                '--class' => 'OnuMarcaModeloSeeder',
-                '--force' => true,
-            ]);
-            Artisan::call('db:seed', [
-                '--class' => 'SerieComprobanteSeeder',
-                '--force' => true,
-            ]);
-            Artisan::call('db:seed', [
-                '--class' => 'PlantillaWhatsAppSeeder',
-                '--force' => true,
-            ]);
-            Artisan::call('db:seed', [
-                '--class' => 'ReglaSeeder',
-                '--force' => true,
-            ]);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Datos iniciales creados correctamente.',
+                'message' => 'Datos iniciales de la BD central creados correctamente.',
             ]);
         } catch (\Throwable $e) {
             return response()->json([
@@ -234,7 +246,7 @@ class InstallerController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email'],
-            'password' => ['required', 'confirmed', Password::defaults()],
+            'password' => ['required', 'confirmed', Password::min(8)],
         ]);
 
         try {
@@ -315,7 +327,9 @@ class InstallerController extends Controller
     }
 
     /**
-     * Intentar crear la base de datos (si el usuario tiene permiso CREATE).
+     * Intentar crear la base de datos.
+     * Usa credenciales de administrador (DB_ADMIN_*) si se envían; si no, usa las del formulario (DB_USERNAME/DB_PASSWORD).
+     * Las credenciales admin solo se usan para esta acción y no se guardan en .env.
      */
     public function createDatabase(Request $request)
     {
@@ -325,16 +339,22 @@ class InstallerController extends Controller
             'DB_DATABASE' => ['required', 'string', 'max:255'],
             'DB_USERNAME' => ['required', 'string', 'max:255'],
             'DB_PASSWORD' => ['nullable', 'string'],
+            'DB_ADMIN_USERNAME' => ['nullable', 'string', 'max:255'],
+            'DB_ADMIN_PASSWORD' => ['nullable', 'string'],
         ]);
 
         $host = $validated['DB_HOST'];
         $port = $validated['DB_PORT'];
         $database = $validated['DB_DATABASE'];
-        $user = $validated['DB_USERNAME'];
-        $password = $validated['DB_PASSWORD'] ?? '';
+        // Usar usuario admin si se proporcionó; si no, el usuario normal
+        $user = !empty($validated['DB_ADMIN_USERNAME'])
+            ? $validated['DB_ADMIN_USERNAME']
+            : $validated['DB_USERNAME'];
+        $password = !empty($validated['DB_ADMIN_USERNAME'])
+            ? ($validated['DB_ADMIN_PASSWORD'] ?? '')
+            : ($validated['DB_PASSWORD'] ?? '');
 
         try {
-            // Conectar sin especificar base de datos para poder ejecutar CREATE DATABASE
             $dsn = "mysql:host={$host};port={$port};charset=utf8mb4";
             $pdo = new \PDO($dsn, $user, $password, [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION]);
             $name = '`' . str_replace('`', '``', $database) . '`';
@@ -349,12 +369,73 @@ class InstallerController extends Controller
             if ($code == 1044 || str_contains($msg, 'Access denied') || str_contains($msg, 'CREATE')) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'El usuario no tiene permiso para crear bases de datos. Crea la base de datos manualmente en MySQL con: CREATE DATABASE ' . $database . ' CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;',
+                    'message' => 'El usuario no tiene permiso para crear bases de datos. Usa un usuario con permiso (p. ej. root) en Usuario y Contraseña.',
                 ], 400);
             }
             return response()->json([
                 'success' => false,
                 'message' => 'Error: ' . $msg,
+            ], 400);
+        }
+    }
+
+    /**
+     * Crear usuario MySQL y darle permisos sobre la BD creada.
+     * Conecta con DB_ADMIN_* (ej. root) y crea el usuario DB_USERNAME con DB_PASSWORD.
+     */
+    public function createDatabaseUser(Request $request)
+    {
+        $validated = $request->validate([
+            'DB_HOST' => ['required', 'string', 'max:255'],
+            'DB_PORT' => ['required', 'string', 'max:10'],
+            'DB_DATABASE' => ['required', 'string', 'max:255'],
+            'DB_USERNAME' => ['required', 'string', 'max:255'],
+            'DB_PASSWORD' => ['nullable', 'string'],
+            'DB_ADMIN_USERNAME' => ['required', 'string', 'max:255'],
+            'DB_ADMIN_PASSWORD' => ['nullable', 'string'],
+        ]);
+
+        $host = $validated['DB_HOST'];
+        $port = $validated['DB_PORT'];
+        $database = $validated['DB_DATABASE'];
+        $appUser = $validated['DB_USERNAME'];
+        $appPassword = $validated['DB_PASSWORD'] ?? '';
+        $adminUser = $validated['DB_ADMIN_USERNAME'];
+        $adminPassword = $validated['DB_ADMIN_PASSWORD'] ?? '';
+
+        $escape = function ($s) {
+            return str_replace(['\\', "'"], ['\\\\', "''"], (string) $s);
+        };
+
+        try {
+            $dsn = "mysql:host={$host};port={$port};charset=utf8mb4";
+            $pdo = new \PDO($dsn, $adminUser, $adminPassword, [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION]);
+
+            $dbName = '`' . str_replace('`', '``', $database) . '`';
+            $userQuoted = "'" . $escape($appUser) . "'@'%'";
+
+            try {
+                $pdo->exec("CREATE USER {$userQuoted} IDENTIFIED BY '" . $escape($appPassword) . "'");
+            } catch (\PDOException $e) {
+                $errno = (int) ($pdo->errorInfo()[1] ?? 0);
+                if ($errno === 1396 || str_contains($e->getMessage(), 'already exists')) {
+                    $pdo->exec("ALTER USER {$userQuoted} IDENTIFIED BY '" . $escape($appPassword) . "'");
+                } else {
+                    throw $e;
+                }
+            }
+
+            $pdo->exec("GRANT ALL PRIVILEGES ON {$dbName}.* TO {$userQuoted}");
+            $pdo->exec('FLUSH PRIVILEGES');
+
+            return response()->json([
+                'success' => true,
+                'message' => "Usuario \"{$appUser}\" creado o actualizado con permisos sobre \"{$database}\".",
+            ]);
+        } catch (\PDOException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage(),
             ], 400);
         }
     }

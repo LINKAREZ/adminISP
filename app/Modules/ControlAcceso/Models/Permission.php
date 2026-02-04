@@ -12,6 +12,8 @@ class Permission extends Model
 {
     use HasFactory, Auditable, Searchable, BelongsToIsp;
 
+    protected $connection = 'mysql';
+
     protected $fillable = [
         'name',
         'display_name',

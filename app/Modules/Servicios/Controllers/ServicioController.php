@@ -31,6 +31,7 @@ class ServicioController extends Controller
 
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Servicio::class);
         $request->validate([
             'buscar' => ['sometimes', 'string', 'max:100'],
             'estado' => ['sometimes', 'string', 'max:20'],
@@ -70,6 +71,7 @@ class ServicioController extends Controller
 
     public function create(Cliente $cliente)
     {
+        $this->authorize('create', Servicio::class);
         $ubicaciones = $cliente->ubicaciones()->with('router')->get();
         $nodos = Cache::remember('red.nodos.activos', 600, function () {
             return \App\Modules\Red\Models\Nodo::where('estado', true)
@@ -92,6 +94,7 @@ class ServicioController extends Controller
 
     public function store(StoreServicioRequest $request, Cliente $cliente)
     {
+        $this->authorize('create', Servicio::class);
         try {
             $servicio = DB::transaction(function () use ($request, $cliente) {
                 $validated = $request->validated();
@@ -224,6 +227,8 @@ class ServicioController extends Controller
             }
         }
 
+        $this->authorize('view', $servicio);
+
         // ✅ Cargar todas las relaciones necesarias para la vista
         $servicio->load([
             'ubicacion.cliente',
@@ -302,6 +307,8 @@ class ServicioController extends Controller
             }
         }
 
+        $this->authorize('update', $servicio);
+
         // ✅ Cargar cliente a través de ubicación
         $servicio->load(['ubicacion.cliente', 'ubicacion', 'router', 'plan', 'onu']);
 
@@ -370,6 +377,8 @@ class ServicioController extends Controller
                 $cliente = $clienteParam instanceof Cliente ? $clienteParam : Cliente::findOrFail($clienteParam);
             }
         }
+
+        $this->authorize('update', $servicio);
 
         try {
             $validated = $request->validated();
@@ -460,12 +469,12 @@ class ServicioController extends Controller
 
         // Verificar si se proporcionaron datos de ONU
         $tieneDatosOnu = $request->has('onu_usuario') ||
-                        $request->has('onu_password') ||
-                        $request->has('onu_marca_id') ||
-                        $request->has('onu_modelo_id') ||
-                        $request->has('onu_serial_number_completo') ||
-                        $request->has('onu_mac_address') ||
-                        $request->has('onu_notas');
+            $request->has('onu_password') ||
+            $request->has('onu_marca_id') ||
+            $request->has('onu_modelo_id') ||
+            $request->has('onu_serial_number_completo') ||
+            $request->has('onu_mac_address') ||
+            $request->has('onu_notas');
 
         if (!$tieneDatosOnu) {
             return;
@@ -587,6 +596,8 @@ class ServicioController extends Controller
             }
         }
 
+        $this->authorize('delete', $servicio);
+
         $validacion = $this->servicioService->puedeEliminar($servicio);
 
         if (!$validacion['puede_eliminar']) {
@@ -615,8 +626,8 @@ class ServicioController extends Controller
             $ubicacion->delete();
             if (config('app.debug')) {
                 Log::debug('Ubicación eliminada automáticamente al eliminar el último servicio', [
-                'ubicacion_id' => $ubicacionId,
-                'cliente_id' => $cliente->id
+                    'ubicacion_id' => $ubicacionId,
+                    'cliente_id' => $cliente->id
                 ]);
             }
         }
@@ -628,6 +639,7 @@ class ServicioController extends Controller
 
     public function provisionales()
     {
+        $this->authorize('viewAny', Servicio::class);
         // ✅ Cargar cliente a través de ubicación
         $servicios = Servicio::provisionales()
             ->with(['ubicacion.cliente', 'router', 'plan'])
@@ -642,6 +654,7 @@ class ServicioController extends Controller
         Servicio $servicio,
         RouterOSScriptService $scriptService
     ) {
+        $this->authorize('update', $servicio);
         $estadoAnterior = $servicio->estado;
         $nuevoEstado = $request->estado;
 
@@ -730,6 +743,7 @@ class ServicioController extends Controller
         RouterOSPppoeService $pppoeService,
         RouterOSNatService $natService
     ) {
+        $this->authorize('view', $servicio);
         $servicio->load('router');
 
         if (!$servicio->router) {
@@ -793,6 +807,7 @@ class ServicioController extends Controller
         RouterOSPppoeService $pppoeService,
         RouterOSNatService $natService
     ) {
+        $this->authorize('view', $servicio);
         $servicio->load('router');
         if (!$servicio->router || empty($servicio->mac_address)) {
             return redirect()->back()->with('error', 'Servicio sin router o MAC')->with('active_tab', 'servicios');
@@ -820,6 +835,7 @@ class ServicioController extends Controller
      */
     public function getIpPppoe(Servicio $servicio, RouterOSPppoeService $pppoeService)
     {
+        $this->authorize('view', $servicio);
         $servicio->load('router');
         if (!$servicio->router || empty($servicio->mac_address)) {
             return response()->json(['success' => false, 'message' => 'Servicio sin router o MAC'], 404);
@@ -845,6 +861,7 @@ class ServicioController extends Controller
 
     public function getRoutersByNodo(Request $request)
     {
+        $this->authorize('viewAny', Servicio::class);
         $nodoId = $request->input('nodo_id');
 
         if (!$nodoId) {
@@ -867,6 +884,7 @@ class ServicioController extends Controller
 
     public function getPlanesByRouter(Request $request)
     {
+        $this->authorize('viewAny', Servicio::class);
         $routerId = $request->input('router_id');
 
         if (!$routerId) {
@@ -892,6 +910,7 @@ class ServicioController extends Controller
      */
     public function getIpPoolsByRouter(Request $request, RouterOSPppoeService $pppoeService)
     {
+        $this->authorize('viewAny', Servicio::class);
         $routerId = $request->input('router_id');
 
         if (!$routerId) {
@@ -932,6 +951,7 @@ class ServicioController extends Controller
      */
     public function getIpLibres(Request $request, RouterOSPppoeService $pppoeService)
     {
+        $this->authorize('viewAny', Servicio::class);
         $routerId = $request->input('router_id');
         $pool = $request->input('pool');
 
@@ -958,6 +978,7 @@ class ServicioController extends Controller
      */
     public function getSugerirIpLibre(Request $request, RouterOSPppoeService $pppoeService)
     {
+        $this->authorize('viewAny', Servicio::class);
         $routerId = $request->input('router_id');
         $pool = $request->input('pool');
 
@@ -981,6 +1002,7 @@ class ServicioController extends Controller
 
     public function buscarEquipoExistente(Request $request, \App\Modules\Red\Services\RouterOSPppoeService $pppoeService)
     {
+        $this->authorize('viewAny', Servicio::class);
         $request->validate([
             'mac' => ['nullable', 'string', 'max:50'],
             'serial' => ['nullable', 'string', 'max:50'],
@@ -1159,6 +1181,7 @@ class ServicioController extends Controller
 
     public function getOnuByServicio(Servicio $servicio)
     {
+        $this->authorize('view', $servicio);
         $onu = $servicio->onu;
 
         if (!$onu) {
@@ -1195,6 +1218,7 @@ class ServicioController extends Controller
 
         try {
             $servicio = Servicio::with('router')->findOrFail($id);
+            $this->authorize('view', $servicio);
 
             // Obtener nodo_id del router
             $router = $servicio->router;

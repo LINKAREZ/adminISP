@@ -9,6 +9,11 @@ use App\Modules\Sistema\Requests\UpdateOnuMarcaRequest;
 
 class OnuMarcaController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(OnuMarca::class, 'marca');
+    }
+
     public function index()
     {
         $marcas = OnuMarca::with('modelosActivos')

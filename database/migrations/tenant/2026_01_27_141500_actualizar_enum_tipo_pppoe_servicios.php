@@ -2,11 +2,15 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
     public function up(): void
     {
+        if (!Schema::hasTable('servicios')) {
+            return;
+        }
         DB::statement("ALTER TABLE servicios MODIFY tipo_pppoe ENUM('unico','diferente','usuario_compartido','usuario_unico') NOT NULL");
 
         DB::table('servicios')

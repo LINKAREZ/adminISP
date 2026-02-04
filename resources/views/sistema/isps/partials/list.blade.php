@@ -5,6 +5,7 @@
             <thead class="thead-light">
                 <tr>
                     <th><i class="fas fa-building mr-1"></i> Nombre</th>
+                    <th><i class="fas fa-database mr-1"></i> Base de datos</th>
                     <th width="110" class="text-center"><i class="fas fa-toggle-on mr-1"></i> Estado</th>
                     <th width="220" class="text-center"><i class="fas fa-cog mr-1"></i> Acciones</th>
                 </tr>
@@ -14,6 +15,13 @@
                     <tr>
                         <td>
                             <strong>{{ $isp->nombre }}</strong>
+                        </td>
+                        <td>
+                            @if($isp->database_name)
+                                <code class="small">{{ $isp->database_name }}</code>
+                            @else
+                                <span class="text-muted small">—</span>
+                            @endif
                         </td>
                         <td class="text-center">
                             @if($isp->activo)
@@ -87,6 +95,9 @@
                     </div>
                 </div>
                 <div class="card-body p-3">
+                    @if($isp->database_name)
+                        <p class="mb-2 small text-muted"><i class="fas fa-database mr-1"></i> <code>{{ $isp->database_name }}</code></p>
+                    @endif
                     <div class="btn-group btn-group-sm w-100 mt-2" role="group">
                         <a href="{{ route('superadmin.isps.show', $isp) }}" class="btn btn-info">
                             <i class="fas fa-eye"></i> Ver

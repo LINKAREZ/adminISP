@@ -11,6 +11,8 @@ class Role extends Model
 {
     use HasFactory, Auditable, BelongsToIsp;
 
+    protected $connection = 'mysql';
+
     protected $fillable = [
         'name',
         'description',

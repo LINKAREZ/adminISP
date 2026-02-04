@@ -10,6 +10,11 @@ use Illuminate\Http\Request;
 
 class NodoController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Nodo::class, 'nodo');
+    }
+
     public function index()
     {
         $nodos = \App\Modules\Red\Models\Nodo::latest()->paginate(15);

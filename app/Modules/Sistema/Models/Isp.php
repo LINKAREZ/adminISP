@@ -10,7 +10,10 @@ class Isp extends Model
 {
     use Auditable;
 
+    protected $connection = 'mysql';
+
     protected $fillable = [
+        'database_name',
         'nombre',
         'ruc',
         'direccion',

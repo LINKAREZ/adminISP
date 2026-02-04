@@ -8,6 +8,7 @@ use App\Modules\Sistema\Models\OnuMarca;
 use App\Modules\Sistema\Models\ApiConfig;
 use App\Modules\Servicios\Models\OnuModelo;
 use App\Modules\Notificaciones\Models\PlantillaWhatsApp;
+use Illuminate\Support\Facades\Gate;
 
 class SistemaController extends Controller
 {
@@ -16,8 +17,9 @@ class SistemaController extends Controller
      */
     public function index()
     {
+        Gate::authorize('sistema.read');
         $user = auth()->user();
-        
+
         // Estadísticas para cada sección
         $estadisticas = [
             'medios_pago' => [
@@ -37,7 +39,7 @@ class SistemaController extends Controller
                 'activas' => PlantillaWhatsApp::where('activo', true)->count(),
             ],
         ];
-        
+
         return view('sistema.index', compact('estadisticas'));
     }
 }

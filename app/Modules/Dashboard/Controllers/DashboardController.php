@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Core\Traits\LogsContext;
 use App\Modules\Dashboard\Services\DashboardService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class DashboardController extends Controller
 {
@@ -17,6 +18,7 @@ class DashboardController extends Controller
 
     public function index()
     {
+        Gate::authorize('dashboard.read');
         try {
             $estadisticas = $this->dashboardService->getEstadisticas();
             return view('dashboard', $estadisticas);

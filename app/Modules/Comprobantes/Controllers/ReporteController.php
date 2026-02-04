@@ -8,6 +8,7 @@ use App\Modules\Sistema\Models\MedioPago;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Gate;
 
 class ReporteController extends Controller
 {
@@ -16,6 +17,7 @@ class ReporteController extends Controller
      */
     public function cuadreCaja(Request $request)
     {
+        Gate::authorize('comprobantes.read');
         // Obtener fechas del request o usar fecha actual
         $fechaInicio = $request->input('fecha_inicio', Carbon::today()->format('Y-m-d'));
         $fechaFin = $request->input('fecha_fin', Carbon::today()->format('Y-m-d'));
@@ -32,11 +34,11 @@ class ReporteController extends Controller
 
         // Obtener pagos agrupados por medio de pago
         $pagosPorMedio = Pago::select(
-                'medio_pago_id',
-                'medio_pago',
-                DB::raw('COUNT(*) as cantidad'),
-                DB::raw('SUM(monto) as total')
-            )
+            'medio_pago_id',
+            'medio_pago',
+            DB::raw('COUNT(*) as cantidad'),
+            DB::raw('SUM(monto) as total')
+        )
             ->whereBetween('fecha_pago', [$fechaInicioCarbon, $fechaFinCarbon])
             ->groupBy('medio_pago_id', 'medio_pago')
             ->get()
@@ -94,6 +96,7 @@ class ReporteController extends Controller
      */
     public function detalleMedioPago(Request $request)
     {
+        Gate::authorize('comprobantes.read');
         $medioPagoId = $request->input('medio_pago_id');
         $medioPagoNombre = $request->input('medio_pago_nombre');
         $fechaInicio = $request->input('fecha_inicio', Carbon::today()->format('Y-m-d'));

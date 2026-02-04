@@ -11,6 +11,7 @@ use App\Modules\Servicios\Models\Onu;
 use App\Modules\Servicios\Models\Servicio;
 use App\Core\Traits\NormalizesMacAddress;
 use App\Core\Traits\RespondsWithJson;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class OnuController extends Controller
@@ -19,6 +20,7 @@ class OnuController extends Controller
 
     public function create(Servicio $servicio)
     {
+        $this->authorize('update', $servicio);
         $marcas = \App\Modules\Sistema\Models\OnuMarca::where('estado', true)
             ->with('modelosActivos')
             ->orderBy('orden')
@@ -30,6 +32,7 @@ class OnuController extends Controller
 
     public function store(StoreOnuRequest $request, Servicio $servicio)
     {
+        $this->authorize('update', $servicio);
         try {
             $validated = $request->validated();
 
@@ -73,6 +76,7 @@ class OnuController extends Controller
 
     public function update(UpdateOnuRequest $request, Servicio $servicio, Onu $onu)
     {
+        $this->authorize('update', $servicio);
         try {
             $validated = $request->validated();
 
@@ -115,6 +119,7 @@ class OnuController extends Controller
 
     public function destroy(Servicio $servicio, Onu $onu)
     {
+        $this->authorize('update', $servicio);
         $onu->update(['servicio_id' => null]);
 
         // ✅ Obtener cliente desde ubicación
@@ -128,6 +133,7 @@ class OnuController extends Controller
 
     public function storeWithoutService(StoreOnuWithoutServiceRequest $request)
     {
+        $this->authorize('create', Servicio::class);
         try {
             $validated = $request->validated();
             $macNormalizada = $this->normalizarMacAddress($validated['mac_address']);
@@ -195,6 +201,7 @@ class OnuController extends Controller
 
     public function buscarPorMac(Request $request)
     {
+        $this->authorize('viewAny', Servicio::class);
         $mac = $request->input('mac');
 
         if (!$mac) {
@@ -241,6 +248,11 @@ class OnuController extends Controller
 
     public function show(Onu $onu)
     {
+        if ($onu->servicio_id) {
+            $this->authorize('view', $onu->servicio);
+        } else {
+            $this->authorize('viewAny', Servicio::class);
+        }
         // ✅ Cargar cliente a través de ubicación
         $onu->load('servicio.ubicacion.cliente');
         return response()->json([
@@ -266,6 +278,11 @@ class OnuController extends Controller
 
     public function updateApi(UpdateOnuApiRequest $request, Onu $onu)
     {
+        if ($onu->servicio_id) {
+            $this->authorize('update', $onu->servicio);
+        } else {
+            $this->authorize('viewAny', Servicio::class);
+        }
         try {
             $data = $request->validated();
 

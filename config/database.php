@@ -6,6 +6,12 @@ return [
 
     'default' => env('DB_CONNECTION', 'mysql'),
 
+    /*
+    | Conexión central: isps, users, roles, permissions.
+    | Las conexiones tenant (isp_1, isp_2, ...) se registran en tiempo de ejecución
+    | por TenantConnectionService según isps.database_name.
+    */
+
     'connections' => [
 
         'sqlite' => [

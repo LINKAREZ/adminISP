@@ -51,6 +51,34 @@
                                         </div>
                                     </div>
                                 </div>
+                                @if($isp->database_name)
+                                    <div class="row mt-2">
+                                        <div class="col-12">
+                                            <div class="form-group mb-0">
+                                                <label class="text-muted">
+                                                    <i class="fas fa-database text-info mr-1"></i>Base de datos tenant
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    class="form-control bg-light"
+                                                    value="{{ $isp->database_name }}"
+                                                    readonly
+                                                    disabled
+                                                >
+                                                <small class="form-text text-muted">Base de datos asignada a este ISP (solo lectura). Se asigna al crear el ISP.</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="row mt-2">
+                                        <div class="col-12">
+                                            <div class="alert alert-info mb-0 py-2">
+                                                <i class="fas fa-database mr-1"></i>
+                                                <strong>Base de datos tenant:</strong> Sin asignar. Ejecuta <code>php artisan isp:create-database {{ $isp->id }}</code> en el servidor para crear y asignar la base.
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
                         </div>
 

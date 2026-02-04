@@ -8,8 +8,11 @@ use App\Modules\Sistema\Services\IspExportService;
 use App\Modules\ControlAcceso\Models\User;
 use App\Modules\ControlAcceso\Models\Role;
 use App\Modules\Sistema\Requests\StoreSuperAdminUserRequest;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\Response;
 use App\Core\Scopes\IspScope;
 
 class SuperAdminController extends Controller
@@ -37,9 +40,11 @@ class SuperAdminController extends Controller
     }
 
     /**
-     * Dashboard - Gestión de ISPs
+     * Dashboard - Gestión de ISPs (estadísticas y accesos rápidos).
+     *
+     * @return View
      */
-    public function dashboard()
+    public function dashboard(): View
     {
         // Estadísticas básicas de ISPs
         $totalIsps = Isp::withoutGlobalScope(IspScope::class)->count();
@@ -55,6 +60,11 @@ class SuperAdminController extends Controller
             ->limit(5)
             ->get();
 
+        $basesDeDatos = Isp::withoutGlobalScope(IspScope::class)
+            ->whereNotNull('database_name')
+            ->orderBy('id')
+            ->get(['id', 'nombre', 'database_name']);
+
         return view('superadmin.dashboard', compact(
             'totalIsps',
             'ispsActivos',
@@ -62,7 +72,8 @@ class SuperAdminController extends Controller
             'totalUsuarios',
             'totalAdminsDefault',
             'recentIsps',
-            'totalClientes'
+            'totalClientes',
+            'basesDeDatos'
         ));
     }
 
@@ -89,9 +100,12 @@ class SuperAdminController extends Controller
     }
 
     /**
-     * Crear usuario administrador por ISP
+     * Crear usuario administrador por ISP.
+     *
+     * @param StoreSuperAdminUserRequest $request
+     * @return RedirectResponse
      */
-    public function storeAdminUser(StoreSuperAdminUserRequest $request)
+    public function storeAdminUser(StoreSuperAdminUserRequest $request): RedirectResponse
     {
         if (!$this->isSuperAdmin()) {
             abort(403, 'Solo los super administradores pueden acceder.');
@@ -115,9 +129,12 @@ class SuperAdminController extends Controller
     }
 
     /**
-     * Exportar datos: vista o descarga según isp_id y format.
+     * Exportar datos: vista de selección o descarga según isp_id y format.
+     *
+     * @param Request $request
+     * @return View|Response|RedirectResponse
      */
-    public function export(Request $request)
+    public function export(Request $request): View|Response|RedirectResponse
     {
         if (!$this->isSuperAdmin()) {
             abort(403);

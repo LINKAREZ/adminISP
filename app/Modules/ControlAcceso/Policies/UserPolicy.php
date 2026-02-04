@@ -7,6 +7,20 @@ use App\Modules\ControlAcceso\Models\User;
 class UserPolicy
 {
     /**
+     * Super administrador puede hacer todo en usuarios, excepto eliminar: se evalúa en delete().
+     */
+    public function before(User $user, string $ability): ?bool
+    {
+        if ($ability === 'delete') {
+            return null; // Evaluar en delete() (no auto-eliminación, solo root puede eliminar is_default_admin)
+        }
+        if (method_exists($user, 'isSuperAdmin') && $user->isSuperAdmin()) {
+            return true;
+        }
+        return null;
+    }
+
+    /**
      * Determinar si el usuario puede ver cualquier modelo.
      */
     public function viewAny(User $user): bool
@@ -65,26 +79,19 @@ class UserPolicy
      */
     public function delete(User $user, User $model): bool
     {
-        // No permitir eliminar usuarios administradores por defecto (excepto super admin root)
-        if ($model->is_default_admin ?? false) {
-            // Solo el usuario root puede eliminar admins por defecto
-            if (!$user->isRootUser()) {
-                return false;
-            }
-        }
-
-        // Usuario root - acceso completo siempre (excepto auto-eliminación)
-        if ($user->isRootUser()) {
-            // No permitir eliminar el propio usuario
-            if ($user->id === $model->id) {
-                return false;
-            }
-            return true;
-        }
-
-        // No permitir eliminar el propio usuario
+        // Nadie puede eliminarse a sí mismo
         if ($user->id === $model->id) {
             return false;
+        }
+
+        // Admins por defecto: solo root puede eliminarlos
+        if ($model->is_default_admin ?? false) {
+            return $user->isRootUser();
+        }
+
+        // Super administrador puede eliminar a otros (excepto is_default_admin)
+        if (method_exists($user, 'isSuperAdmin') && $user->isSuperAdmin()) {
+            return true;
         }
 
         return $user->hasPermission('control-acceso.delete');

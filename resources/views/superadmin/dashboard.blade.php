@@ -127,6 +127,54 @@
         </div>
     </div>
 
+    {{-- Lista de bases de datos tenant --}}
+    <div class="row mb-3 mb-md-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header py-2 py-md-3">
+                    <h3 class="card-title mb-0"><i class="fas fa-database text-info mr-1"></i> Bases de datos tenant</h3>
+                    <div class="card-tools">
+                        <a href="{{ route('superadmin.isps.index') }}" class="btn btn-sm btn-outline-primary">Ver ISPs</a>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    @if($basesDeDatos->count() > 0)
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>ISP</th>
+                                        <th>Base de datos</th>
+                                        <th class="text-right">Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($basesDeDatos as $isp)
+                                        <tr>
+                                            <td>{{ $isp->id }}</td>
+                                            <td><strong>{{ $isp->nombre }}</strong></td>
+                                            <td><code>{{ $isp->database_name }}</code></td>
+                                            <td class="text-right">
+                                                <a href="{{ route('superadmin.isps.show', $isp) }}" class="btn btn-sm btn-info">Ver ISP</a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="p-4 text-center text-muted">
+                            <i class="fas fa-database fa-2x mb-2"></i>
+                            <p class="mb-0">Ningún ISP tiene base de datos tenant asignada.</p>
+                            <p class="small mb-0">Al crear un ISP se crea su BD; si no, ejecuta <code>php artisan isp:create-database {id}</code>.</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row mb-3 mb-md-4">
         <div class="col-12 col-sm-6 col-lg-3 mb-3">
             <x-info-box

@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Core\Services\TenantConnectionService;
 use App\Modules\Servicios\Models\Servicio;
 use App\Modules\Comprobantes\Models\Recibo;
 use App\Modules\Comprobantes\Services\ReciboService;
@@ -29,6 +30,9 @@ class GenerarReciboMensual implements ShouldQueue
      */
     public function handle(ReciboService $reciboService): void
     {
+        if ($this->servicio->isp_id) {
+            TenantConnectionService::setCurrentIspId((int) $this->servicio->isp_id);
+        }
         try {
             $reciboService->generarReciboMensual($this->servicio, $this->periodo);
         } catch (\Exception $e) {

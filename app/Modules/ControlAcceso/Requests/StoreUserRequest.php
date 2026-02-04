@@ -38,7 +38,7 @@ class StoreUserRequest extends FormRequest
             'password' => [
                 'required',
                 'string',
-                Password::min(12) // NIST 800-63B recomienda mínimo 12 caracteres
+                Password::min(8) // Mínimo 8 caracteres
                     ->mixedCase() // Al menos una mayúscula y una minúscula
                     ->numbers() // Al menos un número
                     ->symbols() // Al menos un símbolo
@@ -63,7 +63,7 @@ class StoreUserRequest extends FormRequest
             'email.email' => 'El email debe ser válido.',
             'email.unique' => 'Este email ya está registrado.',
             'password.required' => 'La contraseña es obligatoria.',
-            'password.min' => 'La contraseña debe tener al menos 12 caracteres.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
             'password.mixed' => 'La contraseña debe contener mayúsculas y minúsculas.',
             'password.numbers' => 'La contraseña debe contener al menos un número.',
             'password.symbols' => 'La contraseña debe contener al menos un símbolo.',

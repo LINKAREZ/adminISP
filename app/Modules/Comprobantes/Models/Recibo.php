@@ -5,6 +5,7 @@ namespace App\Modules\Comprobantes\Models;
 use App\Core\Enums\EstadoRecibo;
 use App\Core\Traits\Auditable;
 use App\Core\Traits\BelongsToIsp;
+use App\Core\Traits\UsesTenantConnection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -13,7 +14,7 @@ use Carbon\Carbon;
 
 class Recibo extends Model
 {
-    use Auditable, BelongsToIsp;
+    use Auditable, BelongsToIsp, UsesTenantConnection;
     // Tabla renombrada a 'recibos'
     protected $table = 'recibos';
 

@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Core\Services\TenantConnectionService;
 use App\Modules\Comprobantes\Models\PromesaPago;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -25,6 +26,9 @@ class ActualizarPromesaVencida implements ShouldQueue
      */
     public function handle(): void
     {
+        if ($this->promesa->isp_id) {
+            TenantConnectionService::setCurrentIspId((int) $this->promesa->isp_id);
+        }
         $this->promesa->actualizarEstado();
     }
 }

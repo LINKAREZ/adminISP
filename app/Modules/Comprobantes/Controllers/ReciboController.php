@@ -60,6 +60,7 @@ class ReciboController extends Controller
 
     public function create(Cliente $cliente)
     {
+        $this->authorize('create', Recibo::class);
         // Cargar TODOS los servicios del cliente (activos e inactivos)
         $servicios = $this->obtenerTodosLosServicios($cliente);
 
@@ -91,6 +92,7 @@ class ReciboController extends Controller
 
     public function show(Cliente $cliente, Recibo $recibo)
     {
+        $this->authorize('view', $recibo);
         // Cargar relaciones necesarias
         $recibo->load([
             'servicio.plan',
@@ -105,6 +107,7 @@ class ReciboController extends Controller
 
     public function edit(Cliente $cliente, Recibo $recibo)
     {
+        $this->authorize('update', $recibo);
         $servicios = $this->obtenerServiciosActivosFormateados($cliente);
 
         return view('clientes.recibos.edit', compact('cliente', 'recibo', 'servicios'));
@@ -112,6 +115,7 @@ class ReciboController extends Controller
 
     public function store(StoreReciboRequest $request, Cliente $cliente)
     {
+        $this->authorize('create', Recibo::class);
         try {
             $validated = $request->validated();
 
@@ -152,6 +156,7 @@ class ReciboController extends Controller
 
     public function update(UpdateReciboRequest $request, Cliente $cliente, Recibo $recibo)
     {
+        $this->authorize('update', $recibo);
         $validacion = $this->validateDebtForEdit($recibo, $cliente);
         if ($validacion) {
             return $validacion;
@@ -197,6 +202,7 @@ class ReciboController extends Controller
 
     public function destroy(Recibo $recibo)
     {
+        $this->authorize('delete', $recibo);
         if ($recibo->pagos()->exists()) {
             Log::warning('Intento de eliminar recibo con pagos registrados', [
                 'recibo_id' => $recibo->id,
@@ -237,6 +243,7 @@ class ReciboController extends Controller
 
     public function getRecibosByServicio(Servicio $servicio)
     {
+        $this->authorize('view', $servicio);
         // Cachear resultados por 2 minutos para mejorar rendimiento
         $recibos = Cache::remember(
             "servicio.{$servicio->id}.recibos.formateados",
@@ -280,6 +287,7 @@ class ReciboController extends Controller
      */
     public function getRecibosByServicioId(Cliente $cliente, Request $request)
     {
+        $this->authorize('viewAny', Recibo::class);
         $servicioId = $request->input('servicio_id');
 
         // Si no se proporciona servicio_id, obtener todos los recibos del cliente

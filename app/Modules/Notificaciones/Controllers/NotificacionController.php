@@ -19,6 +19,7 @@ class NotificacionController extends Controller
      */
     public function enviarRecordatorioPago(Request $request, Recibo $recibo)
     {
+        $this->authorize('view', $recibo);
         try {
             $resultado = $this->whatsAppService->enviarRecordatorioPago($recibo);
 
@@ -37,7 +38,6 @@ class NotificacionController extends Controller
                 'success' => false,
                 'message' => $resultado['message'] ?? 'Error al generar el recordatorio',
             ], 400);
-
         } catch (\Exception $e) {
             Log::error('Error en NotificacionController::enviarRecordatorioPago', [
                 'recibo_id' => $recibo->id,

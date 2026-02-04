@@ -73,6 +73,7 @@ class PagoController extends Controller
 
     public function create(Cliente $cliente, Request $request)
     {
+        $this->authorize('create', Pago::class);
         $servicios = $this->obtenerServiciosActivos($cliente);
 
         $servicioId = $request->input('servicio_id');
@@ -111,6 +112,7 @@ class PagoController extends Controller
 
     public function edit(Cliente $cliente, Pago $pago)
     {
+        $this->authorize('update', $pago);
         // Cargar relaciones necesarias con eager loading
         $pago->load(['servicio.plan', 'recibo', 'medioPago']);
 
@@ -132,6 +134,7 @@ class PagoController extends Controller
 
     public function store(StorePagoRequest $request, Cliente $cliente)
     {
+        $this->authorize('create', Pago::class);
         try {
             $validated = $request->validated();
             $diskCapturas = config('isp.archivos.disk_capturas', 'public');
@@ -235,6 +238,7 @@ class PagoController extends Controller
 
     public function update(UpdatePagoRequest $request, Cliente $cliente, Pago $pago)
     {
+        $this->authorize('update', $pago);
         try {
             $validated = $request->validated();
             $diskCapturas = config('isp.archivos.disk_capturas', 'public');
@@ -336,6 +340,7 @@ class PagoController extends Controller
 
     public function destroy(Pago $pago)
     {
+        $this->authorize('delete', $pago);
         try {
             // Cargar relaciones necesarias antes de la transacción
             $cliente = $pago->cliente;
@@ -344,7 +349,7 @@ class PagoController extends Controller
 
             // Cargar servicio antes de eliminar el pago
             $servicioId = $pago->servicio_id;
-            
+
             // Usar transacción para garantizar consistencia
             DB::transaction(function () use ($pago, $reciboId, $servicioId, $diskCapturas) {
                 // Eliminar captura si existe
@@ -385,6 +390,7 @@ class PagoController extends Controller
 
     public function mostrarCaptura(Cliente $cliente, Pago $pago)
     {
+        $this->authorize('view', $pago);
         if (!$pago->captura) {
             abort(404, 'Captura no encontrada');
         }
@@ -400,6 +406,7 @@ class PagoController extends Controller
 
     public function show(Cliente $cliente, Pago $pago)
     {
+        $this->authorize('view', $pago);
         // Cargar relaciones necesarias
         $pago->load(['servicio.plan', 'recibo', 'medioPago', 'registradoPor']);
 
@@ -408,6 +415,7 @@ class PagoController extends Controller
 
     public function verificarDuplicado(Request $request)
     {
+        $this->authorize('create', Pago::class);
         $validated = $request->validate([
             'codigo_seguridad' => ['required', 'string', 'max:10'],
             'numero_operacion' => ['required', 'string', 'max:50'],
@@ -440,6 +448,7 @@ class PagoController extends Controller
      */
     public function verificarNumeroOperacion(Request $request)
     {
+        $this->authorize('create', Pago::class);
         $validated = $request->validate([
             'numero_operacion' => ['required', 'string', 'max:50'],
             'pago_id' => ['nullable', 'integer', 'exists:pagos,id'],

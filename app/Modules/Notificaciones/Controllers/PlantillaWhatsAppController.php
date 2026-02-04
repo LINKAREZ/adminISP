@@ -8,6 +8,11 @@ use App\Modules\Notificaciones\Requests\UpdatePlantillaWhatsAppRequest;
 
 class PlantillaWhatsAppController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(PlantillaWhatsApp::class, 'plantillaWhatsApp');
+    }
+
     /**
      * Mostrar lista de plantillas
      */

@@ -3,11 +3,12 @@
 namespace App\Modules\Sistema\Models;
 
 use App\Core\Traits\Auditable;
+use App\Core\Traits\UsesTenantConnection;
 use Illuminate\Database\Eloquent\Model;
 
 class ApiConfig extends Model
 {
-    use Auditable;
+    use Auditable, UsesTenantConnection;
     protected $table = 'api_configs';
 
     protected $fillable = [
