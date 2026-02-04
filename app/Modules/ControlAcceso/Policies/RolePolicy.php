@@ -8,6 +8,17 @@ use App\Modules\ControlAcceso\Models\User;
 class RolePolicy
 {
     /**
+     * Super administrador puede hacer todo en roles.
+     */
+    public function before(User $user, string $ability): ?bool
+    {
+        if (method_exists($user, 'isSuperAdmin') && $user->isSuperAdmin()) {
+            return true;
+        }
+        return null;
+    }
+
+    /**
      * Determinar si el usuario puede ver cualquier modelo.
      */
     public function viewAny(User $user): bool

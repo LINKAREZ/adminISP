@@ -193,9 +193,9 @@ Con el servicio `adminer` levantado (`docker compose up -d`), abre en el navegad
 
 En la pantalla de login:
 
-- **Sistema:** MySQL  
-- **Servidor:** `db` (ya viene por defecto)  
-- **Usuario:** `adminisp` (o `root` para acceso total)  
+- **Sistema:** MySQL
+- **Servidor:** `db` (ya viene por defecto)
+- **Usuario:** `adminisp` (o `root` para acceso total)
 - **Contraseña:** la que tengas en `.env` como `DB_PASSWORD`
 
 Si no abre desde fuera, en la VPS permite el puerto: `sudo ufw allow 8080 && sudo ufw reload`. Comprueba que el proveedor (Elastika) no bloquee el 8080.

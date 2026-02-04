@@ -13,11 +13,6 @@
 
 @section('content')
 <div class="container-fluid">
-    <div class="alert alert-info alert-dismissible">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        <i class="icon fas fa-info-circle"></i>
-        <strong>Instalador:</strong> No es necesario borrar la carpeta ni las rutas de instalación. El instalador (<code>/install</code>) está deshabilitado automáticamente: al estar la aplicación instalada, redirige a login. Para reinstalar usarías <code>php artisan install:reset --force</code>.
-    </div>
     <div class="row">
         <!-- Estadísticas Globales -->
         <div class="col-lg-3 col-6">

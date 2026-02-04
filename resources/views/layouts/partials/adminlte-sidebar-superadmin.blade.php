@@ -1,7 +1,7 @@
 <!-- Main Sidebar Container para Super Admin -->
 <aside class="main-sidebar sidebar-dark-warning elevation-4">
     <!-- Brand Logo -->
-    <a href="{{ route('dashboard') }}" class="brand-link">
+    <a href="{{ route('superadmin.dashboard') }}" class="brand-link">
         <img src="https://adminlte.io/themes/v3/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
         <span class="brand-text font-weight-light">Admin ISP</span>
     </a>
@@ -27,6 +27,14 @@
                     <a href="{{ route('superadmin.isps.index') }}" class="nav-link {{ request()->is('superadmin/isps*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-building"></i>
                         <p>Gestionar ISPs</p>
+                    </a>
+                </li>
+
+                <!-- Crear administrador -->
+                <li class="nav-item">
+                    <a href="{{ route('superadmin.create-admin-user') }}" class="nav-link {{ request()->is('superadmin/create-admin-user*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-user-plus"></i>
+                        <p>Crear administrador</p>
                     </a>
                 </li>
 
