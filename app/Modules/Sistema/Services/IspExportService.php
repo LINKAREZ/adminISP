@@ -6,7 +6,6 @@ use App\Core\Services\TenantConnectionService;
 use App\Modules\Sistema\Models\Isp;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 class IspExportService
 {
@@ -25,15 +24,40 @@ class IspExportService
     }
 
     /**
+     * Escapa nombre para SQL (backticks).
+     */
+    protected function escapeName(string $name): string
+    {
+        return '`' . str_replace('`', '``', $name) . '`';
+    }
+
+    /**
+     * Convierte un valor de fila a literal SQL para INSERT.
+     */
+    protected function valueToSql($value, \PDO $pdo): string
+    {
+        if ($value === null) {
+            return 'NULL';
+        }
+        if (is_bool($value)) {
+            return $value ? '1' : '0';
+        }
+        if ($value instanceof \DateTimeInterface) {
+            return $pdo->quote($value->format('Y-m-d H:i:s'));
+        }
+        return $pdo->quote((string) $value);
+    }
+
+    /**
      * Exportar datos del ISP desde su BD tenant (multi-tenant).
-     * Si el ISP no tiene database_name, devuelve export vacío o solo datos del ISP desde central.
+     * Genera SQL con tablas cualificadas (`bd`.`tabla`) para importación correcta.
      */
     public function exportToSql(Isp $isp): string
     {
-        $ispId = $isp->id;
+        $centralConnection = TenantConnectionService::CENTRAL_CONNECTION;
         $sql = "-- Exportación de datos del ISP: {$isp->nombre}\n";
         $sql .= "-- Fecha: " . now()->format('Y-m-d H:i:s') . "\n";
-        $sql .= "-- ID ISP: {$ispId}\n";
+        $sql .= "-- ID ISP: {$isp->id}\n";
         $sql .= "-- BD tenant: " . ($isp->database_name ?? 'no asignada') . "\n\n";
 
         if (!$isp->database_name) {
@@ -41,49 +65,43 @@ class IspExportService
             return $sql;
         }
 
-        TenantConnectionService::setCurrentIspId($ispId);
-        $connection = TenantConnectionService::connectionNameForIsp($isp);
-        Config::set('database.default', $connection);
+        TenantConnectionService::setCurrentIspId($isp->id);
+        $connName = TenantConnectionService::connectionNameForIsp($isp);
+        $conn = DB::connection($connName);
         $tenantDb = $isp->database_name;
+        $pdo = $conn->getPdo();
 
-        $sql .= "USE `" . str_replace('`', '``', $tenantDb) . "`;\n\n";
         $sql .= "SET FOREIGN_KEY_CHECKS=0;\n\n";
 
         foreach ($this->tenantTables() as $table) {
-            if (!Schema::connection($connection)->hasTable($table)) {
+            if (!$conn->getSchemaBuilder()->hasTable($table)) {
                 continue;
             }
 
-            $rows = DB::connection($connection)->table($table)->get();
+            $rows = $conn->table($table)->get();
             if ($rows->isEmpty()) {
                 continue;
             }
 
+            $qualifiedTable = $this->escapeName($tenantDb) . '.' . $this->escapeName($table);
             $columns = array_keys((array) $rows->first());
-            $sql .= "\n-- Tabla: {$table}\n";
-            $sql .= "TRUNCATE TABLE `" . str_replace('`', '``', $table) . "`;\n\n";
+            $columnsEscaped = array_map([$this, 'escapeName'], $columns);
+
+            $sql .= "\n-- Tabla: {$table} (" . count($rows) . " filas)\n";
+            $sql .= "TRUNCATE TABLE {$qualifiedTable};\n\n";
 
             foreach ($rows as $row) {
-                $values = array_map(function ($value) use ($connection) {
-                    if ($value === null) {
-                        return 'NULL';
-                    }
-                    if (is_bool($value)) {
-                        return $value ? '1' : '0';
-                    }
-                    return DB::connection($connection)->getPdo()->quote($value);
+                $values = array_map(function ($v) use ($pdo) {
+                    return $this->valueToSql($v, $pdo);
                 }, array_values((array) $row));
-
-                $sql .= "INSERT INTO `" . str_replace('`', '``', $table) . "` (`" . implode('`, `', array_map(function ($c) {
-                    return str_replace('`', '``', $c);
-                }, $columns)) . "`) VALUES (" . implode(', ', $values) . ");\n";
+                $sql .= "INSERT INTO {$qualifiedTable} (" . implode(', ', $columnsEscaped) . ") VALUES (" . implode(', ', $values) . ");\n";
             }
             $sql .= "\n";
         }
 
         $sql .= "SET FOREIGN_KEY_CHECKS=1;\n";
 
-        Config::set('database.default', TenantConnectionService::CENTRAL_CONNECTION);
+        Config::set('database.default', $centralConnection);
 
         return $sql;
     }
@@ -107,11 +125,12 @@ class IspExportService
         TenantConnectionService::setCurrentIspId($isp->id);
         $connection = TenantConnectionService::connectionNameForIsp($isp);
 
+        $conn = DB::connection($connection);
         foreach ($this->tenantTables() as $table) {
-            if (!Schema::connection($connection)->hasTable($table)) {
+            if (!$conn->getSchemaBuilder()->hasTable($table)) {
                 continue;
             }
-            $rows = DB::connection($connection)->table($table)->get();
+            $rows = $conn->table($table)->get();
             $data['tables'][$table] = $rows->map(fn ($row) => (array) $row)->toArray();
         }
 
