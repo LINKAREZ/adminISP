@@ -1,0 +1,62 @@
+# Admin ISP - Docker Compose para VPS
+# Uso: docker compose up -d
+
+services:
+  app:
+    build: .
+    container_name: adminisp-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+    environment:
+      - APP_ENV=production
+      - DB_HOST=db
+      - DB_DATABASE=${DB_DATABASE:-adminisp}
+      - DB_USERNAME=${DB_USERNAME:-adminisp}
+      - DB_PASSWORD=${DB_PASSWORD:-secret}
+    networks:
+      - app
+    depends_on:
+      db:
+        condition: service_healthy
+
+  nginx:
+    image: nginx:alpine
+    container_name: adminisp-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - .:/var/www/html:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - app
+    depends_on:
+      - app
+
+  db:
+    image: mysql:8.0
+    container_name: adminisp-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-adminisp}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_USER: ${DB_USERNAME:-adminisp}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - app
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  app:
+    driver: bridge
+
+volumes:
+  dbdata:
