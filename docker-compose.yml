@@ -18,8 +18,7 @@ services:
     networks:
       - app
     depends_on:
-      db:
-        condition: service_healthy
+      - db
 
   nginx:
     image: nginx:alpine
@@ -49,10 +48,11 @@ services:
     networks:
       - app
     healthcheck:
-      test: ['CMD-SHELL', 'mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD || exit 1']
+      test: ['CMD-SHELL', 'mysqladmin ping -h localhost -u root -p"$$MYSQL_ROOT_PASSWORD" || exit 1']
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 40s
 
 networks:
   app:
