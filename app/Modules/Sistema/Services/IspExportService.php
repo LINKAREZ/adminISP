@@ -2,145 +2,120 @@
 
 namespace App\Modules\Sistema\Services;
 
+use App\Core\Services\TenantConnectionService;
 use App\Modules\Sistema\Models\Isp;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class IspExportService
 {
     /**
-     * Tablas y condiciones para exportación SQL (orden de dependencias).
-     * Retorna [ 'tabla' => ['col' => valor], ... ] con isp_id ya asignado.
+     * Tablas de la BD tenant en orden (respetar FKs para SQL).
      */
-    protected function sqlTables(int $ispId): array
+    protected function tenantTables(): array
     {
         return [
-            'isps' => ['id' => $ispId],
-            'users' => ['isp_id' => $ispId],
-            'roles' => ['isp_id' => $ispId],
-            'permissions' => ['isp_id' => $ispId],
-            'nodos' => ['isp_id' => $ispId],
-            'routers' => ['isp_id' => $ispId],
-            'planes' => ['isp_id' => $ispId],
-            'clientes' => ['isp_id' => $ispId],
-            'ubicaciones' => ['isp_id' => $ispId],
-            'servicios' => ['isp_id' => $ispId],
-            'recibos' => ['isp_id' => $ispId],
-            'pagos' => ['isp_id' => $ispId],
-            'promesas_pago' => ['isp_id' => $ispId],
-            'comprobantes' => ['isp_id' => $ispId],
-            'comprobante_items' => ['isp_id' => $ispId],
-            'series_comprobantes' => ['isp_id' => $ispId],
-            'onus' => ['isp_id' => $ispId],
-            'onu_marcas' => ['isp_id' => $ispId],
-            'onu_modelos' => ['isp_id' => $ispId],
-            'medios_pago' => ['isp_id' => $ispId],
-            'reglas' => ['isp_id' => $ispId],
-            'audit_logs' => ['isp_id' => $ispId],
+            'clientes', 'nodos', 'routers', 'ubicaciones', 'medios_pago',
+            'onu_marcas', 'onu_modelos', 'planes', 'series_comprobantes',
+            'servicios', 'onus', 'recibos', 'pagos', 'comprobantes',
+            'comprobante_items', 'promesas_pago', 'reglas', 'audit_logs',
+            'api_configs', 'plantillas_whatsapp',
         ];
     }
 
     /**
-     * Tablas para exportación JSON.
-     */
-    protected function jsonTables(): array
-    {
-        return [
-            'users', 'roles', 'permissions', 'nodos', 'routers',
-            'planes', 'clientes', 'ubicaciones', 'servicios',
-            'recibos', 'pagos', 'promesas_pago', 'comprobantes',
-            'comprobante_items', 'series_comprobantes', 'onus',
-            'onu_marcas', 'onu_modelos', 'medios_pago', 'reglas',
-            'audit_logs',
-        ];
-    }
-
-    /**
-     * Exportar ISP a SQL (string).
+     * Exportar datos del ISP desde su BD tenant (multi-tenant).
+     * Si el ISP no tiene database_name, devuelve export vacío o solo datos del ISP desde central.
      */
     public function exportToSql(Isp $isp): string
     {
         $ispId = $isp->id;
-        $tables = $this->sqlTables($ispId);
-
         $sql = "-- Exportación de datos del ISP: {$isp->nombre}\n";
         $sql .= "-- Fecha: " . now()->format('Y-m-d H:i:s') . "\n";
-        $sql .= "-- ID ISP: {$ispId}\n\n";
+        $sql .= "-- ID ISP: {$ispId}\n";
+        $sql .= "-- BD tenant: " . ($isp->database_name ?? 'no asignada') . "\n\n";
+
+        if (!$isp->database_name) {
+            $sql .= "-- Este ISP no tiene base de datos tenant. No hay datos operativos que exportar.\n";
+            return $sql;
+        }
+
+        TenantConnectionService::setCurrentIspId($ispId);
+        $connection = TenantConnectionService::connectionNameForIsp($isp);
+        Config::set('database.default', $connection);
+        $tenantDb = $isp->database_name;
+
+        $sql .= "USE `" . str_replace('`', '``', $tenantDb) . "`;\n\n";
         $sql .= "SET FOREIGN_KEY_CHECKS=0;\n\n";
 
-        foreach ($tables as $table => $conditions) {
-            if (!DB::getSchemaBuilder()->hasTable($table)) {
+        foreach ($this->tenantTables() as $table) {
+            if (!Schema::connection($connection)->hasTable($table)) {
                 continue;
             }
 
-            $query = DB::table($table);
-            foreach ($conditions as $column => $value) {
-                $query->where($column, $value);
-            }
-
-            $rows = $query->get();
-
+            $rows = DB::connection($connection)->table($table)->get();
             if ($rows->isEmpty()) {
                 continue;
             }
 
             $columns = array_keys((array) $rows->first());
-
             $sql .= "\n-- Tabla: {$table}\n";
-            $sql .= "DELETE FROM `{$table}` WHERE ";
-
-            $whereConditions = [];
-            foreach ($conditions as $column => $value) {
-                $whereConditions[] = "`{$column}` = " . DB::getPdo()->quote($value);
-            }
-            $sql .= implode(' AND ', $whereConditions) . ";\n\n";
+            $sql .= "TRUNCATE TABLE `" . str_replace('`', '``', $table) . "`;\n\n";
 
             foreach ($rows as $row) {
-                $values = array_map(function ($value) {
+                $values = array_map(function ($value) use ($connection) {
                     if ($value === null) {
                         return 'NULL';
                     }
                     if (is_bool($value)) {
                         return $value ? '1' : '0';
                     }
-                    return DB::getPdo()->quote($value);
+                    return DB::connection($connection)->getPdo()->quote($value);
                 }, array_values((array) $row));
 
-                $sql .= "INSERT INTO `{$table}` (`" . implode('`, `', $columns) . "`) VALUES (" . implode(', ', $values) . ");\n";
+                $sql .= "INSERT INTO `" . str_replace('`', '``', $table) . "` (`" . implode('`, `', array_map(function ($c) {
+                    return str_replace('`', '``', $c);
+                }, $columns)) . "`) VALUES (" . implode(', ', $values) . ");\n";
             }
-
             $sql .= "\n";
         }
 
         $sql .= "SET FOREIGN_KEY_CHECKS=1;\n";
 
+        Config::set('database.default', TenantConnectionService::CENTRAL_CONNECTION);
+
         return $sql;
     }
 
     /**
-     * Exportar ISP a JSON (string).
+     * Exportar datos del ISP a JSON desde su BD tenant.
      */
     public function exportToJson(Isp $isp): string
     {
-        $ispId = $isp->id;
-
         $data = [
-            'isp' => $isp->toArray(),
+            'isp' => $isp->only(['id', 'nombre', 'activo', 'moneda', 'simbolo_moneda', 'igv', 'database_name']),
             'exported_at' => now()->toIso8601String(),
             'tables' => [],
         ];
 
-        foreach ($this->jsonTables() as $table) {
-            if (!DB::getSchemaBuilder()->hasTable($table)) {
+        if (!$isp->database_name) {
+            $data['notice'] = 'Este ISP no tiene base de datos tenant. No hay datos operativos.';
+            return json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        }
+
+        TenantConnectionService::setCurrentIspId($isp->id);
+        $connection = TenantConnectionService::connectionNameForIsp($isp);
+
+        foreach ($this->tenantTables() as $table) {
+            if (!Schema::connection($connection)->hasTable($table)) {
                 continue;
             }
-            if (!DB::getSchemaBuilder()->hasColumn($table, 'isp_id')) {
-                continue;
-            }
-
-            $rows = DB::table($table)->where('isp_id', $ispId)->get();
-
+            $rows = DB::connection($connection)->table($table)->get();
             $data['tables'][$table] = $rows->map(fn ($row) => (array) $row)->toArray();
         }
+
+        Config::set('database.default', TenantConnectionService::CENTRAL_CONNECTION);
 
         return json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }

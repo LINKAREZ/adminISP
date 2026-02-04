@@ -18,13 +18,13 @@
                     <h3 class="card-title">Exportar Datos de ISP</h3>
                 </div>
                 <div class="card-body">
-                    <p class="text-muted">Selecciona un ISP para exportar todos sus datos. Puedes exportar en formato SQL o JSON.</p>
+                    <p class="text-muted">Selecciona un ISP para exportar <strong>todos los datos de su base de datos tenant</strong> (clientes, servicios, recibos, etc.). Formato SQL o JSON.</p>
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead>
                                 <tr>
                                     <th>ISP</th>
-                                    <th>RUC</th>
+                                    <th>Base de datos</th>
                                     <th>Estado</th>
                                     <th class="text-center">Acciones</th>
                                 </tr>
@@ -33,7 +33,13 @@
                                 @forelse($isps as $isp)
                                     <tr>
                                         <td><strong>{{ $isp->nombre }}</strong></td>
-                                        <td>{{ $isp->ruc ?? '-' }}</td>
+                                        <td>
+                                            @if($isp->database_name)
+                                                <code class="small">{{ $isp->database_name }}</code>
+                                            @else
+                                                <span class="text-muted">Sin BD tenant</span>
+                                            @endif
+                                        </td>
                                         <td>
                                             @if($isp->activo)
                                                 <span class="badge badge-success">Activo</span>
@@ -42,21 +48,20 @@
                                             @endif
                                         </td>
                                         <td class="text-center">
-                                            <a href="{{ route('superadmin.export', ['isp_id' => $isp->id, 'format' => 'sql']) }}" class="btn btn-sm btn-primary mr-1">
-                                                <i class="fas fa-download"></i> SQL
-                                            </a>
-                                            <form action="{{ route('superadmin.export') }}" method="GET" class="d-inline">
-                                                <input type="hidden" name="isp_id" value="{{ $isp->id }}">
-                                                <input type="hidden" name="format" value="json">
-                                                <button type="submit" class="btn btn-sm btn-info">
-                                                    <i class="fas fa-file-code"></i> JSON
-                                                </button>
-                                            </form>
-                                            <div class="mt-1">
-                                                <small class="text-muted">
-                                                    <code>php artisan isp:export {{ $isp->id }}</code>
-                                                </small>
-                                            </div>
+                                            @if($isp->database_name)
+                                                <a href="{{ route('superadmin.export', ['isp_id' => $isp->id, 'format' => 'sql']) }}" class="btn btn-sm btn-primary mr-1">
+                                                    <i class="fas fa-download"></i> SQL
+                                                </a>
+                                                <form action="{{ route('superadmin.export') }}" method="GET" class="d-inline">
+                                                    <input type="hidden" name="isp_id" value="{{ $isp->id }}">
+                                                    <input type="hidden" name="format" value="json">
+                                                    <button type="submit" class="btn btn-sm btn-info">
+                                                        <i class="fas fa-file-code"></i> JSON
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <span class="text-muted small">Crear BD tenant primero</span>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty

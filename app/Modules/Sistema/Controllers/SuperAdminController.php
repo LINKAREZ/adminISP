@@ -170,7 +170,6 @@ class SuperAdminController extends Controller
         }
 
         $isps = Isp::withoutGlobalScope(IspScope::class)
-            ->where('activo', true)
             ->orderBy('nombre')
             ->get();
 
