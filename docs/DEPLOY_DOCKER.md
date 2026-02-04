@@ -72,11 +72,11 @@ docker compose exec app php artisan view:cache
 
 ## Comandos útiles
 
-| Acción              | Comando |
-|---------------------|--------|
-| Ver logs            | `docker compose logs -f` |
-| Parar               | `docker compose down` |
-| Actualizar código   | `git pull` y `docker compose up -d --build` |
+| Acción            | Comando                                     |
+| ----------------- | ------------------------------------------- |
+| Ver logs          | `docker compose logs -f`                    |
+| Parar             | `docker compose down`                       |
+| Actualizar código | `git pull` y `docker compose up -d --build` |
 
 ## Estructura
 
