@@ -73,11 +73,12 @@
                                 </dt>
                                 <dd class="col-12 col-sm-7 mb-3 mb-sm-2">
                                     @if($isp->database_name)
-                                        <code class="badge badge-secondary">{{ $isp->database_name }}</code>
-                                        <small class="text-muted d-block mt-1">BD independiente para este ISP.</small>
+                                        <span class="badge badge-success badge-lg"><i class="fas fa-check-circle mr-1"></i> BD creada</span>
+                                        <code class="d-block mt-1 small">{{ $isp->database_name }}</code>
+                                        <small class="text-muted d-block mt-1">Base de datos independiente para este ISP.</small>
                                     @else
-                                        <span class="badge badge-warning">No asignada</span>
-                                        <small class="text-muted d-block mt-1">Ejecute: <code>php artisan isp:create-database {{ $isp->id }}</code></small>
+                                        <span class="badge badge-warning badge-lg"><i class="fas fa-exclamation-triangle mr-1"></i> BD no creada</span>
+                                        <small class="text-muted d-block mt-1">Ejecute en el servidor: <code>php artisan isp:create-database {{ $isp->id }} --force</code></small>
                                     @endif
                                 </dd>
                             </dl>

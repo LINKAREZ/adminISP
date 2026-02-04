@@ -18,9 +18,10 @@
                         </td>
                         <td>
                             @if($isp->database_name)
-                                <code class="small">{{ $isp->database_name }}</code>
+                                <span class="badge badge-success"><i class="fas fa-check-circle mr-1"></i> BD creada</span>
+                                <br><code class="small text-muted">{{ $isp->database_name }}</code>
                             @else
-                                <span class="text-muted small">—</span>
+                                <span class="badge badge-warning"><i class="fas fa-exclamation-triangle mr-1"></i> BD no creada</span>
                             @endif
                         </td>
                         <td class="text-center">
@@ -96,7 +97,9 @@
                 </div>
                 <div class="card-body p-3">
                     @if($isp->database_name)
-                        <p class="mb-2 small text-muted"><i class="fas fa-database mr-1"></i> <code>{{ $isp->database_name }}</code></p>
+                        <p class="mb-2"><span class="badge badge-success"><i class="fas fa-check-circle mr-1"></i> BD creada</span><br><code class="small text-muted mt-1 d-block">{{ $isp->database_name }}</code></p>
+                    @else
+                        <p class="mb-2"><span class="badge badge-warning"><i class="fas fa-exclamation-triangle mr-1"></i> BD no creada</span></p>
                     @endif
                     <div class="btn-group btn-group-sm w-100 mt-2" role="group">
                         <a href="{{ route('superadmin.isps.show', $isp) }}" class="btn btn-info">
