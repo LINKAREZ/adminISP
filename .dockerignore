@@ -16,3 +16,4 @@ Thumbs.db
 .vscode
 *.md
 !README.md
+docker/certs

@@ -1,0 +1,3 @@
+# Los certificados (fullchain.pem, privkey.pem) se generan con:
+# ../scripts/ssl-selfsigned.sh
+# No subas certificados ni claves privadas a Git.

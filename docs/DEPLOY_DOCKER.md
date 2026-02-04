@@ -72,10 +72,11 @@ docker compose exec app php artisan view:cache
 
 ## Si no abre en el navegador
 
-1. **Usa HTTP, no HTTPS**  
+1. **Usa HTTP, no HTTPS**
    Solo está expuesto el puerto 80: **http://TU_IP/install** (no https://).
 
-2. **Firewall en la VPS**  
+2. **Firewall en la VPS**
+
    ```bash
    sudo ufw allow 80
    sudo ufw allow 443
@@ -83,22 +84,25 @@ docker compose exec app php artisan view:cache
    sudo ufw enable   # si aún no está activo
    ```
 
-3. **Comprobar que los contenedores están arriba**  
+3. **Comprobar que los contenedores están arriba**
+
    ```bash
    docker compose ps
-   ```  
+   ```
+
    Deben estar "Up" los tres: app, nginx, db.
 
-4. **Ver logs por si hay error**  
+4. **Ver logs por si hay error**
+
    ```bash
    docker compose logs nginx
    docker compose logs app
    ```
 
-5. **Probar desde la misma VPS**  
+5. **Probar desde la misma VPS**
    ```bash
    curl -I http://localhost/install
-   ```  
+   ```
    Debe devolver `HTTP/1.1 200` o `302`.
 
 ## Comandos útiles
@@ -116,3 +120,41 @@ docker compose exec app php artisan view:cache
 - **db** → MySQL 8.0 (volumen persistente)
 
 La conexión a MikroTik (RouterOS API) se hace desde el contenedor **app** hacia tu router (IP/puerto configurados en la app).
+
+---
+
+## Usar HTTPS
+
+### Opción A: Certificado autofirmado (IP o pruebas)
+
+En la VPS:
+
+```bash
+cd ~/adminisp
+chmod +x scripts/ssl-selfsigned.sh
+./scripts/ssl-selfsigned.sh
+docker compose -f docker-compose.yml -f docker-compose.https.yml up -d
+```
+
+Abre **https://TU_IP/install**. El navegador mostrará una advertencia (certificado no confiable); en Chrome/Edge puedes usar "Avanzado" → "Acceder a la IP (no seguro)".
+
+En `.env` pon `APP_URL=https://TU_IP`.
+
+### Opción B: Let's Encrypt (dominio recomendado)
+
+1. Apunta un dominio (ej. `panel.tudominio.com`) al servidor (A record → IP de la VPS).
+2. En la VPS instala Certbot y obtén el certificado:
+   ```bash
+   sudo apt install certbot
+   sudo certbot certonly --standalone -d panel.tudominio.com
+   ```
+3. Copia los certificados al proyecto y usa el override HTTPS:
+   ```bash
+   sudo cp /etc/letsencrypt/live/panel.tudominio.com/fullchain.pem docker/certs/
+   sudo cp /etc/letsencrypt/live/panel.tudominio.com/privkey.pem docker/certs/
+   sudo chown $USER:$USER docker/certs/*
+   docker compose -f docker-compose.yml -f docker-compose.https.yml up -d
+   ```
+4. Renovación: Certbot renueva en `/etc/letsencrypt/`. Tras renovar, copia de nuevo a `docker/certs/` y `docker compose restart nginx`.
+
+En `.env` pon `APP_URL=https://panel.tudominio.com`.
