@@ -18,6 +18,7 @@ Route::prefix('install')->name('installer.')->middleware('installer')->group(fun
     Route::post('/create-env', [\App\Http\Controllers\InstallerController::class, 'createEnv'])->name('create-env');
     Route::get('/database', [\App\Http\Controllers\InstallerController::class, 'database'])->name('database');
     Route::post('/database', [\App\Http\Controllers\InstallerController::class, 'saveDatabase'])->name('save-database');
+    Route::post('/database/create', [\App\Http\Controllers\InstallerController::class, 'createDatabase'])->name('create-database');
     Route::get('/migrate', [\App\Http\Controllers\InstallerController::class, 'migrate'])->name('migrate');
     Route::post('/migrate/run', [\App\Http\Controllers\InstallerController::class, 'runMigrations'])->name('run-migrations');
     Route::post('/migrate/seed', [\App\Http\Controllers\InstallerController::class, 'runSeeders'])->name('run-seeders');

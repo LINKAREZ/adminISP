@@ -107,6 +107,18 @@ Espera 30–60 segundos y comprueba: `docker compose ps`. Los tres contenedores 
 
 3. **Para ver el error exacto** (solo temporal): pon `APP_DEBUG=true` en `.env`, reinicia con `docker compose restart app`, vuelve a abrir /install y copia el mensaje de error que salga en la página.
 
+## Si al guardar la base de datos sale "Permission denied" en .env
+
+El instalador no puede escribir el archivo `.env` porque en la VPS el archivo es propiedad de otro usuario. Ejecuta en la VPS:
+
+```bash
+cd ~/adminisp
+docker compose exec app chown www-data:www-data .env
+docker compose exec app chmod 664 .env
+```
+
+Vuelve al paso «Base de datos» en el instalador y envía de nuevo el formulario.
+
 ## Si sale "Connection refused" (conexión rechazada)
 
 - **Al abrir la URL en el navegador:** el puerto 80/443 no llega desde fuera. En la VPS: `sudo ufw allow 80`, `sudo ufw allow 443`, `sudo ufw reload`. Comprueba que nginx escucha: `ss -tlnp | grep -E '80|443'`.
@@ -183,21 +195,93 @@ Abre **https://TU_IP/install**. El navegador mostrará una advertencia (certific
 
 En `.env` pon `APP_URL=https://TU_IP`.
 
-### Opción B: Let's Encrypt (si tienes dominio)
+### Opción B: Let's Encrypt con dominio (ej. control.wan.pe)
 
-1. Apunta un dominio (ej. `panel.tudominio.com`) al servidor (registro A → IP de la VPS).
-2. En la VPS instala Certbot y obtén el certificado:
+1. **DNS:** En tu proveedor de dominio crea un registro **A**:
+
+   - Nombre: `control` (o el subdominio que uses)
+   - Valor: **IP de la VPS** (ej. `161.132.4.102`)
+   - Así `control.wan.pe` apuntará al servidor. Espera unos minutos a que propague.
+
+2. En la VPS instala Certbot y obtén el certificado (con webroot, sin parar Nginx):
+
    ```bash
-   sudo apt install certbot
-   sudo certbot certonly --standalone -d panel.tudominio.com
+   sudo apt update && sudo apt install -y certbot
+   cd ~/adminisp
+   sudo certbot certonly --webroot -w "$(pwd)/public" -d control.wan.pe --non-interactive --agree-tos -m tu@email.com
    ```
-3. Copia los certificados al proyecto y reinicia Nginx:
+
+   Sustituye `tu@email.com` por tu email (Let's Encrypt lo usa para avisos de vencimiento).
+
+3. Copia los certificados y reinicia Nginx:
+
    ```bash
-   sudo cp /etc/letsencrypt/live/panel.tudominio.com/fullchain.pem ~/adminisp/docker/nginx/ssl/
-   sudo cp /etc/letsencrypt/live/panel.tudominio.com/privkey.pem ~/adminisp/docker/nginx/ssl/
+   sudo cp /etc/letsencrypt/live/control.wan.pe/fullchain.pem ~/adminisp/docker/nginx/ssl/
+   sudo cp /etc/letsencrypt/live/control.wan.pe/privkey.pem ~/adminisp/docker/nginx/ssl/
    sudo chown -R $USER:$USER ~/adminisp/docker/nginx/ssl
    docker compose restart nginx
    ```
-4. Renovación: tras `sudo certbot renew`, vuelve a copiar los `.pem` a `docker/nginx/ssl/` y `docker compose restart nginx`.
 
-En `.env` pon `APP_URL=https://panel.tudominio.com`.
+4. En `.env` pon:
+
+   ```bash
+   APP_URL=https://control.wan.pe
+   ```
+
+   Luego: `docker compose exec app php artisan config:clear`
+
+5. **Renovación:** Let's Encrypt caduca en 90 días. Tras renovar, vuelve a copiar los `.pem`:
+   ```bash
+   sudo certbot renew
+   sudo cp /etc/letsencrypt/live/control.wan.pe/fullchain.pem ~/adminisp/docker/nginx/ssl/
+   sudo cp /etc/letsencrypt/live/control.wan.pe/privkey.pem ~/adminisp/docker/nginx/ssl/
+   docker compose restart nginx
+   ```
+   Puedes automatizar la renovación con un cron: `sudo crontab -e` → añadir `0 3 * * * certbot renew --quiet && cp ...` (o un script que haga renew + copy + restart).
+
+### Opción C: Certificado que ya tienes (ej. en cPanel)
+
+Si **control.wan.pe** ya tiene certificado en otro servidor (cPanel u otro), puedes usar ese mismo cert en la VPS.
+
+1. **En cPanel (el que tiene el certificado):**
+
+   - Ve a **SSL/TLS Status** o **Manage SSL Hosts** (o **SSL/TLS** → **Manage SSL Sites**).
+   - Localiza el certificado del dominio **control.wan.pe**.
+   - Descarga o copia:
+     - **Certificado** (certificate): suele ser el contenido de “Certificate (CRT)” o el archivo que incluye el certificado y la cadena intermedia. En Nginx necesitamos el **certificado + cadena** en un solo archivo.
+     - **Clave privada** (private key): el archivo .key que generaste al crear el cert.
+
+   Si cPanel solo te deja “Install” y no descargar, en el mismo cPanel entra por **Terminal** o por SSH y copia los archivos. Suelen estar en rutas como:
+
+   - Certificado: `/var/cpanel/ssl/apache_tls/control.wan.pe/combined` o similar (puede ser el .crt + cadena).
+   - Clave: `/var/cpanel/ssl/apache_tls/control.wan.pe/privkey` o en la cuenta del usuario bajo `ssl/`.
+
+2. **En la VPS**, en la carpeta del proyecto:
+
+   - Crea o usa la carpeta `docker/nginx/ssl/`.
+   - Guarda el certificado (cert + cadena) como **`fullchain.pem`**.
+   - Guarda la clave privada como **`privkey.pem`**.
+
+   Por ejemplo, subiendo por SCP desde tu PC (donde guardaste los archivos de cPanel):
+
+   ```bash
+   scp fullchain.pem root@161.132.4.102:~/adminisp/docker/nginx/ssl/
+   scp privkey.pem   root@161.132.4.102:~/adminisp/docker/nginx/ssl/
+   ```
+
+   O crea los archivos a mano en la VPS con `nano ~/adminisp/docker/nginx/ssl/fullchain.pem` y pega el contenido del certificado (incluyendo `-----BEGIN CERTIFICATE-----` y `-----END CERTIFICATE-----` y, si hay, los bloques intermedios). Igual con `privkey.pem` y la clave privada.
+
+3. **Reinicia Nginx** en la VPS:
+
+   ```bash
+   cd ~/adminisp
+   docker compose restart nginx
+   ```
+
+4. En el **.env** de la VPS pon:
+   ```bash
+   APP_URL=https://control.wan.pe
+   ```
+   Luego: `docker compose exec app php artisan config:clear`
+
+Cuando renueves el certificado en cPanel (o donde lo gestiones), vuelve a copiar los nuevos `fullchain.pem` y `privkey.pem` a la VPS y ejecuta `docker compose restart nginx`.

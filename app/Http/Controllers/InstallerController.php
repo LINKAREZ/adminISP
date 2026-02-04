@@ -124,7 +124,20 @@ class InstallerController extends Controller
             ]);
         }
 
-        $this->writeEnvVariables($validated);
+        try {
+            $this->writeEnvVariables($validated);
+        } catch (\Throwable $e) {
+            $msg = $e->getMessage();
+            if (str_contains($msg, 'Permission denied') || str_contains($msg, 'Failed to open stream')) {
+                $help = 'En el servidor (VPS con Docker) ejecuta: '
+                    . 'docker compose exec app chown www-data:www-data .env && '
+                    . 'docker compose exec app chmod 664 .env';
+                return back()->withInput()->withErrors([
+                    'env' => 'No se puede escribir el archivo .env. ' . $help
+                ]);
+            }
+            throw $e;
+        }
         Artisan::call('config:clear');
 
         return redirect()->route('installer.migrate')->with('success', 'Configuración de base de datos guardada.');
@@ -299,6 +312,51 @@ class InstallerController extends Controller
                 'message' => 'Carpeta bootstrap/cache con permisos de escritura',
             ],
         ];
+    }
+
+    /**
+     * Intentar crear la base de datos (si el usuario tiene permiso CREATE).
+     */
+    public function createDatabase(Request $request)
+    {
+        $validated = $request->validate([
+            'DB_HOST' => ['required', 'string', 'max:255'],
+            'DB_PORT' => ['required', 'string', 'max:10'],
+            'DB_DATABASE' => ['required', 'string', 'max:255'],
+            'DB_USERNAME' => ['required', 'string', 'max:255'],
+            'DB_PASSWORD' => ['nullable', 'string'],
+        ]);
+
+        $host = $validated['DB_HOST'];
+        $port = $validated['DB_PORT'];
+        $database = $validated['DB_DATABASE'];
+        $user = $validated['DB_USERNAME'];
+        $password = $validated['DB_PASSWORD'] ?? '';
+
+        try {
+            // Conectar sin especificar base de datos para poder ejecutar CREATE DATABASE
+            $dsn = "mysql:host={$host};port={$port};charset=utf8mb4";
+            $pdo = new \PDO($dsn, $user, $password, [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION]);
+            $name = '`' . str_replace('`', '``', $database) . '`';
+            $pdo->exec("CREATE DATABASE IF NOT EXISTS {$name} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+            return response()->json([
+                'success' => true,
+                'message' => "Base de datos \"{$database}\" creada o ya existía correctamente.",
+            ]);
+        } catch (\PDOException $e) {
+            $code = $e->getCode();
+            $msg = $e->getMessage();
+            if ($code == 1044 || str_contains($msg, 'Access denied') || str_contains($msg, 'CREATE')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El usuario no tiene permiso para crear bases de datos. Crea la base de datos manualmente en MySQL con: CREATE DATABASE ' . $database . ' CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;',
+                ], 400);
+            }
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $msg,
+            ], 400);
+        }
     }
 
     private function writeEnvVariables(array $variables): void
