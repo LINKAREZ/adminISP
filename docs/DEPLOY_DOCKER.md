@@ -55,7 +55,18 @@ docker compose exec app chown -R www-data:www-data storage bootstrap/cache
 docker compose exec app chmod -R 775 storage bootstrap/cache
 ```
 
-### 5. Instalación (base de datos y usuario admin)
+### 5. Compilar assets (Vite) — necesario para /login y panel
+
+En la VPS, desde la raíz del proyecto (para generar `public/build/` y evitar "Vite manifest not found"):
+
+```bash
+cd ~/adminisp
+docker run --rm -v "$(pwd)":/app -w /app node:20-alpine sh -c "npm ci && npm run build"
+```
+
+Si usas otra ruta, sustituye `$(pwd)` por la ruta absoluta (ej. `/root/adminisp`). Tras cambiar CSS/JS del proyecto, vuelve a ejecutar este comando.
+
+### 6. Instalación (base de datos y usuario admin)
 
 - Abre en el navegador: **http://TU_IP/install**
 - Completa el asistente (URL, base de datos, migraciones, usuario administrador).
@@ -67,7 +78,7 @@ docker compose exec app php artisan migrate --force
 # Luego crea el usuario admin desde el instalador o con un seeder.
 ```
 
-### 6. Cachés (opcional)
+### 7. Cachés (opcional)
 
 ```bash
 docker compose exec app php artisan config:cache
