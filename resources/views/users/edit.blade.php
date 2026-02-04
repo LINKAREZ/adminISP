@@ -72,12 +72,11 @@
                                     type="password"
                                     name="password"
                                     minlength="8"
-                                    maxlength="8"
                                     class="form-control @error('password') is-invalid @enderror"
-                                    placeholder="8 caracteres"
+                                    placeholder="Mínimo 8 caracteres"
                                     autocomplete="new-password"
                                 />
-                                <small class="form-text text-muted">Exactamente 8 caracteres. Dejar en blanco para no cambiar.</small>
+                                <small class="form-text text-muted">Mínimo 8 caracteres. Dejar en blanco para no cambiar.</small>
                                 @error('password')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -92,9 +91,8 @@
                                     type="password"
                                     name="password_confirmation"
                                     minlength="8"
-                                    maxlength="8"
                                     class="form-control"
-                                    placeholder="Repite la contraseña (8 caracteres)"
+                                    placeholder="Repite la contraseña"
                                     autocomplete="new-password"
                                 />
                             </div>

@@ -37,7 +37,7 @@ class StoreUserRequest extends FormRequest
             'password' => [
                 'required',
                 'string',
-                'size:8', // Exactamente 8 caracteres
+                'min:8',
                 'confirmed',
             ],
             'role_id' => ['required', $roleRule],
@@ -58,7 +58,7 @@ class StoreUserRequest extends FormRequest
             'email.email' => 'El email debe ser válido.',
             'email.unique' => 'Este email ya está registrado.',
             'password.required' => 'La contraseña es obligatoria.',
-            'password.size' => 'La contraseña debe tener exactamente 8 caracteres.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
             'password.confirmed' => 'Las contraseñas no coinciden.',
         ];
     }

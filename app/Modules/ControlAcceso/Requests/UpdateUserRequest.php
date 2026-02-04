@@ -30,7 +30,7 @@ class UpdateUserRequest extends FormRequest
             'password' => [
                 'nullable',
                 'string',
-                'size:8', // Exactamente 8 caracteres
+                'min:8',
                 'confirmed',
             ],
             'role_id' => ['nullable', 'exists:roles,id'],
@@ -49,7 +49,7 @@ class UpdateUserRequest extends FormRequest
             'email.required' => 'El email es obligatorio.',
             'email.email' => 'El email debe ser válido.',
             'email.unique' => 'Este email ya está registrado.',
-            'password.size' => 'La contraseña debe tener exactamente 8 caracteres.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
             'password.confirmed' => 'Las contraseñas no coinciden.',
         ];
     }

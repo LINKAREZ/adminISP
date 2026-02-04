@@ -15,7 +15,7 @@ class UpdatePasswordRequest extends FormRequest
     {
         return [
             'current_password' => 'required|current_password',
-            'password' => ['required', 'confirmed', 'string', 'size:8'],
+            'password' => ['required', 'confirmed', 'string', 'min:8'],
         ];
     }
 
@@ -24,7 +24,7 @@ class UpdatePasswordRequest extends FormRequest
         return [
             'current_password.current_password' => 'La contraseña actual es incorrecta.',
             'password.confirmed' => 'Las contraseñas no coinciden.',
-            'password.size' => 'La nueva contraseña debe tener exactamente 8 caracteres.',
+            'password.min' => 'La nueva contraseña debe tener al menos 8 caracteres.',
         ];
     }
 }
