@@ -49,10 +49,11 @@ if not defined VPS_PASSWORD (
 
 echo.
 echo [3/3] Actualizando proyecto en la VPS y reiniciando app...
+REM reset --hard para que la VPS quede igual que GitHub (sin conflictos por cambios locales)
 if defined VPS_PASSWORD (
-    plink -batch -pw "%VPS_PASSWORD%" %VPS_USER%@%VPS_HOST% -hostkey "%VPS_KEY%" "cd %PROJECT_PATH% && git pull origin main && docker compose restart app"
+    plink -batch -pw "%VPS_PASSWORD%" %VPS_USER%@%VPS_HOST% -hostkey "%VPS_KEY%" "cd %PROJECT_PATH% && git fetch origin && git reset --hard origin/main && docker compose restart app"
 ) else (
-    plink -batch %VPS_USER%@%VPS_HOST% -hostkey "%VPS_KEY%" "cd %PROJECT_PATH% && git pull origin main && docker compose restart app"
+    plink -batch %VPS_USER%@%VPS_HOST% -hostkey "%VPS_KEY%" "cd %PROJECT_PATH% && git fetch origin && git reset --hard origin/main && docker compose restart app"
 )
 
 if errorlevel 1 (
