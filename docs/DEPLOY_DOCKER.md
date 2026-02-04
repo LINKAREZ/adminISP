@@ -87,6 +87,23 @@ docker compose up -d
 
 Espera 30–60 segundos y comprueba: `docker compose ps`. Los tres contenedores deben estar "Up". Luego abre **http://TU_IP/install**.
 
+## Si /install devuelve 500 Internal Server Error
+
+1. **Comprueba APP_KEY y DB_HOST en la VPS:**
+   ```bash
+   grep -E '^APP_KEY=|^DB_HOST=' .env
+   ```
+   - `APP_KEY` debe tener un valor largo (base64). Si está vacía: `docker compose exec app php artisan key:generate`
+   - `DB_HOST` debe ser **db** (no localhost). Si no: `sed -i 's/DB_HOST=localhost/DB_HOST=db/' .env`
+
+2. **Reinicia la app y limpia caché:**
+   ```bash
+   docker compose exec app php artisan config:clear
+   docker compose restart app
+   ```
+
+3. **Para ver el error exacto** (solo temporal): pon `APP_DEBUG=true` en `.env`, reinicia con `docker compose restart app`, vuelve a abrir /install y copia el mensaje de error que salga en la página.
+
 ## Si sale "Connection refused" (conexión rechazada)
 
 - **Al abrir la URL en el navegador:** el puerto 80/443 no llega desde fuera. En la VPS: `sudo ufw allow 80`, `sudo ufw allow 443`, `sudo ufw reload`. Comprueba que nginx escucha: `ss -tlnp | grep -E '80|443'`.
