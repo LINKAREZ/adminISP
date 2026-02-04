@@ -33,11 +33,32 @@ Si actualmente tienes una sola BD con todos los datos:
 5. El comando copia isps, users, roles, permissions a la central; por cada ISP crea la BD tenant, ejecuta migraciones tenant y copia los datos de las tablas operativas filtradas por `isp_id`.
 6. Actualizar `.env` si hace falta y probar el acceso.
 
+## Cambios en la base de datos de los ISPs (campos/tablas tenant)
+
+Cuando quieras **añadir o quitar campos** (o tablas) en la base de datos de cada ISP:
+
+1. **Crear la migración** en `database/migrations/tenant/` (no en `database/migrations/`).
+   - Ejemplo: `2026_02_05_000001_add_campo_x_to_servicios.php`.
+   - Usa `Schema::table('nombre_tabla', ...)` para modificar tablas existentes.
+   - Comprueba con `Schema::hasColumn()` / `Schema::hasTable()` si aplica, para no fallar en BDs ya actualizadas.
+
+2. **Aplicar en todos los ISPs** (o en uno solo):
+   ```bash
+   php artisan isp:migrate-tenant
+   ```
+   Solo en un ISP:
+   ```bash
+   php artisan isp:migrate-tenant --isp=7
+   ```
+
+Los ISPs que crees **después** ya tendrán esos cambios al crearse la BD (las migraciones tenant se ejecutan al crear el ISP). Este comando sirve para **ISPs que ya existían** antes de añadir la migración.
+
 ## Comandos útiles
 
 | Comando | Descripción |
 |--------|-------------|
-| `php artisan isp:create-database {id}` | Crea la BD tenant para el ISP y ejecuta migraciones (y seeders). |
+| `php artisan isp:create-database {id} [--force]` | Crea la BD tenant para el ISP y ejecuta migraciones (y seeders). |
+| `php artisan isp:migrate-tenant [--isp=id]` | Ejecuta migraciones tenant en la(s) BD de los ISPs (añadir/quitar campos). |
 | `php artisan isp:migrate-to-multi-tenant --source-database=nombre_bd` | Migra datos desde una BD única a central + tenants. |
 | `php artisan recibos:generar-mensuales [--isp=id]` | Genera recibos; sin `--isp` procesa todos los ISPs. |
 | `php artisan promesas:actualizar-vencidas [--isp=id]` | Actualiza promesas vencidas; sin `--isp` procesa todos. |
