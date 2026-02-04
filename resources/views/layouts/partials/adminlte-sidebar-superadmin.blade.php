@@ -32,7 +32,7 @@
 
                 <!-- Control de Acceso -->
                 <li class="nav-item">
-                    <a href="{{ route('roles.index') }}" class="nav-link {{ request()->is('roles*') || request()->is('permissions*') ? 'active' : '' }}">
+                    <a href="{{ route('users.index') }}" class="nav-link {{ request()->is('users*') || request()->is('roles*') || request()->is('permissions*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-users-cog"></i>
                         <p>Control de Acceso</p>
                     </a>
