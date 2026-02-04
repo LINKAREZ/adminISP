@@ -129,7 +129,7 @@ Espera 30–60 segundos y comprueba: `docker compose ps`. Los tres contenedores 
 
 - **app** → PHP 8.2 FPM (Laravel)
 - **nginx** → puerto 80
-- **db** → MySQL 8.0 (volumen persistente)
+- **db** → MariaDB 10.11 (volumen persistente; compatible con Laravel igual que MySQL)
 
 La conexión a MikroTik (RouterOS API) se hace desde el contenedor **app** hacia tu router (IP/puerto configurados en la app).
 

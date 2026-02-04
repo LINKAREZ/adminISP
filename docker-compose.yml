@@ -36,14 +36,14 @@ services:
       - app
 
   db:
-    image: mysql:8.0
+    image: mariadb:10.11
     container_name: adminisp-db
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: ${DB_DATABASE:-adminisp}
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret}
-      MYSQL_USER: ${DB_USERNAME:-adminisp}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+      MARIADB_DATABASE: ${DB_DATABASE:-adminisp}
+      MARIADB_ROOT_PASSWORD: ${DB_PASSWORD:-secret}
+      MARIADB_USER: ${DB_USERNAME:-adminisp}
+      MARIADB_PASSWORD: ${DB_PASSWORD:-secret}
     volumes:
       - dbdata:/var/lib/mysql
     networks:
