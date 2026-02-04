@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ViewErrorBag;
 
@@ -34,6 +35,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Forzar HTTPS en producción cuando APP_URL use https (evita "No es seguro" por contenido mixto)
+        if ($this->app->environment('production') && str_starts_with(config('app.url', ''), 'https://')) {
+            URL::forceScheme('https');
+        }
+
         // Optimización: Cachear rutas y config en producción
         if ($this->app->environment('production')) {
             $this->app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
