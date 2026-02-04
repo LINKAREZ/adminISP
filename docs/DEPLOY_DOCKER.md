@@ -70,6 +70,18 @@ docker compose exec app php artisan route:cache
 docker compose exec app php artisan view:cache
 ```
 
+## Si el contenedor `adminisp-db` está en "Restarting" (MySQL no arranca)
+
+Suele ser un volumen de datos corrupto o de otra versión. **Borra el volumen y vuelve a levantar** (se pierde la base de datos; si aún no has instalado, no importa):
+
+```bash
+cd ~/adminisp
+docker compose down -v
+docker compose up -d
+```
+
+Espera 30–60 segundos y comprueba: `docker compose ps`. Los tres contenedores deben estar "Up". Luego abre **http://TU_IP/install**.
+
 ## Si no abre en el navegador
 
 1. **Usa HTTP, no HTTPS**

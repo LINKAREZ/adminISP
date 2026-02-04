@@ -48,13 +48,6 @@ services:
       - dbdata:/var/lib/mysql
     networks:
       - app
-    healthcheck:
-      test:
-        ['CMD-SHELL', 'mysqladmin ping -h localhost -u root -p"$$MYSQL_ROOT_PASSWORD" || exit 1']
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 40s
 
 networks:
   app:
