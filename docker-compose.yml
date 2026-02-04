@@ -10,6 +10,7 @@ services:
     volumes:
       - .:/var/www/html
     environment:
+      - APP_NAME=${APP_NAME:-AdminISP}
       - APP_ENV=production
       - DB_HOST=db
       - DB_DATABASE=${DB_DATABASE:-adminisp}

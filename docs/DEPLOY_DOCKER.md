@@ -30,7 +30,7 @@ Ajusta al menos:
 - `DB_HOST=db`
 - `DB_DATABASE=adminisp`
 - `DB_USERNAME=adminisp`
-- `DB_PASSWORD=**contraseña_segura**`
+- `DB_PASSWORD=**contraseña_segura**` (usa una contraseña propia; si dejas `secret`, MariaDB puede mostrar un error en el log la primera vez, pero suele quedar "ready for connections")
 
 Guarda (Ctrl+O, Enter, Ctrl+X).
 
@@ -43,7 +43,7 @@ docker compose up -d
 
 ### 4. Instalar dependencias PHP (vendor) y configurar Laravel
 
-El volumen montado oculta la carpeta `vendor` de la imagen. Hay que generarla en el contenedor (queda en tu proyecto):
+El volumen montado oculta la carpeta `vendor` de la imagen. Hay que generarla en el contenedor (queda en tu proyecto). **Ejecuta cada comando en una línea distinta** (evita pegar todo junto):
 
 ```bash
 docker compose exec app composer install --no-dev --optimize-autoloader
