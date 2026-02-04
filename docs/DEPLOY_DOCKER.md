@@ -30,7 +30,7 @@ Ajusta al menos (**en Docker `DB_HOST` debe ser `db`, no `localhost`**):
 - **`DB_HOST=db`** ← obligatorio en Docker (nombre del servicio)
 - `DB_DATABASE=adminisp`
 - `DB_USERNAME=adminisp`
-- `DB_PASSWORD=**contraseña_segura**` (usa una contraseña propia; si dejas `secret`, MariaDB puede mostrar un error en el log la primera vez, pero suele quedar "ready for connections")
+- `DB_PASSWORD=**contraseña_segura**` (usa una contraseña propia; si dejas `secret`, MySQL puede mostrar un aviso en el log la primera vez, pero suele quedar "ready for connections")
 
 Si ya tenías `DB_HOST=localhost`, cámbialo a `db` y reinicia la app: `docker compose restart app`
 
@@ -90,13 +90,16 @@ Espera 30–60 segundos y comprueba: `docker compose ps`. Los tres contenedores 
 ## Si /install devuelve 500 Internal Server Error
 
 1. **Comprueba APP_KEY y DB_HOST en la VPS:**
+
    ```bash
    grep -E '^APP_KEY=|^DB_HOST=' .env
    ```
+
    - `APP_KEY` debe tener un valor largo (base64). Si está vacía: `docker compose exec app php artisan key:generate`
    - `DB_HOST` debe ser **db** (no localhost). Si no: `sed -i 's/DB_HOST=localhost/DB_HOST=db/' .env`
 
 2. **Reinicia la app y limpia caché:**
+
    ```bash
    docker compose exec app php artisan config:clear
    docker compose restart app
@@ -107,7 +110,7 @@ Espera 30–60 segundos y comprueba: `docker compose ps`. Los tres contenedores 
 ## Si sale "Connection refused" (conexión rechazada)
 
 - **Al abrir la URL en el navegador:** el puerto 80/443 no llega desde fuera. En la VPS: `sudo ufw allow 80`, `sudo ufw allow 443`, `sudo ufw reload`. Comprueba que nginx escucha: `ss -tlnp | grep -E '80|443'`.
-- **Al enviar el formulario del instalador (paso base de datos):** Laravel no puede conectar a MySQL/MariaDB. En la VPS el `.env` debe tener **`DB_HOST=db`** (no `localhost`). Comprueba con `grep DB_ .env`. Si pone `DB_HOST=localhost`, edita: `nano .env` → cambia a `DB_HOST=db`. Luego `docker compose restart app` y vuelve a intentar el instalador.
+- **Al enviar el formulario del instalador (paso base de datos):** Laravel no puede conectar a MySQL. En la VPS el `.env` debe tener **`DB_HOST=db`** (no `localhost`). Comprueba con `grep DB_ .env`. Si pone `DB_HOST=localhost`, edita: `nano .env` → cambia a `DB_HOST=db`. Luego `docker compose restart app` y vuelve a intentar el instalador.
 
 ## Si no abre en el navegador
 
@@ -156,7 +159,7 @@ Espera 30–60 segundos y comprueba: `docker compose ps`. Los tres contenedores 
 
 - **app** → PHP 8.2 FPM (Laravel)
 - **nginx** → puerto 80
-- **db** → MariaDB 10.11 (volumen persistente; compatible con Laravel igual que MySQL)
+- **db** → MySQL 8.0 (volumen persistente)
 
 La conexión a MikroTik (RouterOS API) se hace desde el contenedor **app** hacia tu router (IP/puerto configurados en la app).
 
