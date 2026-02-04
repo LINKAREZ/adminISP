@@ -183,6 +183,22 @@ Vuelve al paso «Base de datos» en el instalador y envía de nuevo el formulari
 - **app** → PHP 8.2 FPM (Laravel)
 - **nginx** → puertos 80 (redirige a HTTPS) y 443 (HTTPS)
 - **db** → MySQL 8.0 (volumen persistente)
+- **adminer** → Interfaz web para ver/editar la base de datos (puerto **8080**)
+
+### Ver la base de datos (Adminer)
+
+Con el servicio `adminer` levantado (`docker compose up -d`), abre en el navegador:
+
+- **http://TU_IP:8080** o **https://TU_IP:8080** (si tu firewall permite 8080)
+
+En la pantalla de login:
+
+- **Sistema:** MySQL  
+- **Servidor:** `db` (ya viene por defecto)  
+- **Usuario:** `adminisp` (o `root` para acceso total)  
+- **Contraseña:** la que tengas en `.env` como `DB_PASSWORD`
+
+Si no abre desde fuera, en la VPS permite el puerto: `sudo ufw allow 8080 && sudo ufw reload`. Comprueba que el proveedor (Elastika) no bloquee el 8080.
 
 La conexión a MikroTik (RouterOS API) se hace desde el contenedor **app** hacia tu router (IP/puerto configurados en la app).
 

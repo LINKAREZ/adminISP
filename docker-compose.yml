@@ -51,6 +51,20 @@ services:
     networks:
       - app
 
+  # Adminer: interfaz web para ver/administrar la base de datos
+  adminer:
+    image: adminer:latest
+    container_name: adminisp-adminer
+    restart: unless-stopped
+    ports:
+      - '8080:8080'
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+    networks:
+      - app
+    depends_on:
+      - db
+
 networks:
   app:
     driver: bridge
