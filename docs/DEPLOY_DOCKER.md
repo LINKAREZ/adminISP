@@ -21,16 +21,18 @@ cp .env.example .env
 nano .env
 ```
 
-Ajusta al menos:
+Ajusta al menos (**en Docker `DB_HOST` debe ser `db`, no `localhost`**):
 
 - `APP_ENV=production`
 - `APP_DEBUG=false`
 - `APP_URL=http://TU_IP_O_DOMINIO`
 - `DB_CONNECTION=mysql`
-- `DB_HOST=db`
+- **`DB_HOST=db`** ← obligatorio en Docker (nombre del servicio)
 - `DB_DATABASE=adminisp`
 - `DB_USERNAME=adminisp`
 - `DB_PASSWORD=**contraseña_segura**` (usa una contraseña propia; si dejas `secret`, MariaDB puede mostrar un error en el log la primera vez, pero suele quedar "ready for connections")
+
+Si ya tenías `DB_HOST=localhost`, cámbialo a `db` y reinicia la app: `docker compose restart app`
 
 Guarda (Ctrl+O, Enter, Ctrl+X).
 
@@ -84,6 +86,11 @@ docker compose up -d
 ```
 
 Espera 30–60 segundos y comprueba: `docker compose ps`. Los tres contenedores deben estar "Up". Luego abre **http://TU_IP/install**.
+
+## Si sale "Connection refused" (conexión rechazada)
+
+- **Al abrir la URL en el navegador:** el puerto 80/443 no llega desde fuera. En la VPS: `sudo ufw allow 80`, `sudo ufw allow 443`, `sudo ufw reload`. Comprueba que nginx escucha: `ss -tlnp | grep -E '80|443'`.
+- **Al enviar el formulario del instalador (paso base de datos):** Laravel no puede conectar a MySQL/MariaDB. En la VPS el `.env` debe tener **`DB_HOST=db`** (no `localhost`). Comprueba con `grep DB_ .env`. Si pone `DB_HOST=localhost`, edita: `nano .env` → cambia a `DB_HOST=db`. Luego `docker compose restart app` y vuelve a intentar el instalador.
 
 ## Si no abre en el navegador
 
