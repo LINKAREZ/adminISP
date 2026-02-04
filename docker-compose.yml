@@ -37,7 +37,7 @@ services:
       - app
 
   db:
-    image: mysql:8.0
+    image: mysql:8.0.32
     container_name: adminisp-db
     restart: unless-stopped
     environment:
