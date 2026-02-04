@@ -3,7 +3,6 @@
 namespace App\Modules\ControlAcceso\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rule;
 
 class StoreUserRequest extends FormRequest
@@ -38,11 +37,7 @@ class StoreUserRequest extends FormRequest
             'password' => [
                 'required',
                 'string',
-                Password::min(8) // Mínimo 8 caracteres
-                    ->mixedCase() // Al menos una mayúscula y una minúscula
-                    ->numbers() // Al menos un número
-                    ->symbols() // Al menos un símbolo
-                    ->uncompromised(), // Verifica contra base de datos de contraseñas comprometidas
+                'size:8', // Exactamente 8 caracteres
                 'confirmed',
             ],
             'role_id' => ['required', $roleRule],
@@ -63,11 +58,7 @@ class StoreUserRequest extends FormRequest
             'email.email' => 'El email debe ser válido.',
             'email.unique' => 'Este email ya está registrado.',
             'password.required' => 'La contraseña es obligatoria.',
-            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
-            'password.mixed' => 'La contraseña debe contener mayúsculas y minúsculas.',
-            'password.numbers' => 'La contraseña debe contener al menos un número.',
-            'password.symbols' => 'La contraseña debe contener al menos un símbolo.',
-            'password.uncompromised' => 'Esta contraseña ha sido comprometida. Por favor, elija otra.',
+            'password.size' => 'La contraseña debe tener exactamente 8 caracteres.',
             'password.confirmed' => 'Las contraseñas no coinciden.',
         ];
     }

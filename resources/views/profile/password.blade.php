@@ -12,7 +12,7 @@
                     @method('PUT')
                         <div class="alert alert-info">
                             <i class="fas fa-info-circle mr-2"></i>
-                            La nueva contraseña debe tener al menos 12 caracteres, con mayúsculas, minúsculas, números y símbolos.
+                            La nueva contraseña debe tener exactamente 8 caracteres.
                         </div>
 
                         <div class="form-group">
@@ -21,7 +21,7 @@
                             </label>
                             <input type="password" name="current_password" id="current_password"
                                    class="form-control @error('current_password') is-invalid @enderror"
-                                   required>
+                                   required autocomplete="current-password">
                             @error('current_password')
                                 <span class="invalid-feedback">{{ $message }}</span>
                             @enderror
@@ -33,7 +33,7 @@
                             </label>
                             <input type="password" name="password" id="password"
                                    class="form-control @error('password') is-invalid @enderror"
-                                   required minlength="12">
+                                   required minlength="8" maxlength="8" placeholder="8 caracteres" autocomplete="new-password">
                             @error('password')
                                 <span class="invalid-feedback">{{ $message }}</span>
                             @enderror
@@ -45,7 +45,7 @@
                             </label>
                             <input type="password" name="password_confirmation" id="password_confirmation"
                                    class="form-control"
-                                   required>
+                                   required minlength="8" maxlength="8" placeholder="8 caracteres" autocomplete="new-password">
                         </div>
                     </div>
                     <x-slot name="footer">

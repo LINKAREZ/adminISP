@@ -3,7 +3,6 @@
 namespace App\Modules\ControlAcceso\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Password;
 
 class UpdatePasswordRequest extends FormRequest
 {
@@ -16,7 +15,7 @@ class UpdatePasswordRequest extends FormRequest
     {
         return [
             'current_password' => 'required|current_password',
-            'password' => ['required', 'confirmed', Password::min(8)],
+            'password' => ['required', 'confirmed', 'string', 'size:8'],
         ];
     }
 
@@ -25,7 +24,7 @@ class UpdatePasswordRequest extends FormRequest
         return [
             'current_password.current_password' => 'La contraseña actual es incorrecta.',
             'password.confirmed' => 'Las contraseñas no coinciden.',
-            'password.min' => 'La nueva contraseña debe tener al menos 8 caracteres.',
+            'password.size' => 'La nueva contraseña debe tener exactamente 8 caracteres.',
         ];
     }
 }

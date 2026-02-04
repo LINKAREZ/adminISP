@@ -3,7 +3,6 @@
 namespace App\Modules\ControlAcceso\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Password;
 
 class UpdateUserRequest extends FormRequest
 {
@@ -31,11 +30,7 @@ class UpdateUserRequest extends FormRequest
             'password' => [
                 'nullable',
                 'string',
-                Password::min(8) // Mínimo 8 caracteres
-                    ->mixedCase() // Al menos una mayúscula y una minúscula
-                    ->numbers() // Al menos un número
-                    ->symbols() // Al menos un símbolo
-                    ->uncompromised(), // Verifica contra base de datos de contraseñas comprometidas
+                'size:8', // Exactamente 8 caracteres
                 'confirmed',
             ],
             'role_id' => ['nullable', 'exists:roles,id'],
@@ -54,11 +49,7 @@ class UpdateUserRequest extends FormRequest
             'email.required' => 'El email es obligatorio.',
             'email.email' => 'El email debe ser válido.',
             'email.unique' => 'Este email ya está registrado.',
-            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
-            'password.mixed' => 'La contraseña debe contener mayúsculas y minúsculas.',
-            'password.numbers' => 'La contraseña debe contener al menos un número.',
-            'password.symbols' => 'La contraseña debe contener al menos un símbolo.',
-            'password.uncompromised' => 'Esta contraseña ha sido comprometida. Por favor, elija otra.',
+            'password.size' => 'La contraseña debe tener exactamente 8 caracteres.',
             'password.confirmed' => 'Las contraseñas no coinciden.',
         ];
     }
