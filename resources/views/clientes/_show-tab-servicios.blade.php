@@ -74,6 +74,11 @@
                             <input type="hidden" name="cliente_id" value="{{ $cliente->id }}">
                         </form>
                     @endif
+                    {{-- Formulario eliminar servicio (fuera del dropdown para que el submit no falle) --}}
+                    <form id="form-delete-servicio-{{ $servicio->id }}" action="{{ route('clientes.servicios.destroy', ['cliente' => $cliente, 'servicio' => $servicio]) }}" method="POST" class="d-none">
+                        @csrf
+                        @method('DELETE')
+                    </form>
 
                     {{-- Botones de estado y acciones --}}
                     <div class="d-flex align-items-center" style="gap: 0.5rem;">
@@ -94,6 +99,7 @@
                             'routeEdit' => route('clientes.servicios.edit', ['cliente' => $cliente, 'servicio' => $servicio]),
                             'routeView' => route('clientes.servicios.show', ['cliente' => $cliente, 'servicio' => $servicio]),
                             'routeDelete' => route('clientes.servicios.destroy', ['cliente' => $cliente, 'servicio' => $servicio]),
+                            'deleteFormId' => 'form-delete-servicio-' . $servicio->id,
                             'confirmMessage' => '¿Eliminar este servicio?'
                         ])
                     </div>

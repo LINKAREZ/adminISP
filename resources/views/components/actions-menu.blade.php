@@ -3,6 +3,7 @@
     'routeEdit' => null,
     'routeView' => null,
     'routeDelete' => null,
+    'deleteFormId' => null,
     'confirmMessage' => '¿Está seguro de eliminar este elemento?',
     'deletePermission' => null,
 ])
@@ -34,15 +35,11 @@
 
         @if($showDelete)
             @if(empty($deletePermission))
-                <form action="{{ $routeDelete }}" method="POST" class="actions-menu-delete-form">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="dropdown-item text-danger" onclick="return confirm(@json($confirmMessage))" title="Eliminar">
+                @if($deleteFormId)
+                    <a href="#" class="dropdown-item text-danger" title="Eliminar" onclick="event.preventDefault(); if(confirm(@json($confirmMessage))) document.getElementById(@json($deleteFormId)).submit();">
                         <i class="fas fa-trash mr-2"></i> Eliminar
-                    </button>
-                </form>
-            @else
-                @hasPermission($deletePermission)
+                    </a>
+                @else
                     <form action="{{ $routeDelete }}" method="POST" class="actions-menu-delete-form">
                         @csrf
                         @method('DELETE')
@@ -50,6 +47,22 @@
                             <i class="fas fa-trash mr-2"></i> Eliminar
                         </button>
                     </form>
+                @endif
+            @else
+                @hasPermission($deletePermission)
+                    @if($deleteFormId)
+                        <a href="#" class="dropdown-item text-danger" title="Eliminar" onclick="event.preventDefault(); if(confirm(@json($confirmMessage))) document.getElementById(@json($deleteFormId)).submit();">
+                            <i class="fas fa-trash mr-2"></i> Eliminar
+                        </a>
+                    @else
+                        <form action="{{ $routeDelete }}" method="POST" class="actions-menu-delete-form">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="dropdown-item text-danger" onclick="return confirm(@json($confirmMessage))" title="Eliminar">
+                                <i class="fas fa-trash mr-2"></i> Eliminar
+                            </button>
+                        </form>
+                    @endif
                 @endhasPermission
             @endif
         @endif
