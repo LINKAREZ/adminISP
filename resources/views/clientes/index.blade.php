@@ -187,6 +187,22 @@
                         @endforelse
                     </div>
 
+                    {{-- Selector de registros por página (recarga con más/menos filas desde el servidor) --}}
+                    <form method="GET" action="{{ route('clientes.index') }}" id="form-per-page-clientes" class="mb-2 d-none d-md-flex align-items-center">
+                        <input type="hidden" name="router_id" value="{{ $routerId }}">
+                        @if(request('buscar'))
+                            <input type="hidden" name="buscar" value="{{ request('buscar') }}">
+                        @endif
+                        <label for="per_page_clientes" class="mb-0 mr-2 text-nowrap small text-muted">Mostrar</label>
+                        <select name="per_page" id="per_page_clientes" class="form-control form-control-sm" style="width: auto; min-width: 100px;" onchange="this.form.submit()">
+                            <option value="20"  {{ request('per_page', 20) == 20 ? 'selected' : '' }}>20</option>
+                            <option value="50"  {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                            <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                            <option value="all" {{ request('per_page') == 'all' ? 'selected' : '' }}>Todos</option>
+                        </select>
+                        <span class="ml-2 small text-muted">registros</span>
+                    </form>
+
                     <!-- Vista desktop: Tabla -->
                     <div class="table-responsive d-none d-md-block">
                         <table id="tablaClientes" class="table table-hover table-striped" data-datatable="true" data-options='{"dom": "<\"row\"<\"col-sm-12 col-md-6\"l>>rt<\"row\"<\"col-sm-12 col-md-5\"i><\"col-sm-12 col-md-7\"p>>", "pageLength": 25}'>

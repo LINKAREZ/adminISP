@@ -60,6 +60,13 @@ class ClienteController extends Controller
             $query->search($request->buscar, ['nombre', 'documento', 'telefonos']);
         }
 
+        $perPage = $request->input('per_page', 20);
+        if ($perPage === 'all' || $perPage === 'todas' || (is_numeric($perPage) && (int) $perPage > 500)) {
+            $perPage = 99999;
+        } else {
+            $perPage = min(max((int) $perPage ?: 20, 1), 500);
+        }
+
         $clientes = $query->with(['ubicaciones' => function ($q) {
             $q->withCount('servicios');
         }])
@@ -81,7 +88,8 @@ class ClienteController extends Controller
                 }
             ])
             ->latest()
-            ->paginate(20);
+            ->paginate($perPage)
+            ->withQueryString();
 
         return view('clientes.index', compact('clientes', 'routers', 'routerId'));
     }
