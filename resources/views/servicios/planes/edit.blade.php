@@ -270,7 +270,7 @@
                         <x-btn :route="route('servicios.planes.index')" variant="secondary" icon="fa-times">
                             Cancelar
                         </x-btn>
-                        <x-btn type="submit" variant="primary" icon="fa-save" class="float-right">
+                        <x-btn type="submit" form="form-plan" variant="primary" icon="fa-save" class="float-right">
                             Actualizar Plan
                         </x-btn>
                     </x-slot>

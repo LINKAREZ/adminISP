@@ -22,7 +22,7 @@
     <div class="row">
         <div class="col-md-8 offset-md-2">
             <x-card title="Editar Marca" icon="fa-tag" variant="primary">
-                <form action="{{ route('sistema.equipo.marcas.update', $marca) }}" method="POST">
+                <form action="{{ route('sistema.equipo.marcas.update', $marca) }}" method="POST" id="form-marca-edit">
                     @csrf
                     @method('PUT')
                         <x-form-input
@@ -53,7 +53,7 @@
                         <x-btn :route="route('sistema.equipo.marcas.index')" variant="secondary" icon="fa-times">
                             Cancelar
                         </x-btn>
-                        <x-btn type="submit" variant="primary" icon="fa-save" class="float-right">
+                        <x-btn type="submit" form="form-marca-edit" variant="primary" icon="fa-save" class="float-right">
                             Guardar
                         </x-btn>
                     </x-slot>

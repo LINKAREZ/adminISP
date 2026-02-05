@@ -17,7 +17,7 @@
 
     <div class="row">
         <div class="col-md-8 offset-md-2">
-            <form method="POST" action="{{ route('red.routers.store') }}">
+            <form method="POST" action="{{ route('red.routers.store') }}" id="form-router-create">
                 @csrf
                 <x-card title="Crear Nuevo Router" icon="fa-network-wired" variant="primary">
                         <!-- Nombre -->
@@ -226,7 +226,7 @@
                         <x-btn :route="route('red.routers.index')" variant="secondary" icon="fa-times">
                             Cancelar
                         </x-btn>
-                        <x-btn type="submit" variant="primary" icon="fa-save" class="float-right">
+                        <x-btn type="submit" form="form-router-create" variant="primary" icon="fa-save" class="float-right">
                             Guardar Router
                         </x-btn>
                     </x-slot>

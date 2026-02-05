@@ -17,7 +17,7 @@
 
     <div class="row">
         <div class="col-md-8 offset-md-2">
-            <form method="POST" action="{{ route('red.routers.update', $router) }}">
+            <form method="POST" action="{{ route('red.routers.update', $router) }}" id="form-router-edit">
                 @csrf
                 @method('PUT')
                 <x-card title="Editar Router" icon="fa-network-wired" variant="primary">
@@ -227,7 +227,7 @@
                         <x-btn :route="route('red.routers.index')" variant="secondary" icon="fa-times">
                             Cancelar
                         </x-btn>
-                        <x-btn type="submit" variant="primary" icon="fa-save" class="float-right">
+                        <x-btn type="submit" form="form-router-edit" variant="primary" icon="fa-save" class="float-right">
                             Actualizar Router
                         </x-btn>
                     </x-slot>

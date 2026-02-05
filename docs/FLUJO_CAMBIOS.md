@@ -2,6 +2,8 @@
 
 Este documento define cómo se guardan los cambios y cómo llegan desde tu máquina local hasta el servidor (VPS panel.wan.pe).
 
+Para evitar errores recurrentes (419, 403, formularios que no envían), ver **[PREVENCION_ERRORES.md](PREVENCION_ERRORES.md)**.
+
 ---
 
 ## Resumen del flujo

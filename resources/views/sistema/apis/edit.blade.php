@@ -15,7 +15,7 @@
 
     <div class="row">
         <div class="col-12">
-            <form action="{{ route('sistema.apis.update', $api) }}" method="POST">
+            <form action="{{ route('sistema.apis.update', $api) }}" method="POST" id="form-api-edit">
                 @csrf
                 @method('PUT')
                 <x-card title="Editar API" subtitle="{{ ucfirst($api->nombre) }}" icon="fa-plug" variant="primary">
@@ -71,7 +71,7 @@
                         <x-btn :route="route('sistema.apis.index')" variant="secondary" icon="fa-arrow-left">
                             Volver
                         </x-btn>
-                        <x-btn type="submit" variant="primary" icon="fa-save" class="float-right">
+                        <x-btn type="submit" form="form-api-edit" variant="primary" icon="fa-save" class="float-right">
                             Guardar Cambios
                         </x-btn>
                     </x-slot>

@@ -17,7 +17,7 @@
 
     <div class="row">
         <div class="col-md-8 offset-md-2">
-            <form method="POST" action="{{ route('red.nodos.update', $nodo) }}">
+            <form method="POST" action="{{ route('red.nodos.update', $nodo) }}" id="form-nodo-edit">
                 @csrf
                 @method('PUT')
                 <x-card title="Editar Nodo" icon="fa-sitemap" variant="primary">
@@ -54,7 +54,7 @@
                         <x-btn :route="route('red.nodos.index')" variant="secondary" icon="fa-times">
                             Cancelar
                         </x-btn>
-                        <x-btn type="submit" variant="primary" icon="fa-save" class="float-right">
+                        <x-btn type="submit" form="form-nodo-edit" variant="primary" icon="fa-save" class="float-right">
                             Actualizar Nodo
                         </x-btn>
                     </x-slot>

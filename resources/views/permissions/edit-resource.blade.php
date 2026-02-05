@@ -17,7 +17,7 @@
     <div class="row">
         <div class="col-md-8 offset-md-2">
             <x-card title="Editar Submódulo" subtitle="{{ ucfirst($resource) }}" icon="fa-key" variant="primary">
-                <form method="POST" action="{{ route('permissions.resource.update') }}">
+                <form method="POST" action="{{ route('permissions.resource.update') }}" id="form-permission-resource-edit">
                     @csrf
                     @method('PUT')
                     <input type="hidden" name="resource" value="{{ $resource }}">
@@ -80,7 +80,7 @@
                         <x-btn :route="route('permissions.index')" variant="secondary" icon="fa-times">
                             Cancelar
                         </x-btn>
-                        <x-btn type="submit" variant="primary" icon="fa-save" class="float-right">
+                        <x-btn type="submit" form="form-permission-resource-edit" variant="primary" icon="fa-save" class="float-right">
                             Actualizar Submódulo
                         </x-btn>
                     </x-slot>

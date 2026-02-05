@@ -21,7 +21,7 @@
 
     <div class="row">
         <div class="col-md-8 offset-md-2">
-            <form action="{{ route('sistema.equipo.marcas.store') }}" method="POST">
+            <form action="{{ route('sistema.equipo.marcas.store') }}" method="POST" id="form-marca-create">
                 @csrf
                 <x-card title="Nueva Marca" icon="fa-tag" variant="primary">
                     <input type="hidden" name="estado" value="1">
@@ -38,7 +38,7 @@
                         <x-btn :route="route('sistema.equipo.marcas.index')" variant="secondary" icon="fa-times">
                             Cancelar
                         </x-btn>
-                        <x-btn type="submit" variant="primary" icon="fa-save" class="float-right">
+                        <x-btn type="submit" form="form-marca-create" variant="primary" icon="fa-save" class="float-right">
                             Guardar
                         </x-btn>
                     </x-slot>

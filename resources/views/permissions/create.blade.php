@@ -17,7 +17,7 @@
     <div class="row">
         <div class="col-md-8 offset-md-2">
             <x-card title="Crear Nuevo Permiso" icon="fa-key" variant="primary">
-                <form method="POST" action="{{ route('permissions.store') }}">
+                <form method="POST" action="{{ route('permissions.store') }}" id="form-permission-create">
                     @csrf
                         <!-- Información -->
                         <div class="alert alert-info">
@@ -103,7 +103,7 @@
                         <x-btn :route="route('permissions.index')" variant="secondary" icon="fa-times">
                             Cancelar
                         </x-btn>
-                        <x-btn type="submit" variant="primary" icon="fa-save" class="float-right">
+                        <x-btn type="submit" form="form-permission-create" variant="primary" icon="fa-save" class="float-right">
                             Guardar Permiso
                         </x-btn>
                     </x-slot>

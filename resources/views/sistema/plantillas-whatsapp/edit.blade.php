@@ -18,7 +18,7 @@
     <div class="row">
         <div class="col-12">
             <x-card title="Editar Plantilla" icon="fa-whatsapp" variant="primary">
-                <form action="{{ route('sistema.plantillas-whatsapp.update', $plantillaWhatsApp) }}" method="POST">
+                <form action="{{ route('sistema.plantillas-whatsapp.update', $plantillaWhatsApp) }}" method="POST" id="form-plantilla-whatsapp">
                     @csrf
                     @method('PUT')
                         <div class="form-group">
@@ -89,7 +89,7 @@
                             <x-btn :route="route('sistema.plantillas-whatsapp.index')" variant="secondary" icon="fa-arrow-left">
                                 Volver
                             </x-btn>
-                            <x-btn type="submit" variant="primary" icon="fa-save">
+                            <x-btn type="submit" form="form-plantilla-whatsapp" variant="primary" icon="fa-save">
                                 Guardar Cambios
                             </x-btn>
                         </div>

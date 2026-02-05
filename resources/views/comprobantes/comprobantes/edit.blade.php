@@ -17,7 +17,7 @@
 <div class="row">
     <div class="col-md-8 mx-auto">
         <x-card title="Editar Comprobante" subtitle="{{ $comprobante->numero_completo }}" icon="fa-edit" variant="primary">
-            <form action="{{ route('comprobantes.update', $comprobante) }}" method="POST">
+            <form action="{{ route('comprobantes.update', $comprobante) }}" method="POST" id="form-comprobante-edit">
                 @csrf
                 @method('PUT')
                     <div class="form-group">
@@ -61,7 +61,7 @@
                     <x-btn :route="route('comprobantes.show', $comprobante)" variant="secondary" icon="fa-arrow-left">
                         Volver
                     </x-btn>
-                    <x-btn type="submit" variant="primary" icon="fa-save" class="float-right">
+                    <x-btn type="submit" form="form-comprobante-edit" variant="primary" icon="fa-save" class="float-right">
                         Actualizar Comprobante
                     </x-btn>
                 </x-slot>

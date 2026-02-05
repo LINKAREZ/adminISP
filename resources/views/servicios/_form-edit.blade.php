@@ -617,7 +617,7 @@
                                 Cancelar
                             </x-btn>
                         @endif
-                        <x-btn type="submit" variant="primary" icon="fa-save" class="float-right">
+                        <x-btn type="submit" form="form-servicio-edit" variant="primary" icon="fa-save" class="float-right">
                             Actualizar Servicio
                         </x-btn>
                     </x-slot>

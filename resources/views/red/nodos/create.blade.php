@@ -17,7 +17,7 @@
 
     <div class="row">
         <div class="col-md-8 offset-md-2">
-            <form method="POST" action="{{ route('red.nodos.store') }}">
+            <form method="POST" action="{{ route('red.nodos.store') }}" id="form-nodo-create">
                 @csrf
                 <x-card title="Crear Nuevo Nodo" icon="fa-sitemap" variant="primary">
                     <x-form-input
@@ -53,7 +53,7 @@
                         <x-btn :route="route('red.nodos.index')" variant="secondary" icon="fa-times">
                             Cancelar
                         </x-btn>
-                        <x-btn type="submit" variant="primary" icon="fa-save" class="float-right">
+                        <x-btn type="submit" form="form-nodo-create" variant="primary" icon="fa-save" class="float-right">
                             Guardar Nodo
                         </x-btn>
                     </x-slot>

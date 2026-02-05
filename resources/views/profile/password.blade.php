@@ -7,7 +7,7 @@
     <div class="row">
         <div class="col-md-6 mx-auto">
             <x-card title="Cambiar contraseña" icon="fa-key" variant="warning">
-                <form action="{{ route('profile.password.update') }}" method="POST">
+                <form action="{{ route('profile.password.update') }}" method="POST" id="form-password">
                     @csrf
                     @method('PUT')
                         <div class="alert alert-info">
@@ -52,7 +52,7 @@
                         <x-btn :route="route('profile.index')" variant="secondary" icon="fa-arrow-left">
                             Volver
                         </x-btn>
-                        <x-btn type="submit" variant="warning" icon="fa-save" class="float-right">
+                        <x-btn type="submit" form="form-password" variant="warning" icon="fa-save" class="float-right">
                             Cambiar contraseña
                         </x-btn>
                     </x-slot>

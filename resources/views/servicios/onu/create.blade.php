@@ -17,7 +17,7 @@
                 $clienteOnu = $servicio->ubicacion->cliente ?? null;
             @endphp
             <x-card title="Agregar ONU al Servicio" subtitle="Servicio: {{ $servicio->mac_address ?? 'N/A' }} • Cliente: {{ $clienteOnu->nombre ?? 'N/A' }}" icon="fa-server" variant="primary">
-                <form method="POST" action="{{ route('servicios.onu.store', $servicio) }}">
+                <form method="POST" action="{{ route('servicios.onu.store', $servicio) }}" id="form-onu-create">
                     @csrf
                         <!-- Seleccionar ONU existente o crear nueva -->
                         @if($onusDisponibles->count() > 0)
@@ -200,7 +200,7 @@
                         <x-btn :route="$clienteIdOnu ? route('clientes.servicios.show', ['cliente' => $clienteIdOnu, 'servicio' => $servicio]) : route('servicios.show', $servicio)" variant="secondary" icon="fa-times">
                             Cancelar
                         </x-btn>
-                        <x-btn type="submit" variant="primary" icon="fa-save" class="float-right">
+                        <x-btn type="submit" form="form-onu-create" variant="primary" icon="fa-save" class="float-right">
                             Guardar ONU
                         </x-btn>
                     </x-slot>

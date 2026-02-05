@@ -21,7 +21,7 @@
 
     <div class="row">
         <div class="col-md-8 offset-md-2">
-            <form action="{{ route('sistema.equipo.modelos.store') }}" method="POST">
+            <form action="{{ route('sistema.equipo.modelos.store') }}" method="POST" id="form-modelo-onu-create">
                 @csrf
                 <x-card title="Nuevo Modelo ONU" icon="fa-server" variant="primary">
                     <input type="hidden" name="estado" value="1">
@@ -59,7 +59,7 @@
                         <x-btn :route="route('sistema.equipo.modelos.index')" variant="secondary" icon="fa-times">
                             Cancelar
                         </x-btn>
-                        <x-btn type="submit" variant="primary" icon="fa-save" class="float-right">
+                        <x-btn type="submit" form="form-modelo-onu-create" variant="primary" icon="fa-save" class="float-right">
                             Guardar
                         </x-btn>
                     </x-slot>

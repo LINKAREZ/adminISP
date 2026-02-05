@@ -7,7 +7,7 @@
     <div class="row">
         <div class="col-md-8 mx-auto">
             <x-card title="Editar información personal" icon="fa-user-edit" variant="primary">
-                <form action="{{ route('profile.update') }}" method="POST">
+                <form action="{{ route('profile.update') }}" method="POST" id="form-profile-edit">
                     @csrf
                     @method('PUT')
                         <div class="form-group">
@@ -48,7 +48,7 @@
                         <x-btn :route="route('profile.index')" variant="secondary" icon="fa-arrow-left">
                             Volver
                         </x-btn>
-                        <x-btn type="submit" variant="primary" icon="fa-save" class="float-right">
+                        <x-btn type="submit" form="form-profile-edit" variant="primary" icon="fa-save" class="float-right">
                             Guardar cambios
                         </x-btn>
                     </x-slot>

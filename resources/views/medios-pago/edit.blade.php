@@ -136,7 +136,7 @@
                         <x-btn :route="route('sistema.medios-pago.index')" variant="secondary" icon="fa-times">
                             Cancelar
                         </x-btn>
-                        <x-btn type="submit" variant="primary" icon="fa-save" class="float-right">
+                        <x-btn type="submit" form="form-medio-pago" variant="primary" icon="fa-save" class="float-right">
                             Actualizar Medio de Pago
                         </x-btn>
                     </x-slot>

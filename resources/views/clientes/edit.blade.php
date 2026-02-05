@@ -145,7 +145,7 @@
                             <x-btn :route="route('clientes.show', $cliente)" variant="secondary" icon="fa-times">
                                 Cancelar
                             </x-btn>
-                            <button type="submit" class="btn btn-primary float-right">
+                            <button type="submit" form="form-cliente-edit" class="btn btn-primary float-right">
                                 <i class="fas fa-save mr-1"></i> Actualizar Cliente
                             </button>
                         </div>

@@ -267,7 +267,7 @@
                         <x-btn :route="route('roles.index')" variant="secondary" icon="fa-times">
                             Cancelar
                         </x-btn>
-                        <x-btn type="submit" variant="primary" icon="fa-save" class="float-right">
+                        <x-btn type="submit" form="form-role-permissions" variant="primary" icon="fa-save" class="float-right">
                             Guardar Cambios
                         </x-btn>
                     </x-slot>

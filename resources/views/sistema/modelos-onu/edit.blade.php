@@ -119,7 +119,7 @@
                         <x-btn :route="route('sistema.equipo.modelos.index')" variant="secondary" icon="fa-times">
                             Cancelar
                         </x-btn>
-                        <x-btn type="submit" variant="primary" icon="fa-save" class="float-right">
+                        <x-btn type="submit" form="form-modelo-onu" variant="primary" icon="fa-save" class="float-right">
                             Guardar Credenciales
                         </x-btn>
                     </x-slot>

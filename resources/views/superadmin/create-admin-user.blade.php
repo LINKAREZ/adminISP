@@ -14,7 +14,7 @@
     <div class="row">
         <div class="col-md-8 offset-md-2">
             <x-card title="Crear Usuario Administrador por ISP" icon="fa-user-shield" variant="warning">
-                <form action="{{ route('superadmin.store-admin-user') }}" method="POST">
+                <form action="{{ route('superadmin.store-admin-user') }}" method="POST" id="form-create-admin">
                     @csrf
                         <div class="alert alert-info">
                             <i class="fas fa-info-circle"></i>
@@ -152,7 +152,7 @@
                         <x-btn :route="route('superadmin.dashboard')" variant="secondary" icon="fa-times">
                             Cancelar
                         </x-btn>
-                        <x-btn type="submit" variant="warning" icon="fa-save" class="float-right">
+                        <x-btn type="submit" form="form-create-admin" variant="warning" icon="fa-save" class="float-right">
                             Crear Usuario Administrador
                         </x-btn>
                     </x-slot>

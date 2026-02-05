@@ -15,11 +15,13 @@
     ║      Contenido...                                                     ║
     ║  </x-card>                                                            ║
     ╠══════════════════════════════════════════════════════════════════════╣
-    ║  Con footer:                                                          ║
+    ║  Con footer: el footer se renderiza FUERA del body, por tanto si el    ║
+    ║  contenido es un <form>, el botón submit queda fuera del form.        ║
+    ║  Usar id="form-xxx" en el form y form="form-xxx" en el botón submit.   ║
     ║  <x-card title="Formulario">                                          ║
-    ║      Campos del formulario...                                         ║
+    ║      <form id="form-editar" method="POST">...</form>                  ║
     ║      <x-slot name="footer">                                           ║
-    ║          <x-btn type="submit">Guardar</x-btn>                         ║
+    ║          <x-btn type="submit" form="form-editar">Guardar</x-btn>      ║
     ║      </x-slot>                                                        ║
     ║  </x-card>                                                            ║
     ╠══════════════════════════════════════════════════════════════════════╣
