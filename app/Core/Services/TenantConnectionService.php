@@ -60,20 +60,30 @@ class TenantConnectionService
 
     /**
      * Devuelve el nombre de la conexión tenant actual (app container, sesión o usuario) o null.
+     * Registra la conexión de forma perezosa si aún no está configurada, para que funcione
+     * aunque SetIspContext se ejecute después de SubstituteBindings (route model binding).
      */
     public static function currentTenantConnectionName(): ?string
     {
+        $ispId = null;
         if (app()->has('current_isp_id')) {
-            return static::connectionNameForId((int) app('current_isp_id'));
+            $ispId = (int) app('current_isp_id');
+        } elseif (session()->has('current_isp_id')) {
+            $ispId = (int) session('current_isp_id');
+        } elseif (auth()->check() && auth()->user()->isp_id) {
+            $ispId = (int) auth()->user()->isp_id;
         }
-        $ispId = session('current_isp_id');
-        if ($ispId) {
-            return static::connectionNameForId((int) $ispId);
+
+        if ($ispId === null) {
+            return null;
         }
-        if (auth()->check() && auth()->user()->isp_id) {
-            return static::connectionNameForId((int) auth()->user()->isp_id);
+
+        $name = static::connectionNameForId($ispId);
+        if (! Config::has("database.connections.{$name}")) {
+            static::registerConnectionForIspId($ispId);
         }
-        return null;
+
+        return $name;
     }
 
     /**
