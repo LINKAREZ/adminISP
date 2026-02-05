@@ -15,8 +15,8 @@
 @section('content')
 <div class="container-fluid">
     <div class="row">
-        <!-- Información Principal -->
-        <div class="col-12 col-md-8 order-2 order-md-1">
+        <!-- Información Principal (mobile first: contenido arriba) -->
+        <div class="col-12 col-md-8 order-1 order-md-1">
             <!-- Información del ISP -->
             <x-card title="Información del ISP" icon="fa-info-circle" variant="primary">
                 <x-slot name="actions">
@@ -126,27 +126,20 @@
             </x-card>
         </div>
 
-        <!-- Sidebar -->
-        <div class="col-12 col-md-4 order-1 order-md-2 mb-3 mb-md-0">
-            <!-- Acciones rápidas -->
-            <x-card title="Acciones Rápidas" icon="fa-bolt" variant="warning">
-                <a href="{{ route('superadmin.isps.edit', $isp) }}" class="btn btn-warning btn-block mb-2">
-                    <i class="fas fa-edit"></i> Editar ISP
+        <!-- Acciones (mobile first: debajo del contenido; sin duplicar Editar/Crear Admin) -->
+        <div class="col-12 col-md-4 order-2 order-md-2 mb-3 mb-md-0">
+            <x-card title="Acciones" icon="fa-bolt" variant="warning">
+                <a href="{{ route('superadmin.isps.index') }}" class="btn btn-secondary btn-block mb-2">
+                    <i class="fas fa-arrow-left"></i> Volver a ISPs
                 </a>
-                <a href="{{ route('superadmin.create-admin-user') }}?isp_id={{ $isp->id }}" class="btn btn-success btn-block mb-2">
-                    <i class="fas fa-user-shield"></i> <span class="d-none d-sm-inline">Crear Administrador</span><span class="d-sm-none">Crear Admin</span>
-                </a>
-                <form action="{{ route('superadmin.isps.destroy', $isp) }}" method="POST" class="mb-2"
-                      onsubmit="return confirm('¿Eliminar el ISP «{{ addslashes($isp->nombre) }}»? No se puede deshacer. Si tiene usuarios asociados no se eliminará.');">
+                <form action="{{ route('superadmin.isps.destroy', $isp) }}" method="POST" class="mb-0"
+                      onsubmit="return confirm('¿Eliminar el ISP «{{ addslashes($isp->nombre) }}»? No se puede deshacer.');">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn-danger btn-block">
                         <i class="fas fa-trash"></i> Eliminar ISP
                     </button>
                 </form>
-                <a href="{{ route('superadmin.isps.index') }}" class="btn btn-secondary btn-block">
-                    <i class="fas fa-arrow-left"></i> Volver
-                </a>
             </x-card>
         </div>
     </div>
@@ -156,9 +149,9 @@
         <div class="col-12">
             <x-card title="Usuarios Administradores" icon="fa-user-shield" variant="warning" :outline="true">
                 <x-slot name="actions">
-                    <x-btn :route="route('superadmin.create-admin-user') . '?isp_id=' . $isp->id" variant="warning" size="sm" icon="fa-plus-circle">
-                        <span class="d-none d-sm-inline">Crear Admin</span><span class="d-sm-none">Crear</span>
-                    </x-btn>
+                    <a href="{{ route('superadmin.create-admin-user') }}?isp_id={{ $isp->id }}" class="btn btn-sm btn-success">
+                        <i class="fas fa-user-plus"></i> <span class="d-none d-sm-inline">Crear administrador</span><span class="d-sm-none">Crear</span>
+                    </a>
                 </x-slot>
                     @if($defaultAdmins->count() > 0)
                         <!-- Vista escritorio: Tabla -->
