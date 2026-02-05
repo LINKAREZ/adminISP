@@ -22,6 +22,8 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Detrás de nginx/proxy: usar X-Forwarded-Proto para HTTPS y evitar 419 en login
+        $middleware->trustProxies(at: '*');
         $middleware->redirectGuestsTo('/login');
         // Comentado para evitar bucles - se maneja manualmente en el controlador
         // $middleware->redirectUsersTo('/dashboard');

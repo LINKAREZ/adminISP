@@ -189,6 +189,14 @@ Vuelve al paso «Base de datos» en el instalador y envía de nuevo el formulari
    ```
    Debe devolver `HTTP/1.1 200` o `302`.
 
+## Si sale 419 Page Expired en /login
+
+Suele deberse a que la app va detrás de un proxy (nginx) y Laravel no reconoce HTTPS, por lo que la sesión/CSRF fallan. Comprueba:
+
+1. **APP_URL con HTTPS:** En `.env` debe ser la URL pública con `https://` (ej. `APP_URL=https://panel.wan.pe`). Si pone `http://`, las cookies pueden no coincidir.
+2. **Trust proxies:** El proyecto ya incluye `trustProxies(at: '*')` en `bootstrap/app.php` para que se usen los headers `X-Forwarded-Proto` y `X-Forwarded-For`. Tras un despliegue, ejecuta `docker compose exec app php artisan config:clear` y `docker compose restart app`.
+3. **Limpiar sesión en el navegador:** Cierra sesión si la hubiera, borra cookies de `panel.wan.pe` y vuelve a abrir `/login` y enviar el formulario.
+
 ## Flujo de cambios (local → VPS)
 
 Para saber cómo guardar cambios en Git y desplegarlos en la VPS, ver **[FLUJO_CAMBIOS.md](FLUJO_CAMBIOS.md)**.
