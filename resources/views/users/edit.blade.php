@@ -120,14 +120,15 @@
                                 </span>
                             @enderror
                         </div>
-                    <x-slot name="footer">
-                        <x-btn :route="route('users.index')" variant="secondary" icon="fa-times">
-                            Cancelar
-                        </x-btn>
-                        <x-btn type="submit" variant="primary" icon="fa-save" class="float-right">
-                            Actualizar Usuario
-                        </x-btn>
-                    </x-slot>
+
+                        <div class="form-group mb-0 d-flex flex-wrap gap-2 justify-content-between">
+                            <x-btn :route="route('users.index')" variant="secondary" icon="fa-times">
+                                Cancelar
+                            </x-btn>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save mr-1"></i> Actualizar Usuario
+                            </button>
+                        </div>
                 </form>
             </x-card>
         </div>
