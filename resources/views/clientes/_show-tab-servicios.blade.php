@@ -93,7 +93,12 @@
                                 <i class="fas fa-check-circle"></i>
                             </button>
                         @endif
-                        {{-- Botón de acciones --}}
+                        {{-- Botón Eliminar visible (evita depender solo del menú desplegable) --}}
+                        <button type="button" class="btn btn-sm btn-outline-danger" title="Eliminar servicio"
+                                onclick="if(confirm('¿Eliminar este servicio? Esta acción no se puede deshacer.')) document.getElementById('form-delete-servicio-{{ $servicio->id }}').submit();">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        {{-- Botón de acciones (menú) --}}
                         @include('components.actions-menu', [
                             'id' => $servicio->id,
                             'routeEdit' => route('clientes.servicios.edit', ['cliente' => $cliente, 'servicio' => $servicio]),

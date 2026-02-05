@@ -196,11 +196,8 @@ class ServicioService
     /**
      * Verificar si un servicio puede ser eliminado
      *
-     * Un servicio NO puede ser eliminado si:
-     * - Tiene recibos con saldo por pagar (saldo > 0)
-     * - Tiene promesas de pago pendientes o vencidas
-     *
-     * Si los recibos tienen saldo 0 (pagados o anulados) sí se permite eliminar.
+     * Un servicio NO puede ser eliminado solo si tiene recibos con saldo por pagar (saldo > 0).
+     * Si todos los recibos tienen saldo 0 se permite eliminar (aunque tenga promesas o estado pendiente).
      *
      * @param Servicio $servicio Servicio a verificar
      * @return array Array con las siguientes claves:
@@ -209,28 +206,18 @@ class ServicioService
      */
     public function puedeEliminar(Servicio $servicio): array
     {
-        $puedeEliminar = true;
-        $razones = [];
-
         $tieneDeuda = $servicio->recibos()->where('saldo', '>', 0)->exists();
 
         if ($tieneDeuda) {
-            $puedeEliminar = false;
-            $razones[] = 'tiene recibos con saldo por pagar';
-        }
-
-        $promesasPendientes = \App\Modules\Comprobantes\Models\PromesaPago::where('servicio_id', $servicio->id)
-            ->whereIn('estado', ['pendiente', 'vencida'])
-            ->exists();
-
-        if ($promesasPendientes) {
-            $puedeEliminar = false;
-            $razones[] = 'tiene promesas de pago pendientes';
+            return [
+                'puede_eliminar' => false,
+                'razones' => ['tiene recibos con saldo por pagar'],
+            ];
         }
 
         return [
-            'puede_eliminar' => $puedeEliminar,
-            'razones' => $razones,
+            'puede_eliminar' => true,
+            'razones' => [],
         ];
     }
 
