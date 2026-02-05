@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -23,5 +24,16 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
         \Illuminate\Support\Facades\Auth::shouldUse('web');
+
+        // Gates por nombre de permiso (dashboard.read, sistema.read, etc.) para Gate::authorize()
+        Gate::before(function ($user, string $ability) {
+            if (!$user) {
+                return null;
+            }
+            if (str_contains($ability, '.') && method_exists($user, 'hasPermission')) {
+                return $user->hasPermission($ability) ? true : false;
+            }
+            return null;
+        });
     }
 }
