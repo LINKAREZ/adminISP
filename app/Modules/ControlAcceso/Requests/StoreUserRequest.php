@@ -9,10 +9,21 @@ class StoreUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
+     * Debe coincidir con UserPolicy::create(): root y super admin pueden; resto por permiso.
      */
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('control-acceso.create');
+        if (! auth()->check()) {
+            return false;
+        }
+        $user = auth()->user();
+        if (method_exists($user, 'isRootUser') && $user->isRootUser()) {
+            return true;
+        }
+        if (method_exists($user, 'isSuperAdmin') && $user->isSuperAdmin()) {
+            return true;
+        }
+        return $user->hasPermission('control-acceso.create');
     }
 
     /**
