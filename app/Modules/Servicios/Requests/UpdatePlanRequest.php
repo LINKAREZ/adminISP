@@ -32,8 +32,9 @@ class UpdatePlanRequest extends FormRequest
             $this->merge(['precio_mensual' => (float)$precio]);
         }
 
+        // ip_fija en BD puede ser boolean/tinyint; vacío se guarda como 0
         if ($this->has('ip_fija') && ($this->ip_fija === null || $this->ip_fija === '')) {
-            $this->merge(['ip_fija' => '']);
+            $this->merge(['ip_fija' => 0]);
         }
     }
 
@@ -63,7 +64,17 @@ class UpdatePlanRequest extends FormRequest
             'precio_mensual' => ['required', 'numeric', 'min:0'],
             'tipo_conexion' => ['required', 'in:pppoe,dhcp,estatica'],
             'perfil_mikrotik' => ['nullable', 'string', 'max:255'],
-            'ip_fija' => ['nullable', 'ip'],
+            'ip_fija' => [
+                'nullable',
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    if ($value === null || $value === '' || $value === 0) {
+                        return;
+                    }
+                    if (! filter_var($value, FILTER_VALIDATE_IP)) {
+                        $fail(__('validation.ip', ['attribute' => $attribute]));
+                    }
+                },
+            ],
         ];
     }
 }
