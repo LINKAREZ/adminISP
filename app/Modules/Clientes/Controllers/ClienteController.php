@@ -251,8 +251,9 @@ class ClienteController extends Controller
 
         $router = Router::findOrFail($data['router_id']);
         $ispId = $router->isp_id ?? (Auth::user()?->isp_id ?? session('current_isp_id'));
+        // Key por nombre en minúsculas: el formulario envía value="nombre_lower|callerid" y buscamos por $usuario (lowercase)
         $secrets = collect($pppoeService->getSecrets($router))->keyBy(function ($secret) {
-            return trim((string) ($secret['name'] ?? ''));
+            return mb_strtolower(trim((string) ($secret['name'] ?? '')));
         });
         $planes = Plan::where('router_id', $router->id)->get()->keyBy('perfil_mikrotik');
         $planesPorNombre = Plan::where('router_id', $router->id)->get()->keyBy('nombre');
@@ -347,9 +348,12 @@ class ClienteController extends Controller
 
                 $secret = $secrets->get($usuario);
                 if (!$secret) {
+                    Log::debug('Importar PPPoE omitido: secret no encontrado por usuario', ['usuario' => $usuario, 'key' => $key]);
                     $resultado['omitidos']++;
                     continue;
                 }
+
+                $usuarioPppoe = trim((string) ($secret['name'] ?? $usuario));
 
                 $disabledValue = strtolower((string) ($secret['disabled'] ?? 'false'));
                 if (in_array($disabledValue, ['true', 'yes', '1'], true)) {
@@ -367,10 +371,10 @@ class ClienteController extends Controller
                     continue;
                 }
 
-            $dni = $this->extraerDniDesdeUsuario($usuario);
+            $dni = $this->extraerDniDesdeUsuario($usuarioPppoe);
             $tipoPppoe = $dni ? 'usuario_unico' : 'usuario_compartido';
             $cliente = null;
-            $nombreCliente = 'PPPoE ' . $usuario;
+            $nombreCliente = 'PPPoE ' . $usuarioPppoe;
             $dniInfo = null;
 
             if ($dni) {
@@ -438,7 +442,7 @@ class ClienteController extends Controller
                     'router_id' => $router->id,
                     'plan_id' => $plan->id,
                     'tipo_pppoe' => $tipoPppoe,
-                    'usuario_pppoe' => $usuario,
+                    'usuario_pppoe' => $usuarioPppoe,
                     'password_pppoe' => $passwordPppoe,
                     'mac_address' => $callerId,
                     'estado' => 'activo',
