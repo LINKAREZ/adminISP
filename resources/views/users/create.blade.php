@@ -61,16 +61,23 @@
                         <!-- Password -->
                         <div class="form-group">
                             <label for="password">Contraseña <span class="text-danger">*</span></label>
-                            <input
-                                id="password"
-                                type="password"
-                                name="password"
-                                required
-                                minlength="8"
-                                class="form-control @error('password') is-invalid @enderror"
-                                placeholder="Mínimo 8 caracteres"
-                                autocomplete="new-password"
-                            />
+                            <div class="input-group">
+                                <input
+                                    id="password"
+                                    type="password"
+                                    name="password"
+                                    required
+                                    minlength="8"
+                                    class="form-control @error('password') is-invalid @enderror"
+                                    placeholder="Mínimo 8 caracteres"
+                                    autocomplete="new-password"
+                                />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-secondary" id="toggle-password" title="Ver contraseña" aria-label="Ver contraseña">
+                                        <i class="fas fa-eye" id="toggle-password-icon"></i>
+                                    </button>
+                                </div>
+                            </div>
                             <small class="form-text text-muted">Mínimo 8 caracteres.</small>
                             @error('password')
                                 <span class="invalid-feedback" role="alert">
@@ -82,16 +89,23 @@
                         <!-- Confirmar Password -->
                         <div class="form-group">
                             <label for="password_confirmation">Confirmar Contraseña <span class="text-danger">*</span></label>
-                            <input
-                                id="password_confirmation"
-                                type="password"
-                                name="password_confirmation"
-                                required
-                                minlength="8"
-                                class="form-control"
-                                placeholder="Repite la contraseña"
-                                autocomplete="new-password"
-                            />
+                            <div class="input-group">
+                                <input
+                                    id="password_confirmation"
+                                    type="password"
+                                    name="password_confirmation"
+                                    required
+                                    minlength="8"
+                                    class="form-control"
+                                    placeholder="Repite la contraseña"
+                                    autocomplete="new-password"
+                                />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-secondary" id="toggle-password-confirmation" title="Ver contraseña" aria-label="Ver contraseña">
+                                        <i class="fas fa-eye" id="toggle-password-confirmation-icon"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- ISP (solo para super admins) -->
@@ -161,4 +175,27 @@
             </x-card>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+    (function() {
+        function setupToggle(triggerId, inputId, iconId) {
+            var btn = document.getElementById(triggerId);
+            var input = document.getElementById(inputId);
+            var icon = document.getElementById(iconId);
+            if (!btn || !input || !icon) return;
+            btn.addEventListener('click', function() {
+                var isPassword = input.type === 'password';
+                input.type = isPassword ? 'text' : 'password';
+                icon.classList.toggle('fa-eye', !isPassword);
+                icon.classList.toggle('fa-eye-slash', isPassword);
+                btn.setAttribute('title', isPassword ? 'Ocultar contraseña' : 'Ver contraseña');
+                btn.setAttribute('aria-label', isPassword ? 'Ocultar contraseña' : 'Ver contraseña');
+            });
+        }
+        setupToggle('toggle-password', 'password', 'toggle-password-icon');
+        setupToggle('toggle-password-confirmation', 'password_confirmation', 'toggle-password-confirmation-icon');
+    })();
+    </script>
+    @endpush
 @endsection
