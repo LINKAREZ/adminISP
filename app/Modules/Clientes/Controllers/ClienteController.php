@@ -428,13 +428,18 @@ class ClienteController extends Controller
                 ]);
             }
 
+                // Permitir importar aunque el secret no tenga password en el router (se guarda null y se puede completar después)
+                $passwordPppoe = isset($secret['password']) && trim((string) $secret['password']) !== ''
+                    ? trim((string) $secret['password'])
+                    : null;
+
                 $servicio = Servicio::create([
                     'ubicacion_id' => $ubicacion->id,
                     'router_id' => $router->id,
                     'plan_id' => $plan->id,
                     'tipo_pppoe' => $tipoPppoe,
                     'usuario_pppoe' => $usuario,
-                    'password_pppoe' => $secret['password'] ?? null,
+                    'password_pppoe' => $passwordPppoe,
                     'mac_address' => $callerId,
                     'estado' => 'activo',
                     'es_provisional' => true,
