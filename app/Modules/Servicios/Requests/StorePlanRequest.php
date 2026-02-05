@@ -13,6 +13,13 @@ class StorePlanRequest extends FormRequest
         return auth()->check() && auth()->user()->hasPermission('servicios.create');
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('ip_fija') && ($this->ip_fija === null || $this->ip_fija === '')) {
+            $this->merge(['ip_fija' => '']);
+        }
+    }
+
     public function rules(): array
     {
         $tenantConn = TenantConnectionService::currentTenantConnectionName();

@@ -31,6 +31,10 @@ class UpdatePlanRequest extends FormRequest
             }
             $this->merge(['precio_mensual' => (float)$precio]);
         }
+
+        if ($this->has('ip_fija') && ($this->ip_fija === null || $this->ip_fija === '')) {
+            $this->merge(['ip_fija' => '']);
+        }
     }
 
     public function rules(): array
