@@ -8,6 +8,7 @@ use App\Modules\Clientes\Requests\UpdateClienteRequest;
 use App\Modules\Clientes\Models\Cliente;
 use App\Core\Services\DniService;
 use App\Core\Services\RucService;
+use App\Core\Services\TenantConnectionService;
 use App\Modules\Clientes\Services\ClienteService;
 use App\Core\Traits\RespondsWithJson;
 use App\Core\Traits\NormalizesMacAddress;
@@ -215,8 +216,21 @@ class ClienteController extends Controller
             'router_id' => $request->input('router_id'),
         ]);
 
+        $tenantConn = TenantConnectionService::currentTenantConnectionName();
         $data = $request->validate([
-            'router_id' => ['required', 'exists:routers,id'],
+            'router_id' => [
+                'required',
+                'integer',
+                function (string $attribute, mixed $value, \Closure $fail) use ($tenantConn): void {
+                    if (! $tenantConn) {
+                        $fail(__('validation.exists', ['attribute' => $attribute]));
+                        return;
+                    }
+                    if (! DB::connection($tenantConn)->table('routers')->where('id', (int) $value)->exists()) {
+                        $fail(__('validation.exists', ['attribute' => $attribute]));
+                    }
+                },
+            ],
             'usuarios' => ['nullable', 'array'],
             'usuarios.*' => ['string', 'max:255'],
         ]);
@@ -613,11 +627,36 @@ class ClienteController extends Controller
     {
         $this->authorize('update', $cliente);
 
+        $tenantConn = TenantConnectionService::currentTenantConnectionName();
         $validated = $request->validate([
             'usuario_pppoe' => ['required', 'string', 'max:255'],
             'password' => ['required', 'string', 'max:255'],
-            'router_id' => ['required', 'exists:routers,id'],
-            'plan_id' => ['required', 'exists:planes,id'],
+            'router_id' => [
+                'required',
+                'integer',
+                function (string $attribute, mixed $value, \Closure $fail) use ($tenantConn): void {
+                    if (! $tenantConn) {
+                        $fail(__('validation.exists', ['attribute' => $attribute]));
+                        return;
+                    }
+                    if (! DB::connection($tenantConn)->table('routers')->where('id', (int) $value)->exists()) {
+                        $fail(__('validation.exists', ['attribute' => $attribute]));
+                    }
+                },
+            ],
+            'plan_id' => [
+                'required',
+                'integer',
+                function (string $attribute, mixed $value, \Closure $fail) use ($tenantConn): void {
+                    if (! $tenantConn) {
+                        $fail(__('validation.exists', ['attribute' => $attribute]));
+                        return;
+                    }
+                    if (! DB::connection($tenantConn)->table('planes')->where('id', (int) $value)->exists()) {
+                        $fail(__('validation.exists', ['attribute' => $attribute]));
+                    }
+                },
+            ],
             'network' => ['nullable', 'string', 'max:255'],
             'registrar_servicio' => ['nullable', 'boolean'],
         ]);
