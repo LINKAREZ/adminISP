@@ -4,10 +4,12 @@ namespace App\Modules\Auth\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Core\Models\AuditLog;
+use App\Core\Services\TenantConnectionService;
 use App\Modules\ControlAcceso\Models\User;
 use App\Modules\Auth\Requests\LoginRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
@@ -47,28 +49,37 @@ class AuthenticatedSessionController extends Controller
             ]);
         }
 
-        // Registrar en audit log (con try-catch para no bloquear el login)
-        try {
-            AuditLog::create([
-                'user_id' => Auth::id(),
-                'action' => 'login',
-                'model_type' => User::class,
-                'model_id' => Auth::id(),
-                'ip_address' => $request->ip(),
-                'user_agent' => $request->userAgent(),
-                'metadata' => [
-                    'url' => $request->fullUrl(),
-                    'method' => $request->method(),
-                ],
-            ]);
-        } catch (\Exception $e) {
-            Log::warning('Error al crear audit log en login', [
-                'error' => $e->getMessage(),
-            ]);
+        // Registrar conexión tenant del usuario para que AuditLog pueda escribir (isp_7, etc.)
+        $user = Auth::user();
+        if ($user && isset($user->isp_id) && $user->isp_id) {
+            TenantConnectionService::registerConnectionForIspId((int) $user->isp_id);
+        }
+
+        // Registrar en audit log solo si la conexión tenant está configurada (tabla audit_logs está en tenant)
+        $connName = TenantConnectionService::currentTenantConnectionName();
+        $canLog = $connName && Config::has("database.connections.{$connName}");
+        if ($canLog) {
+            try {
+                AuditLog::create([
+                    'user_id' => Auth::id(),
+                    'action' => 'login',
+                    'model_type' => User::class,
+                    'model_id' => Auth::id(),
+                    'ip_address' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                    'metadata' => [
+                        'url' => $request->fullUrl(),
+                        'method' => $request->method(),
+                    ],
+                ]);
+            } catch (\Exception $e) {
+                Log::warning('Error al crear audit log en login', [
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
 
         // Redirigir: super admin → /superadmin, resto → /dashboard
-        $user = Auth::user();
         if (method_exists($user, 'isSuperAdmin') && $user->isSuperAdmin()) {
             return redirect()->route('superadmin.dashboard');
         }
@@ -79,8 +90,16 @@ class AuthenticatedSessionController extends Controller
     {
         $userId = Auth::id();
 
-        // Registrar en audit log (con try-catch para no bloquear el logout)
-        if ($userId) {
+        // Registrar conexión tenant para que AuditLog pueda escribir
+        $user = Auth::user();
+        if ($user && isset($user->isp_id) && $user->isp_id) {
+            TenantConnectionService::registerConnectionForIspId((int) $user->isp_id);
+        }
+
+        $connName = $userId ? TenantConnectionService::currentTenantConnectionName() : null;
+        $canLog = $connName && Config::has("database.connections.{$connName}");
+
+        if ($userId && $canLog) {
             try {
                 AuditLog::create([
                     'user_id' => $userId,
