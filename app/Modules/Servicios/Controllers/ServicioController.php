@@ -19,6 +19,7 @@ use App\Modules\Red\Services\RouterOSPppoeService;
 use App\Modules\Red\Services\RouterOSScriptService;
 use App\Modules\Red\Services\RouterOSNatService;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 
 class ServicioController extends Controller
 {
@@ -419,7 +420,39 @@ class ServicioController extends Controller
                 $validated['onu_id'] ?? null
             );
 
+            // Extraer datos de ubicación (notas y fotos) para no enviarlos al modelo Servicio
+            $ubicacionNotas = $validated['ubicacion_notas'] ?? null;
+            unset(
+                $validated['ubicacion_notas'],
+                $validated['ubicacion_foto_1'],
+                $validated['ubicacion_foto_2'],
+                $validated['ubicacion_foto_3']
+            );
+
             $servicio->update($validated);
+
+            // Actualizar notas y fotos de la ubicación del servicio
+            $ubicacion = $servicio->ubicacion;
+            if ($ubicacion) {
+                if ($ubicacionNotas !== null) {
+                    $ubicacion->update(['notas' => $ubicacionNotas]);
+                }
+                foreach (
+                    ['ubicacion_foto_1' => 'foto_1', 'ubicacion_foto_2' => 'foto_2', 'ubicacion_foto_3' => 'foto_3']
+                    as $requestKey => $dbKey
+                ) {
+                    if ($request->hasFile($requestKey)) {
+                        if ($ubicacion->$dbKey) {
+                            Storage::disk('public')->delete($ubicacion->$dbKey);
+                        }
+                        $path = $request->file($requestKey)->store(
+                            'ubicaciones-fotos/' . $ubicacion->id,
+                            'public'
+                        );
+                        $ubicacion->update([$dbKey => $path]);
+                    }
+                }
+            }
 
             // Procesar datos de ONU si se proporcionan (usuario, password, etc.)
             $this->procesarDatosOnu($servicio, $request);
@@ -634,6 +667,7 @@ class ServicioController extends Controller
 
         return redirect()
             ->route('clientes.show', $cliente)
+            ->withFragment('content-servicios')
             ->with('success', 'Servicio eliminado correctamente.');
     }
 
@@ -1007,8 +1041,11 @@ class ServicioController extends Controller
             'mac' => ['nullable', 'string', 'max:50'],
             'serial' => ['nullable', 'string', 'max:50'],
             'dni' => ['nullable', 'string', 'max:15'],
-            'router_id' => ['nullable', 'integer', 'exists:routers,id'],
+            'router_id' => ['nullable', 'integer'],
         ]);
+        if ($request->filled('router_id') && ! \App\Modules\Red\Models\Router::where('id', $request->router_id)->exists()) {
+            throw \Illuminate\Validation\ValidationException::withMessages(['router_id' => [__('validation.exists', ['attribute' => 'router'])]]);
+        }
 
         $mac = $request->input('mac');
         $serial = $request->input('serial');
