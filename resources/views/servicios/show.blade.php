@@ -384,6 +384,22 @@
                                                 </div>
                                             </div>
                                         @endif
+                                        @if($servicio->ubicacion->foto_1 || $servicio->ubicacion->foto_2 || $servicio->ubicacion->foto_3)
+                                            <div class="form-group mt-3">
+                                                <label><i class="fas fa-camera mr-1"></i> Fotos de ubicación</label>
+                                                <div class="row">
+                                                    @foreach(['foto_1', 'foto_2', 'foto_3'] as $fKey)
+                                                        @if(!empty($servicio->ubicacion->$fKey))
+                                                            <div class="col-md-4 mb-2">
+                                                                <a href="{{ asset('storage/' . $servicio->ubicacion->$fKey) }}" target="_blank" rel="noopener">
+                                                                    <img src="{{ asset('storage/' . $servicio->ubicacion->$fKey) }}" alt="Foto ubicación" class="img-fluid rounded border" style="max-height: 150px; object-fit: cover;">
+                                                                </a>
+                                                            </div>
+                                                        @endif
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        @endif
                                     @else
                                         <div class="alert alert-info">
                                             <i class="icon fas fa-info"></i> No hay ubicación asociada a este servicio

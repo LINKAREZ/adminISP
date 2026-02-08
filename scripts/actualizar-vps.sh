@@ -6,20 +6,24 @@ set -e
 echo "=== Actualizando Admin ISP en VPS ==="
 cd /root/adminisp
 
-echo "[1/5] Obteniendo último código..."
+echo "[1/6] Obteniendo último código..."
 git fetch origin
 git reset --hard origin/main
 
-echo "[2/5] Limpiando caché de vistas..."
+echo "[2/6] Ajustando permisos (storage, bootstrap/cache)..."
+docker compose exec -T app chown -R www-data:www-data storage bootstrap/cache
+docker compose exec -T app chmod -R 775 storage bootstrap/cache
+
+echo "[3/6] Limpiando caché de vistas..."
 docker compose exec -T app php artisan view:clear
 
-echo "[3/5] Limpiando caché de Laravel..."
+echo "[4/6] Limpiando caché de Laravel..."
 docker compose exec -T app php artisan optimize:clear
 
-echo "[4/5] Regenerando autoload..."
+echo "[5/6] Regenerando autoload..."
 docker compose exec -T app composer dump-autoload --no-interaction
 
-echo "[5/5] Reiniciando contenedor app..."
+echo "[6/6] Reiniciando contenedor app..."
 docker compose restart app
 
 echo ""
