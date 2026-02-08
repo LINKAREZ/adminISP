@@ -388,11 +388,12 @@
                                             <div class="form-group mt-3">
                                                 <label><i class="fas fa-camera mr-1"></i> Fotos de ubicación</label>
                                                 <div class="row">
-                                                    @foreach(['foto_1', 'foto_2', 'foto_3'] as $fKey)
+                                                    @foreach([1 => 'foto_1', 2 => 'foto_2', 3 => 'foto_3'] as $num => $fKey)
                                                         @if(!empty($servicio->ubicacion->$fKey))
+                                                            @php $fotoUrl = route('ubicaciones.foto', ['ubicacion' => $servicio->ubicacion->id, 'num' => $num]); @endphp
                                                             <div class="col-md-4 mb-2">
-                                                                <a href="{{ asset('storage/' . $servicio->ubicacion->$fKey) }}" target="_blank" rel="noopener">
-                                                                    <img src="{{ asset('storage/' . $servicio->ubicacion->$fKey) }}" alt="Foto ubicación" class="img-fluid rounded border" style="max-height: 150px; object-fit: cover;">
+                                                                <a href="{{ $fotoUrl }}" target="_blank" rel="noopener">
+                                                                    <img src="{{ $fotoUrl }}" alt="Foto ubicación" class="img-fluid rounded border" style="max-height: 150px; object-fit: cover;">
                                                                 </a>
                                                             </div>
                                                         @endif

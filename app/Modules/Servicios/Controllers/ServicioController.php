@@ -446,11 +446,12 @@ class ServicioController extends Controller
                 ) {
                     if ($request->hasFile($requestKey)) {
                         if ($ubicacion->$dbKey) {
+                            Storage::disk('local')->delete($ubicacion->$dbKey);
                             Storage::disk('public')->delete($ubicacion->$dbKey);
                         }
                         $path = $request->file($requestKey)->store(
                             'ubicaciones-fotos/' . $ubicacion->id,
-                            'public'
+                            'local'
                         );
                         $ubicacion->update([$dbKey => $path]);
                     }

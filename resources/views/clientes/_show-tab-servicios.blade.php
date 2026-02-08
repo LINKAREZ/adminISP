@@ -176,10 +176,11 @@
                     <div class="col-12 mb-2 mt-1">
                         <div class="small text-muted text-uppercase mb-1" style="font-size: 0.7rem; letter-spacing: 0.05em;"><i class="fas fa-camera mr-1"></i> Fotos de ubicación</div>
                         <div class="d-flex flex-wrap" style="gap: 0.5rem;">
-                            @foreach(['foto_1','foto_2','foto_3'] as $f)
+                            @foreach([1 => 'foto_1', 2 => 'foto_2', 3 => 'foto_3'] as $num => $f)
                                 @if(!empty($u->$f))
-                                    <a href="{{ asset('storage/' . $u->$f) }}" target="_blank" rel="noopener" class="d-inline-block border rounded overflow-hidden" style="width: 56px; height: 56px;">
-                                        <img src="{{ asset('storage/' . $u->$f) }}" alt="Foto ubicación" class="w-100 h-100" style="object-fit: cover;">
+                                    @php $fotoUrl = route('ubicaciones.foto', ['ubicacion' => $u->id, 'num' => $num]); @endphp
+                                    <a href="{{ $fotoUrl }}" target="_blank" rel="noopener" class="d-inline-block border rounded overflow-hidden" style="width: 56px; height: 56px;">
+                                        <img src="{{ $fotoUrl }}" alt="Foto ubicación" class="w-100 h-100" style="object-fit: cover;">
                                     </a>
                                 @endif
                             @endforeach

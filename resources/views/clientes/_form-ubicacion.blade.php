@@ -109,7 +109,7 @@
                 <div class="col-md-4 mb-2">
                     <div class="border rounded p-2 text-center" style="min-height: 100px; background: #f8f9fa;">
                         @if($ubicacion && !empty($ubicacion->$name))
-                            <img src="{{ asset('storage/' . $ubicacion->$name) }}" alt="Foto {{ $num }}" class="img-fluid rounded mb-1" style="max-height: 80px; object-fit: cover;">
+                            <img src="{{ route('ubicaciones.foto', ['ubicacion' => $ubicacion->id, 'num' => $num]) }}" alt="Foto {{ $num }}" class="img-fluid rounded mb-1" style="max-height: 80px; object-fit: cover;">
                             <small class="d-block text-muted">Reemplazar:</small>
                         @endif
                         <input type="file" name="{{ $name }}" accept="image/jpeg,image/png,image/webp" class="form-control form-control-sm">

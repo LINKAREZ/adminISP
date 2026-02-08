@@ -84,7 +84,7 @@ class UbicacionController extends Controller
             $ubicacion = Ubicacion::create($validated);
 
             foreach ($files as $key => $file) {
-                $path = $file->store('ubicaciones-fotos/' . $ubicacion->id, 'public');
+                $path = $file->store('ubicaciones-fotos/' . $ubicacion->id, 'local');
                 $ubicacion->update([$key => $path]);
             }
 
@@ -127,9 +127,10 @@ class UbicacionController extends Controller
             foreach (['foto_1', 'foto_2', 'foto_3'] as $key) {
                 if ($request->hasFile($key)) {
                     if ($ubicacion->$key) {
+                        Storage::disk('local')->delete($ubicacion->$key);
                         Storage::disk('public')->delete($ubicacion->$key);
                     }
-                    $path = $request->file($key)->store('ubicaciones-fotos/' . $ubicacion->id, 'public');
+                    $path = $request->file($key)->store('ubicaciones-fotos/' . $ubicacion->id, 'local');
                     $updates[$key] = $path;
                 }
                 unset($validated[$key]);
@@ -180,5 +181,33 @@ class UbicacionController extends Controller
             ->route('clientes.show', $cliente)
             ->with('success', 'Ubicación eliminada correctamente.')
             ->with('active_tab', 'servicios');
+    }
+
+    /**
+     * Servir una foto de ubicación (protegida por autenticación).
+     * Solo usuarios autenticados del mismo ISP pueden ver las fotos.
+     */
+    public function showFoto(Ubicacion $ubicacion, int $num)
+    {
+        if ($num < 1 || $num > 3) {
+            abort(404);
+        }
+        $key = 'foto_' . $num;
+        $path = $ubicacion->$key;
+        if (empty($path)) {
+            abort(404);
+        }
+        $user = auth()->user();
+        if ($user->isp_id && $ubicacion->isp_id && (int) $user->isp_id !== (int) $ubicacion->isp_id) {
+            abort(403);
+        }
+        $disk = Storage::disk('local')->exists($path) ? 'local' : (Storage::disk('public')->exists($path) ? 'public' : null);
+        if (! $disk) {
+            abort(404);
+        }
+        $mime = Storage::disk($disk)->mimeType($path) ?: 'image/jpeg';
+        return response()->file(Storage::disk($disk)->path($path), [
+            'Content-Type' => $mime,
+        ]);
     }
 }

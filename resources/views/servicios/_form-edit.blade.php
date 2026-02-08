@@ -370,7 +370,7 @@
                                                         $fotoPath = $servicio->ubicacion?->$fKey ?? null;
                                                     @endphp
                                                     @if(!empty($fotoPath))
-                                                        <img src="{{ asset('storage/' . $fotoPath) }}" alt="Foto {{ $num }}" class="img-fluid rounded mb-1" style="max-height: 80px; object-fit: cover;">
+                                                        <img src="{{ route('ubicaciones.foto', ['ubicacion' => $servicio->ubicacion->id, 'num' => $num]) }}" alt="Foto {{ $num }}" class="img-fluid rounded mb-1" style="max-height: 80px; object-fit: cover;">
                                                         <small class="d-block text-muted">Reemplazar:</small>
                                                     @endif
                                                     <input type="file" name="{{ $name }}" accept="image/jpeg,image/png,image/webp" class="form-control form-control-sm" @if(!$servicio->ubicacion_id || !$servicio->ubicacion) disabled @endif>

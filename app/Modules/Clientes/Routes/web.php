@@ -4,6 +4,13 @@ use App\Modules\Clientes\Controllers\ClienteController;
 use App\Modules\Clientes\Controllers\UbicacionController;
 use Illuminate\Support\Facades\Route;
 
+// Fotos de ubicación (protegidas por auth; evita acceso público a /storage/...)
+Route::middleware(['web', 'auth'])->group(function () {
+    Route::get('ubicaciones/{ubicacion}/foto/{num}', [UbicacionController::class, 'showFoto'])
+        ->name('ubicaciones.foto')
+        ->where('num', '[123]');
+});
+
 // IMPORTANTE: Estas rutas deben ir ANTES del resource para evitar conflictos de route model binding
 Route::middleware(['web', 'auth'])->group(function () {
     Route::get('clientes/consultas/dni', [ClienteController::class, 'consultarDni'])->name('clientes.consultar-dni');
