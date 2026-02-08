@@ -32,14 +32,16 @@ git push 2>nul || (
 :vps
 echo.
 echo ========================================
-echo EN LA VPS ejecuta (por SSH):
+echo EN LA VPS ejecuta (por SSH) - actualización 100%:
 echo ========================================
 echo   ssh root@161.132.4.102
 echo   cd /root/adminisp
 echo   git pull
 echo   bash scripts/actualizar-vps.sh
 echo.
-echo O en una sola línea después de conectarte:
+echo Una sola línea (después de conectarte por SSH):
 echo   cd /root/adminisp && git pull && bash scripts/actualizar-vps.sh
+echo.
+echo El script limpia caché, recompila vistas y reinicia la app.
 echo ========================================
 pause
