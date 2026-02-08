@@ -529,7 +529,10 @@
             if (isNaN(lat) || isNaN(lng)) return;
             if (el._leafletMap) { el._leafletMap.invalidateSize(); return; }
             var map = L.map('mapa-ubicacion-servicio-show').setView([lat, lng], 16);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' }).addTo(map);
+            var calle = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' });
+            var satelite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: '&copy; Esri' });
+            calle.addTo(map);
+            L.control.layers({ 'Calle': calle, 'Satélite': satelite }, null, { collapsed: true }).addTo(map);
             L.marker([lat, lng]).addTo(map);
             el._leafletMap = map;
         }

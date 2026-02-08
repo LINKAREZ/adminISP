@@ -21,7 +21,10 @@
             var lat = parseFloat(latInput && latInput.value) || -12.046374;
             var lng = parseFloat(lngInput && lngInput.value) || -77.042793;
             var map = L.map(mapId).setView([lat, lng], 15);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' }).addTo(map);
+            var calle = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' });
+            var satelite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: '&copy; Esri' });
+            calle.addTo(map);
+            L.control.layers({ 'Calle': calle, 'Satélite': satelite }, null, { collapsed: true }).addTo(map);
             var marker = L.marker([lat, lng]).addTo(map);
             map.on('click', function(e) {
                 marker.setLatLng(e.latlng);
