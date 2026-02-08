@@ -2,6 +2,7 @@
 
 namespace App\Modules\Comprobantes\Requests;
 
+use App\Modules\Clientes\Models\Cliente;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreComprobanteRequest extends FormRequest
@@ -15,7 +16,14 @@ class StoreComprobanteRequest extends FormRequest
     {
         return [
             'tipo' => 'required|in:boleta,factura,recibo',
-            'cliente_id' => 'required|exists:clientes,id',
+            'cliente_id' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    if ($value && ! Cliente::where('id', $value)->exists()) {
+                        $fail(__('validation.exists', ['attribute' => 'cliente']));
+                    }
+                },
+            ],
             'fecha_emision' => 'required|date',
             'monto' => 'required|numeric|min:0.01',
             'descripcion' => 'required|string|max:500',

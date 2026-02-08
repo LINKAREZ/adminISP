@@ -35,34 +35,16 @@
 
         @if($showDelete)
             @if(empty($deletePermission))
-                @if($deleteFormId)
-                    <a href="#" class="dropdown-item text-danger" title="Eliminar" onclick="event.preventDefault(); if(confirm(@json($confirmMessage))) document.getElementById(@json($deleteFormId)).submit();">
-                        <i class="fas fa-trash mr-2"></i> Eliminar
-                    </a>
-                @else
-                    <form action="{{ $routeDelete }}" method="POST" class="actions-menu-delete-form">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="dropdown-item text-danger" onclick="return confirm(@json($confirmMessage))" title="Eliminar">
-                            <i class="fas fa-trash mr-2"></i> Eliminar
-                        </button>
-                    </form>
-                @endif
+                <a href="#" class="dropdown-item text-danger" title="Eliminar" role="button"
+                   onclick='event.preventDefault(); if(!confirm({{ json_encode($confirmMessage) }})) return false; var f=document.createElement("form"); f.method="POST"; f.action={{ json_encode($routeDelete) }}; var t=document.createElement("input"); t.name="_token"; t.value=document.querySelector("meta[name=csrf-token]")?.getAttribute("content")||""; f.appendChild(t); var m=document.createElement("input"); m.name="_method"; m.value="DELETE"; f.appendChild(m); document.body.appendChild(f); f.submit();'>
+                    <i class="fas fa-trash mr-2"></i> Eliminar
+                </a>
             @else
                 @hasPermission($deletePermission)
-                    @if($deleteFormId)
-                        <a href="#" class="dropdown-item text-danger" title="Eliminar" onclick="event.preventDefault(); if(confirm(@json($confirmMessage))) document.getElementById(@json($deleteFormId)).submit();">
-                            <i class="fas fa-trash mr-2"></i> Eliminar
-                        </a>
-                    @else
-                        <form action="{{ $routeDelete }}" method="POST" class="actions-menu-delete-form">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="dropdown-item text-danger" onclick="return confirm(@json($confirmMessage))" title="Eliminar">
-                                <i class="fas fa-trash mr-2"></i> Eliminar
-                            </button>
-                        </form>
-                    @endif
+                    <a href="#" class="dropdown-item text-danger" title="Eliminar" role="button"
+                       onclick='event.preventDefault(); if(!confirm({{ json_encode($confirmMessage) }})) return false; var f=document.createElement("form"); f.method="POST"; f.action={{ json_encode($routeDelete) }}; var t=document.createElement("input"); t.name="_token"; t.value=document.querySelector("meta[name=csrf-token]")?.getAttribute("content")||""; f.appendChild(t); var m=document.createElement("input"); m.name="_method"; m.value="DELETE"; f.appendChild(m); document.body.appendChild(f); f.submit();'>
+                        <i class="fas fa-trash mr-2"></i> Eliminar
+                    </a>
                 @endhasPermission
             @endif
         @endif

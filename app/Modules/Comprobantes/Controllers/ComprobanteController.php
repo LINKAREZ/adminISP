@@ -36,11 +36,14 @@ class ComprobanteController extends Controller
         $request->validate([
             'tipo' => ['sometimes', 'string', 'max:20'],
             'serie' => ['sometimes', 'string', 'max:10'],
-            'cliente_id' => ['sometimes', 'integer', 'exists:clientes,id'],
+            'cliente_id' => ['sometimes', 'integer'],
             'numero_completo' => ['sometimes', 'string', 'max:30'],
             'fecha_desde' => ['sometimes', 'date'],
             'fecha_hasta' => ['sometimes', 'date'],
         ]);
+        if ($request->filled('cliente_id') && ! Cliente::where('id', $request->cliente_id)->exists()) {
+            throw \Illuminate\Validation\ValidationException::withMessages(['cliente_id' => [__('validation.exists', ['attribute' => 'cliente'])]]);
+        }
 
         // Cargar comprobantes con relaciones (incluyendo recibos sin pago)
         $query = Comprobante::with(['pago.cliente', 'cliente', 'generadoPor']);

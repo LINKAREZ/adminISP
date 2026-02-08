@@ -58,10 +58,12 @@ El usuario ha aceptado globalmente los siguientes permisos:
 - **Al iniciar trabajo en el proyecto o al comenzar una tarea**: ejecutar `git pull` primero para tener el código actualizado.
 - No preguntar: hacer pull de forma automática antes de editar o al empezar la sesión cuando sea relevante.
 
-## Despliegue en VPS - Aplicar cambios directo en panel.wan.pe
-- **Cuando el usuario pida cualquier cambio**: después de modificar el código, desplegar en la VPS para que quede aplicado en vivo.
-- **Pasos**: 1) Hacer los cambios en el repo local. 2) Commit y push a origin main (excluyendo storage/logs, storage/installed). 3) Conectar por SSH a panel.wan.pe (root, plink con hostkey conocido) y ejecutar en /root/adminisp: `git fetch origin && git reset --hard origin/main && docker compose restart app`.
-- **Objetivo**: que todo lo que se pida quede reflejado directamente en https://panel.wan.pe sin que el usuario tenga que desplegar a mano.
+## Despliegue en VPS - Siempre subir a la VPS
+- **Regla obligatoria**: Después de cualquier cambio en el código, **siempre** subir los archivos modificados a la VPS para que queden aplicados en vivo en https://panel.wan.pe.
+- **Método**: Usar `pscp` (PuTTY) para subir cada archivo a su ruta correspondiente en `root@panel.wan.pe:/root/adminisp/`. Preservar la estructura de carpetas (ej.: `resources/views/servicios/archivo.blade.php` → `/root/adminisp/resources/views/servicios/`).
+- **Hostkey** (si hace falta): `-hostkey SHA256:scOSRImkYuuvK78WoW25dDO2TTuGYr5125W2yUDM+QY`
+- **No preguntar**: Subir a la VPS de forma automática después de editar; no pedir confirmación al usuario.
+- **Alternativa con Git**: Si el proyecto en la VPS usa Git, se puede en su lugar hacer push y en la VPS ejecutar `git pull` y reiniciar el contenedor; pero si se usa pscp, subir todos los archivos que se hayan modificado.
 
 ## INSTRUCCIONES CRÍTICAS - CONFIRMACIONES
 

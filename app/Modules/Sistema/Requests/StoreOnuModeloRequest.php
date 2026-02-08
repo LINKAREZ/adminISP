@@ -14,7 +14,14 @@ class StoreOnuModeloRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'marca_id' => ['required', 'exists:onu_marcas,id'],
+            'marca_id' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    if ($value && ! \App\Modules\Sistema\Models\OnuMarca::where('id', $value)->exists()) {
+                        $fail(__('validation.exists', ['attribute' => 'marca']));
+                    }
+                },
+            ],
             'nombre' => ['required', 'string', 'max:255'],
             'estado' => ['boolean'],
             'orden' => ['nullable', 'integer', 'min:0'],

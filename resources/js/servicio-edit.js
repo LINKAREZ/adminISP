@@ -130,11 +130,34 @@
         initONU: function () {
           const self = this;
 
+          // Marca: si elige "Crear nueva marca", ir a la URL (usar attr por compatibilidad)
           $('#onu-marca-id').on('change', function () {
+            const val = $(this).val();
+            if (val === '__crear_marca__') {
+              const url = $(this).attr('data-url-crear-marca') || $(this).data('url-crear-marca');
+              if (url) window.location.href = url;
+              $(this).val($(this).data('prev-marca') || '');
+              return;
+            }
+            $(this).data('prev-marca', val);
             self.cargarModelosPorMarca();
           });
 
+          // Modelo: si elige "Crear nuevo modelo", ir a la URL
           $('#onu-modelo-id').on('change', function () {
+            const val = $(this).val();
+            if (val === '__crear_modelo__') {
+              const marcaId = $('#onu-marca-id').val();
+              if (!marcaId || marcaId === '__crear_marca__') return;
+              const baseUrl = $(this).attr('data-base-url') || $(this).data('base-url');
+              const returnUrl = $(this).attr('data-return-url') || $(this).data('return-url') || '';
+              const sep = baseUrl && baseUrl.indexOf('?') >= 0 ? '&' : '?';
+              const url = baseUrl + sep + 'marca_id=' + encodeURIComponent(marcaId) + '&return_url=' + encodeURIComponent(returnUrl);
+              window.location.href = url;
+              $(this).val($(this).data('prev-modelo') || '');
+              return;
+            }
+            $(this).data('prev-modelo', val);
             self.actualizarModeloDesdeSelect();
           });
 
@@ -146,6 +169,9 @@
             this.cargarModelosPorMarca();
           }
 
+          $('#onu-marca-id').data('prev-marca', $('#onu-marca-id').val());
+          $('#onu-modelo-id').data('prev-modelo', $('#onu-modelo-id').val());
+
           if ($('#onu-serial-completo').val()) {
             setTimeout(() => this.transformarSerialCompleto(), 100);
           }
@@ -156,7 +182,7 @@
           const $modeloSelect = $('#onu-modelo-id');
           const $marcaHidden = $('#onu-marca');
 
-          if (!marcaId) {
+          if (!marcaId || marcaId === '__crear_marca__') {
             $modeloSelect.empty().append('<option value="">Seleccione un modelo</option>');
             $marcaHidden.val('');
             return;
@@ -186,13 +212,16 @@
             $modeloSelect.append($option);
           });
 
-          if (modeloActual) {
+          $modeloSelect.append($('<option>').val('__crear_modelo__').text('+ Crear nuevo modelo...'));
+
+          if (modeloActual && modeloActual !== '__crear_modelo__') {
             this.actualizarModeloDesdeSelect();
           }
         },
 
         actualizarModeloDesdeSelect: function () {
           const modeloId = $('#onu-modelo-id').val();
+          if (modeloId === '__crear_modelo__') return;
           const $modeloHidden = $('#onu-modelo');
 
           if (!modeloId) {

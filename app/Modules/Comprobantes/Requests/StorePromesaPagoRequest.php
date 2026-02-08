@@ -47,7 +47,12 @@ class StorePromesaPagoRequest extends FormRequest
         return [
             'recibo_id' => [
                 'required',
-                'exists:recibos,id',
+                function ($attribute, $value, $fail) {
+                    if ($value && ! \App\Modules\Comprobantes\Models\Recibo::where('id', $value)->exists()) {
+                        $fail(__('validation.exists', ['attribute' => 'recibo']));
+                        return;
+                    }
+                },
                 function ($attribute, $value, $fail) {
                     // Verificar que no exista una promesa de pago activa para este recibo
                     $promesaActiva = PromesaPago::where('recibo_id', $value)

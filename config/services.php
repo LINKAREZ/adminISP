@@ -17,18 +17,18 @@ return [
     'dni' => [
         'apisperu' => [
             'api_key' => env('APISPERU_API_KEY', ''),
-            'url' => env('APISPERU_API_URL', 'https://dniruc.apisperu.com/api/v1/dni'),
+            'url' => env('APISPERU_DNI_URL', rtrim(env('APISPERU_API_URL', 'https://dniruc.apisperu.com/api/v1'), '/') . '/dni'),
             'timeout' => env('APISPERU_TIMEOUT', 15),
-            'use_query_token' => env('APISPERU_USE_QUERY_TOKEN', false),
+            'use_query_token' => env('APISPERU_USE_QUERY_TOKEN', true),
         ],
     ],
 
     'ruc' => [
         'apisperu' => [
             'api_key' => env('APISPERU_API_KEY', ''),
-            'url' => env('APISPERU_API_URL', 'https://dniruc.apisperu.com/api/v1/ruc'),
+            'url' => env('APISPERU_RUC_URL', rtrim(env('APISPERU_API_URL', 'https://dniruc.apisperu.com/api/v1'), '/') . '/ruc'),
             'timeout' => env('APISPERU_TIMEOUT', 15),
-            'use_query_token' => env('APISPERU_USE_QUERY_TOKEN', false),
+            'use_query_token' => env('APISPERU_USE_QUERY_TOKEN', true),
         ],
     ],
 

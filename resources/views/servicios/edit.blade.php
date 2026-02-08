@@ -71,6 +71,85 @@
                 }, 200);
             }, { once: true });
         }
+
+        // Crear marca/modelo: redirección y cargar modelos al cambiar marca (JS puro)
+        (function() {
+            function runCuandoListo() {
+                var selMarca = document.getElementById('onu-marca-id');
+                var selModelo = document.getElementById('onu-modelo-id');
+                if (!selMarca || !selModelo) return;
+                var data = window.servicioEditData;
+                if (!data || !data.todosModelos) return;
+
+                function cargarModelosPorMarca() {
+                    var marcaId = selMarca.value;
+                    if (!marcaId || marcaId === '__crear_marca__') {
+                        selModelo.innerHTML = '<option value="">Seleccione un modelo</option>';
+                        return;
+                    }
+                    var modelos = data.todosModelos.filter(function(m) { return m.marca_id == marcaId && m.estado; });
+                    var modeloActual = selModelo.value;
+                    selModelo.innerHTML = '<option value="">Seleccione un modelo</option>';
+                    modelos.forEach(function(m) {
+                        var opt = document.createElement('option');
+                        opt.value = m.id;
+                        opt.textContent = m.nombre;
+                        opt.setAttribute('data-modelo-nombre', m.nombre);
+                        opt.setAttribute('data-requiere-transformacion', m.requiere_transformacion ? '1' : '0');
+                        if (String(m.id) === String(modeloActual)) opt.selected = true;
+                        selModelo.appendChild(opt);
+                    });
+                    var optCrear = document.createElement('option');
+                    optCrear.value = '__crear_modelo__';
+                    optCrear.textContent = '+ Crear nuevo modelo...';
+                    selModelo.appendChild(optCrear);
+                }
+                function asegurarOpcionCrearModelo() {
+                    if (!selMarca.value || selMarca.value === '__crear_marca__') return;
+                    if (!selModelo.querySelector('option[value="__crear_modelo__"]')) {
+                        var o = document.createElement('option');
+                        o.value = '__crear_modelo__';
+                        o.textContent = '+ Crear nuevo modelo...';
+                        selModelo.appendChild(o);
+                    }
+                }
+
+                selMarca.addEventListener('change', function() {
+                    if (this.value === '__crear_marca__') {
+                        var url = this.getAttribute('data-url-crear-marca');
+                        if (url) window.location.href = url;
+                        this.value = this.dataset.prevMarca || '';
+                        return;
+                    }
+                    this.dataset.prevMarca = this.value;
+                    setTimeout(function() { cargarModelosPorMarca(); setTimeout(asegurarOpcionCrearModelo, 80); }, 120);
+                });
+                selMarca.dataset.prevMarca = selMarca.value || '';
+
+                selModelo.addEventListener('change', function() {
+                    if (this.value === '__crear_modelo__') {
+                        var marcaId = selMarca.value;
+                        if (!marcaId || marcaId === '__crear_marca__') return;
+                        var baseUrl = this.getAttribute('data-base-url') || '';
+                        var returnUrl = this.getAttribute('data-return-url') || '';
+                        var sep = baseUrl.indexOf('?') >= 0 ? '&' : '?';
+                        var url = baseUrl + sep + 'marca_id=' + encodeURIComponent(marcaId) + '&return_url=' + encodeURIComponent(returnUrl);
+                        window.location.href = url;
+                        this.value = this.dataset.prevModelo || '';
+                    }
+                });
+                selModelo.dataset.prevModelo = selModelo.value || '';
+
+                if (selMarca.value && selMarca.value !== '__crear_marca__') {
+                    setTimeout(function() { cargarModelosPorMarca(); setTimeout(asegurarOpcionCrearModelo, 100); }, 150);
+                }
+            }
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', runCuandoListo);
+            } else {
+                runCuandoListo();
+            }
+        })();
     </script>
 @endpush
 
@@ -106,11 +185,18 @@
                 },
 
                 initTabs: function() {
+                    const self = this;
                     // Bootstrap tabs nativo
                     $('#servicioTabs a').on('click', function(e) {
                         e.preventDefault();
                         $(this).tab('show');
+                        // Al mostrar pestaña Equipo no hace falta acción extra (opciones ya en el select)
                     });
+                    // Si se llegó con hash de pestaña Equipo (ej. desde "Configurar credenciales"), activar esa pestaña
+                    var hash = window.location.hash;
+                    if (hash === '#content-tab-equipo' || hash === '#acceso-equipo') {
+                        $('#tab-equipo').tab('show');
+                    }
                 },
 
                 initModoPppoe: function() {
@@ -132,13 +218,33 @@
                 initONU: function() {
                     const self = this;
 
-                    // Cargar modelos cuando cambia la marca
+                    // Marca: si elige "Crear nueva marca", ir a la URL y restaurar selección
                     $('#onu-marca-id').on('change', function() {
+                        var val = $(this).val();
+                        if (val === '__crear_marca__') {
+                            var url = $(this).data('url-crear-marca');
+                            if (url) window.location = url;
+                            $(this).val($(this).data('prev-marca') || '');
+                            return;
+                        }
+                        $(this).data('prev-marca', val);
                         self.cargarModelosPorMarca();
                     });
 
-                    // Actualizar modelo cuando cambia el select
+                    // Modelo: si elige "Crear nuevo modelo", ir a la URL y restaurar selección
                     $('#onu-modelo-id').on('change', function() {
+                        var val = $(this).val();
+                        if (val === '__crear_modelo__') {
+                            var marcaId = $('#onu-marca-id').val();
+                            if (!marcaId || marcaId === '__crear_marca__') return;
+                            var baseUrl = $(this).data('base-url');
+                            var returnUrl = $(this).data('return-url');
+                            var url = baseUrl + (baseUrl.indexOf('?') >= 0 ? '&' : '?') + 'marca_id=' + encodeURIComponent(marcaId) + '&return_url=' + encodeURIComponent(returnUrl || '');
+                            window.location = url;
+                            $(this).val($(this).data('prev-modelo') || '');
+                            return;
+                        }
+                        $(this).data('prev-modelo', val);
                         self.actualizarModeloDesdeSelect();
                     });
 
@@ -151,6 +257,10 @@
                     if ($('#onu-marca-id').val()) {
                         this.cargarModelosPorMarca();
                     }
+
+                    // Guardar selección actual de marca/modelo para restaurar al elegir "Crear..."
+                    $('#onu-marca-id').data('prev-marca', $('#onu-marca-id').val());
+                    $('#onu-modelo-id').data('prev-modelo', $('#onu-modelo-id').val());
 
                     // Transformar serial inicial si existe
                     if ($('#onu-serial-completo').val()) {
@@ -198,14 +308,18 @@
                         $modeloSelect.append($option);
                     });
 
-                    // Actualizar modelo si estaba seleccionado
-                    if (modeloActual) {
+                    // Opción "Crear nuevo modelo" al final del listado (solo cuando hay marca seleccionada)
+                    $modeloSelect.append($('<option>').val('__crear_modelo__').text('+ Crear nuevo modelo...'));
+
+                    // Actualizar modelo si estaba seleccionado (y no es la opción crear)
+                    if (modeloActual && modeloActual !== '__crear_modelo__') {
                         this.actualizarModeloDesdeSelect();
                     }
                 },
 
                 actualizarModeloDesdeSelect: function() {
                     const modeloId = $('#onu-modelo-id').val();
+                    if (modeloId === '__crear_modelo__') return;
                     const $modeloHidden = $('#onu-modelo');
 
                     if (!modeloId) {

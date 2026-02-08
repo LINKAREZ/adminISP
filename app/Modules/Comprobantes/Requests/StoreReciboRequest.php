@@ -28,7 +28,14 @@ class StoreReciboRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'servicio_id' => ['nullable', 'exists:servicios,id'],
+            'servicio_id' => [
+                'nullable',
+                function ($attribute, $value, $fail) {
+                    if ($value && ! \App\Modules\Servicios\Models\Servicio::where('id', $value)->exists()) {
+                        $fail(__('validation.exists', ['attribute' => 'servicio']));
+                    }
+                },
+            ],
             'periodo' => ['required', 'date_format:Y-m'],
             'fecha_emision' => ['required', 'date'],
             'fecha_vencimiento' => ['required', 'date', 'after_or_equal:fecha_emision'],

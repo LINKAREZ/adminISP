@@ -7,6 +7,7 @@ use App\Modules\Sistema\Requests\StoreOnuModeloRequest;
 use App\Modules\Sistema\Requests\UpdateOnuModeloRequest;
 use App\Modules\Servicios\Models\OnuModelo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 
 class OnuModeloController extends Controller
 {
@@ -45,24 +46,41 @@ class OnuModeloController extends Controller
         return view('sistema.modelos-onu.index', compact('modelos', 'marcas'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $marcas = \App\Modules\Sistema\Models\OnuMarca::where('estado', true)
             ->orderBy('orden')
             ->orderBy('nombre')
             ->get();
 
-        return view('sistema.modelos-onu.create', compact('marcas'));
+        $marcaIdPreseleccionada = $request->input('marca_id');
+
+        return view('sistema.modelos-onu.create', compact('marcas', 'marcaIdPreseleccionada'));
     }
 
     public function store(StoreOnuModeloRequest $request)
     {
         $data = $request->validated();
+        unset($data['return_url']);
         $data['estado'] = $data['estado'] ?? true;
-        $data['orden'] = $data['orden'] ?? 0;
         $data['requiere_transformacion'] = $data['requiere_transformacion'] ?? false;
 
-        \App\Modules\Servicios\Models\OnuModelo::create($data);
+        $conn = OnuModelo::query()->getConnection()->getName();
+        if (Schema::connection($conn)->hasColumn('onu_modelos', 'orden')) {
+            $data['orden'] = $data['orden'] ?? 0;
+        } else {
+            unset($data['orden']);
+        }
+        if (!Schema::connection($conn)->hasColumn('onu_modelos', 'requiere_transformacion')) {
+            unset($data['requiere_transformacion']);
+        }
+
+        OnuModelo::create($data);
+
+        $returnUrl = $request->input('return_url');
+        if ($returnUrl && \Illuminate\Support\Facades\URL::isValidUrl($returnUrl)) {
+            return redirect()->to($returnUrl)->with('success', 'Modelo ONU creado correctamente.');
+        }
 
         return redirect()
             ->route('sistema.equipo.modelos.index')
@@ -87,7 +105,15 @@ class OnuModeloController extends Controller
 
     public function update(UpdateOnuModeloRequest $request, OnuModelo $modelo)
     {
-        $modelo->update($request->validated());
+        $data = $request->validated();
+        $conn = $modelo->getConnectionName();
+        if ($conn && !Schema::connection($conn)->hasColumn('onu_modelos', 'orden')) {
+            unset($data['orden']);
+        }
+        if ($conn && !Schema::connection($conn)->hasColumn('onu_modelos', 'requiere_transformacion')) {
+            unset($data['requiere_transformacion']);
+        }
+        $modelo->update($data);
 
         // Redirigir según la ruta de origen
         $redirectRoute = request()->is('sistema/equipo/modelos*')

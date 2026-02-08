@@ -32,8 +32,14 @@ class OnuMarcaController extends Controller
     public function store(StoreOnuMarcaRequest $request)
     {
         $validated = $request->validated();
+        unset($validated['return_url']);
 
         OnuMarca::create($validated);
+
+        $returnUrl = $request->input('return_url');
+        if ($returnUrl && \Illuminate\Support\Facades\URL::isValidUrl($returnUrl)) {
+            return redirect()->to($returnUrl)->with('success', 'Marca creada correctamente.');
+        }
 
         return redirect()
             ->route('sistema.equipo.marcas.index')

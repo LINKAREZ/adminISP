@@ -110,6 +110,52 @@
                     </div>
                 </div>
 
+                {{-- Acceso rápido: usuario y contraseña de ingreso al equipo (ONU), no PPPoE --}}
+                @if($servicio->onu)
+                <div class="alert alert-light border mb-3 py-2 px-3" style="background: #f8f9fa;">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap mb-2" style="gap: 0.5rem;">
+                        <div class="small text-muted text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em;">
+                            <i class="fas fa-key mr-1"></i>Acceso rápido (ingreso al equipo)
+                        </div>
+                        @if(empty($servicio->onu->usuario) && empty($servicio->onu->password))
+                        <a href="{{ route('clientes.servicios.edit', ['cliente' => $cliente, 'servicio' => $servicio]) }}#content-tab-equipo" class="btn btn-sm btn-outline-primary py-0">
+                            <i class="fas fa-edit mr-1"></i>Configurar credenciales
+                        </a>
+                        @endif
+                    </div>
+                    <div class="d-flex flex-wrap align-items-center" style="gap: 1rem 1.5rem;">
+                        <div class="d-flex align-items-center" style="gap: 0.35rem;">
+                            <span class="text-muted small">Usuario:</span>
+                            <code class="px-2 py-1 bg-white border rounded" style="font-size: 0.9rem;">{{ $servicio->onu->usuario ?: '—' }}</code>
+                            @if($servicio->onu->usuario)
+                            <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1 btn-copy-servicio" title="Copiar" data-copy="{{ e($servicio->onu->usuario) }}">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            @endif
+                        </div>
+                        <div class="d-flex align-items-center" style="gap: 0.35rem;">
+                            <span class="text-muted small">Contraseña:</span>
+                            <code class="px-2 py-1 bg-white border rounded" style="font-size: 0.9rem;">{{ $servicio->onu->password ?: '—' }}</code>
+                            @if($servicio->onu->password)
+                            <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1 btn-copy-servicio" title="Copiar" data-copy="{{ e($servicio->onu->password) }}">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            @endif
+                        </div>
+                        @php $onuSerial = $servicio->onu->serial_number_completo ?? $servicio->onu->serial_number_olt ?? $servicio->onu->serial_number ?? ''; @endphp
+                        @if($onuSerial)
+                        <div class="d-flex align-items-center" style="gap: 0.35rem;">
+                            <span class="text-muted small">ONU:</span>
+                            <code class="px-2 py-1 bg-white border rounded" style="font-size: 0.9rem;">{{ $onuSerial }}</code>
+                            <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1 btn-copy-servicio" title="Copiar" data-copy="{{ e($onuSerial) }}">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+                @endif
+
                 {{-- Info del servicio --}}
                 <div class="row">
                     <div class="col-6 col-md-3 mb-2">
@@ -122,6 +168,24 @@
                             {{ $servicio->ubicacion->direccion ?? '—' }}
                         </div>
                     </div>
+                    @php
+                        $u = $servicio->ubicacion ?? null;
+                        $tieneFotos = $u && ($u->foto_1 || $u->foto_2 || $u->foto_3);
+                    @endphp
+                    @if($tieneFotos)
+                    <div class="col-12 mb-2 mt-1">
+                        <div class="small text-muted text-uppercase mb-1" style="font-size: 0.7rem; letter-spacing: 0.05em;"><i class="fas fa-camera mr-1"></i> Fotos de ubicación</div>
+                        <div class="d-flex flex-wrap" style="gap: 0.5rem;">
+                            @foreach(['foto_1','foto_2','foto_3'] as $f)
+                                @if(!empty($u->$f))
+                                    <a href="{{ asset('storage/' . $u->$f) }}" target="_blank" rel="noopener" class="d-inline-block border rounded overflow-hidden" style="width: 56px; height: 56px;">
+                                        <img src="{{ asset('storage/' . $u->$f) }}" alt="Foto ubicación" class="w-100 h-100" style="object-fit: cover;">
+                                    </a>
+                                @endif
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
                     <div class="col-6 col-md-3 mb-2">
                         <div class="small text-muted text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em;">Instalación</div>
                         <div>{{ formato_fecha($servicio->fecha_instalacion) }}</div>
@@ -195,4 +259,28 @@
         </div>
     @endforelse
 </div>
+
+@push('scripts')
+<script>
+(function() {
+    document.querySelectorAll('.btn-copy-servicio').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var text = this.getAttribute('data-copy') || '';
+            if (text && navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(function() {
+                    var icon = btn.querySelector('i');
+                    var html = btn.innerHTML;
+                    btn.innerHTML = '✓';
+                    btn.classList.add('text-success');
+                    setTimeout(function() {
+                        btn.innerHTML = html;
+                        btn.classList.remove('text-success');
+                    }, 1500);
+                });
+            }
+        });
+    });
+})();
+</script>
+@endpush
 

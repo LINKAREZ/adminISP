@@ -9,6 +9,7 @@ use App\Modules\Clientes\Models\Ubicacion;
 use App\Modules\Clientes\Models\Cliente;
 use App\Modules\Red\Models\Router;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class UbicacionController extends Controller
 {
@@ -72,7 +73,20 @@ class UbicacionController extends Controller
             $validated = $request->validated();
             $validated['cliente_id'] = $cliente->id;
 
-            Ubicacion::create($validated);
+            $files = [];
+            foreach (['foto_1', 'foto_2', 'foto_3'] as $key) {
+                if ($request->hasFile($key)) {
+                    $files[$key] = $request->file($key);
+                }
+                unset($validated[$key]);
+            }
+
+            $ubicacion = Ubicacion::create($validated);
+
+            foreach ($files as $key => $file) {
+                $path = $file->store('ubicaciones-fotos/' . $ubicacion->id, 'public');
+                $ubicacion->update([$key => $path]);
+            }
 
             // Si es petición AJAX, devolver JSON
             if ($request->wantsJson() || $request->ajax()) {
@@ -109,7 +123,18 @@ class UbicacionController extends Controller
         try {
             $validated = $request->validated();
 
-            $ubicacion->update($validated);
+            $updates = [];
+            foreach (['foto_1', 'foto_2', 'foto_3'] as $key) {
+                if ($request->hasFile($key)) {
+                    if ($ubicacion->$key) {
+                        Storage::disk('public')->delete($ubicacion->$key);
+                    }
+                    $path = $request->file($key)->store('ubicaciones-fotos/' . $ubicacion->id, 'public');
+                    $updates[$key] = $path;
+                }
+                unset($validated[$key]);
+            }
+            $ubicacion->update(array_merge($validated, $updates));
 
             // Si es petición AJAX, devolver JSON
             if ($request->wantsJson() || $request->ajax()) {

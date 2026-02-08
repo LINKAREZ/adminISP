@@ -23,6 +23,9 @@
         <div class="col-md-8 offset-md-2">
             <form action="{{ route('sistema.equipo.marcas.store') }}" method="POST" id="form-marca-create">
                 @csrf
+                @if(request('return_url'))
+                    <input type="hidden" name="return_url" value="{{ request('return_url') }}">
+                @endif
                 <x-card title="Nueva Marca" icon="fa-tag" variant="primary">
                     <input type="hidden" name="estado" value="1">
                     <input type="hidden" name="orden" value="0">

@@ -98,7 +98,7 @@ class RucService
         try {
             // Preparar la petición según documentación de APISPERU
             $baseUrl = config('services.ruc.apisperu.url', 'https://dniruc.apisperu.com/api/v1/ruc');
-            $useQueryToken = (bool) config('services.ruc.apisperu.use_query_token', false);
+            $useQueryToken = (bool) config('services.ruc.apisperu.use_query_token', true);
             $url = "{$baseUrl}/{$ruc}";
             if ($useQueryToken) {
                 $url .= '?token=' . urlencode(trim($token));
@@ -130,12 +130,14 @@ class RucService
 
             // Verificar respuesta
             if ($statusCode === 200) {
-                $data = $response->json();
-                $this->logDebug("📋 Datos recibidos de APISPERU: " . json_encode($data));
+                $body = $response->json();
+                $this->logDebug("📋 Datos recibidos de APISPERU: " . json_encode($body));
+                // Algunas APIs devuelven { "data": { "razonSocial": "...", ... } }
+                $data = isset($body['data']) && is_array($body['data']) ? $body['data'] : $body;
 
                 // Verificar si la API retornó success:false (formato de error de APISPERU)
-                if (isset($data['success']) && $data['success'] === false) {
-                    $errorMessage = $data['message'] ?? 'No se encontraron resultados.';
+                if (isset($body['success']) && $body['success'] === false) {
+                    $errorMessage = $body['message'] ?? $data['message'] ?? 'No se encontraron resultados.';
                     $this->logDebug("ℹ️ APISPERU indica que no se encontró el RUC: {$errorMessage}");
                     return null; // Retornar null para indicar que no se encontró
                 }

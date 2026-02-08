@@ -161,11 +161,11 @@
                                             <small class="text-muted d-block mb-1">
                                                 <i class="fas fa-wifi mr-1"></i>Servicio
                                             </small>
-                                            @if($cliente->servicios_activos > 0)
+                                            @if(($cliente->servicios_activos_en_router ?? 0) > 0)
                                                 <span class="badge badge-success">
                                                     <i class="fas fa-wifi mr-1"></i>Activo
                                                 </span>
-                                            @elseif($cliente->servicios_count > 0)
+                                            @elseif(($cliente->servicios_en_router ?? 0) > 0)
                                                 <span class="badge badge-danger">
                                                     <i class="fas fa-ban mr-1"></i>Cortado
                                                 </span>
@@ -205,7 +205,7 @@
 
                     <!-- Vista desktop: Tabla -->
                     <div class="table-responsive d-none d-md-block">
-                        <table id="tablaClientes" class="table table-hover table-striped" data-datatable="true" data-options='{"dom": "<\"row\"<\"col-sm-12 col-md-6\"l>>rt<\"row\"<\"col-sm-12 col-md-5\"i><\"col-sm-12 col-md-7\"p>>", "pageLength": 25}'>
+                        <table id="tablaClientes" class="table table-hover table-striped" data-datatable="true" data-options='{"dom": "rt<\"row\"<\"col-sm-12 col-md-5\"i><\"col-sm-12 col-md-7\"p>>", "pageLength": {{ request("per_page") == "all" ? max($clientes->total(), 1) : (int) request("per_page", 20) }}}'>
                             <thead>
                                 <tr>
                                     <th>Cliente</th>
@@ -243,11 +243,11 @@
                                             @endif
                                         </td>
                                         <td>
-                                            @if($cliente->servicios_activos > 0)
+                                            @if(($cliente->servicios_activos_en_router ?? 0) > 0)
                                                 <span class="badge badge-success">
                                                     <i class="fas fa-wifi mr-1"></i>Activo
                                                 </span>
-                                            @elseif($cliente->servicios_count > 0)
+                                            @elseif(($cliente->servicios_en_router ?? 0) > 0)
                                                 <span class="badge badge-danger">
                                                     <i class="fas fa-ban mr-1"></i>Cortado
                                                 </span>
@@ -759,17 +759,33 @@
                             }
                         }, 500);
 
-                        // Búsqueda con Enter
-                        $('#buscar-clientes').on('keypress', function(e) {
-                            try {
+                        // Búsqueda interactiva al escribir (con debounce) + Enter para enviar de inmediato
+                        (function() {
+                            var debounceTimer;
+                            var debounceMs = 350;
+                            var $input = $('#buscar-clientes');
+                            var $form = $('#form-buscar-clientes');
+
+                            function enviarBusqueda() {
+                                $form.submit();
+                            }
+
+                            $input.on('keypress', function(e) {
                                 if (e.which === 13) {
                                     e.preventDefault();
-                                    $('#form-buscar-clientes').submit();
+                                    clearTimeout(debounceTimer);
+                                    enviarBusqueda();
                                 }
-                            } catch (error) {
-                                logWarn('Error en búsqueda:', error);
-                            }
-                        });
+                            });
+
+                            $input.on('input', function() {
+                                clearTimeout(debounceTimer);
+                                var valor = $input.val().trim();
+                                debounceTimer = setTimeout(function() {
+                                    enviarBusqueda();
+                                }, debounceMs);
+                            });
+                        })();
 
                         // Manejo del formulario de recibos masivos
                         $('#formRecibosMasivos').on('submit', function(e) {

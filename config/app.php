@@ -8,6 +8,7 @@ return [
     'timezone' => env('APP_TIMEZONE', 'UTC'),
     'locale' => 'es',
     'fallback_locale' => 'en',
+    'charset' => 'UTF-8',
     'key' => env('APP_KEY'),
     'cipher' => 'AES-256-CBC',
 ];

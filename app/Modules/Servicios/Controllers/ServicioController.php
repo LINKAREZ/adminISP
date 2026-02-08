@@ -310,11 +310,14 @@ class ServicioController extends Controller
 
         $this->authorize('update', $servicio);
 
-        // ✅ Cargar cliente a través de ubicación
+        // ✅ Cargar cliente a través de ubicación (asegurar ubicación para pestaña Ubicación y fotos)
         $servicio->load(['ubicacion.cliente', 'ubicacion', 'router', 'plan', 'onu']);
+        if ($servicio->ubicacion_id && ! $servicio->relationLoaded('ubicacion')) {
+            $servicio->load('ubicacion');
+        }
 
         // ✅ Obtener cliente desde ubicación (si no se obtuvo desde la ruta)
-        if (!$cliente) {
+        if (! $cliente && $servicio->ubicacion) {
             $cliente = $servicio->ubicacion->cliente;
         }
         $ubicaciones = $cliente->ubicaciones()->with('router')->get();

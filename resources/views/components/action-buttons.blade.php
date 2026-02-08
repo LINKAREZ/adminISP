@@ -54,14 +54,10 @@
 
             @if($deleteRoute && (!$deletePermission || auth()->user()->can($deletePermission)))
                 <div class="dropdown-divider"></div>
-                <form action="{{ route($deleteRoute, $deleteParams) }}" method="POST" class="d-inline">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="dropdown-item dropdown-item-mobile text-danger"
-                            @if($confirmDelete) onclick="return confirm('{{ $deleteMessage }}')" @endif>
-                        <i class="fas fa-trash mr-2"></i> Eliminar
-                    </button>
-                </form>
+                <a href="#" class="dropdown-item dropdown-item-mobile text-danger" role="button"
+                   onclick='event.preventDefault(); if({{ $confirmDelete ? "!confirm(" . json_encode($deleteMessage) . ")" : "false" }}) return false; var f=document.createElement("form"); f.method="POST"; f.action={{ json_encode(route($deleteRoute, $deleteParams)) }}; var t=document.createElement("input"); t.name="_token"; t.value=document.querySelector("meta[name=csrf-token]")?.getAttribute("content")||""; f.appendChild(t); var m=document.createElement("input"); m.name="_method"; m.value="DELETE"; f.appendChild(m); document.body.appendChild(f); f.submit();'>
+                    <i class="fas fa-trash mr-2"></i> Eliminar
+                </a>
             @endif
         </div>
     </div>
@@ -110,7 +106,7 @@
                         class="btn {{ $btnClass }} btn-danger btn-mobile-touch"
                         title="Eliminar"
                         aria-label="Eliminar"
-                        @if($confirmDelete) onclick="return confirm('{{ $deleteMessage }}')" @endif>
+                        @if($confirmDelete) onclick='return confirm({{ json_encode($deleteMessage) }})' @endif>
                     <i class="fas fa-trash"></i>
                 </button>
             </form>

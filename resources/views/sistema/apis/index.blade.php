@@ -10,6 +10,13 @@
     <div class="row">
         <div class="col-12">
             <x-card title="Configuración de APIs" subtitle="Gestiona los tokens y configuraciones de las APIs externas" icon="fa-plug" variant="primary">
+                    @php $apisperu = $apis->firstWhere('nombre', 'apisperu'); @endphp
+                    @if($apisperu && empty($apisperu->token) && empty(config('services.dni.apisperu.api_key')))
+                        <div class="alert alert-warning mb-3">
+                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                            <strong>Para que funcione la búsqueda de nombres por DNI/RUC</strong> en Clientes &gt; Crear, configura el token de APIsPERU: edita la API <strong>Apisperu</strong> y pega el token que te enviaron por email, o añade <code>APISPERU_API_KEY=tu_token</code> en el archivo .env del servidor.
+                        </div>
+                    @endif
                     <!-- Vista móvil: Lista compacta -->
                     <div class="d-block d-md-none">
                         @forelse($apis as $api)

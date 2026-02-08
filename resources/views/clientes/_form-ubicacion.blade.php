@@ -3,6 +3,7 @@
 <form
     method="POST"
     action="{{ $ubicacion ? route('clientes.ubicaciones.update', [$cliente, $ubicacion]) : route('clientes.ubicaciones.store', $cliente) }}"
+    enctype="multipart/form-data"
 >
     @if($ubicacion)
         @method('PUT')
@@ -98,6 +99,33 @@
             rows="2"
             placeholder="Notas adicionales..."
         >{{ old('notas', $ubicacion->notas ?? '') }}</textarea>
+    </div>
+
+    <div class="form-group">
+        <label><i class="fas fa-camera mr-1"></i> Fotos de ubicación (hasta 3)</label>
+        <small class="d-block text-muted mb-2">Opcional. Imágenes JPG/PNG, máx. 2 MB cada una.</small>
+        <div class="row">
+            @foreach([1 => 'foto_1', 2 => 'foto_2', 3 => 'foto_3'] as $num => $name)
+                <div class="col-md-4 mb-2">
+                    <div class="border rounded p-2 text-center" style="min-height: 100px; background: #f8f9fa;">
+                        @if($ubicacion && !empty($ubicacion->$name))
+                            <img src="{{ asset('storage/' . $ubicacion->$name) }}" alt="Foto {{ $num }}" class="img-fluid rounded mb-1" style="max-height: 80px; object-fit: cover;">
+                            <small class="d-block text-muted">Reemplazar:</small>
+                        @endif
+                        <input type="file" name="{{ $name }}" accept="image/jpeg,image/png,image/webp" class="form-control form-control-sm">
+                    </div>
+                </div>
+            @endforeach
+        </div>
+        @error('foto_1')
+            <span class="invalid-feedback d-block" role="alert"><strong>{{ $message }}</strong></span>
+        @enderror
+        @error('foto_2')
+            <span class="invalid-feedback d-block" role="alert"><strong>{{ $message }}</strong></span>
+        @enderror
+        @error('foto_3')
+            <span class="invalid-feedback d-block" role="alert"><strong>{{ $message }}</strong></span>
+        @enderror
     </div>
 
     <div class="d-flex gap-2 pt-3 border-top">

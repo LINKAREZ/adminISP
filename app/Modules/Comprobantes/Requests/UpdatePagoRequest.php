@@ -95,7 +95,14 @@ class UpdatePagoRequest extends FormRequest
         }
 
         $rules = [
-            'servicio_id' => ['required', 'exists:servicios,id'],
+            'servicio_id' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    if ($value && ! \App\Modules\Servicios\Models\Servicio::where('id', $value)->exists()) {
+                        $fail(__('validation.exists', ['attribute' => 'servicio']));
+                    }
+                },
+            ],
             'monto' => ['required', 'numeric', 'min:0.01'],
             'fecha_pago' => ['required', 'date'],
             'fecha_hora' => ['nullable', 'date'],
@@ -103,7 +110,14 @@ class UpdatePagoRequest extends FormRequest
             'minuto' => ['nullable', 'integer', 'min:0', 'max:59'],
             'periodo' => ['nullable', 'in:AM,PM'],
             'medio_pago' => ['nullable', 'in:efectivo,yape,plin,transferencia,otro'],
-            'medio_pago_id' => ['required', 'exists:medios_pago,id'],
+            'medio_pago_id' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    if ($value && ! \App\Modules\Sistema\Models\MedioPago::where('id', $value)->exists()) {
+                        $fail(__('validation.exists', ['attribute' => 'medio de pago']));
+                    }
+                },
+            ],
             'codigo_seguridad' => ['nullable', 'string', 'max:10'],
             'numero_operacion' => [
                 'nullable',

@@ -23,6 +23,9 @@
         <div class="col-md-8 offset-md-2">
             <form action="{{ route('sistema.equipo.modelos.store') }}" method="POST" id="form-modelo-onu-create">
                 @csrf
+                @if(request('return_url'))
+                    <input type="hidden" name="return_url" value="{{ request('return_url') }}">
+                @endif
                 <x-card title="Nuevo Modelo ONU" icon="fa-server" variant="primary">
                     <input type="hidden" name="estado" value="1">
                     <input type="hidden" name="orden" value="0">
@@ -33,7 +36,7 @@
                         <select name="marca_id" class="form-control @error('marca_id') is-invalid @enderror" required>
                             <option value="">Seleccione...</option>
                             @foreach($marcas as $marca)
-                                <option value="{{ $marca->id }}" {{ old('marca_id') == $marca->id ? 'selected' : '' }}>
+                                <option value="{{ $marca->id }}" {{ old('marca_id', $marcaIdPreseleccionada ?? null) == $marca->id ? 'selected' : '' }}>
                                     {{ $marca->nombre }}
                                 </option>
                             @endforeach

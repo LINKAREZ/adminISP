@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 return Application::configure(basePath: dirname(__DIR__))
     ->withCommands([
         \App\Console\Commands\IspCreateDatabase::class,
+        \App\Console\Commands\IspMigrateTenant::class,
         \App\Console\Commands\IspMigrateToMultiTenant::class,
         \App\Console\Commands\InstallReset::class,
     ])

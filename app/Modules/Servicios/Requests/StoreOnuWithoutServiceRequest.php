@@ -18,8 +18,22 @@ class StoreOnuWithoutServiceRequest extends FormRequest
             'mac_address' => 'required|regex:/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/',
             'marca' => 'nullable|string|max:255',
             'modelo' => 'nullable|string|max:255',
-            'marca_id' => 'nullable|exists:onu_marcas,id',
-            'modelo_id' => 'nullable|exists:onu_modelos,id',
+            'marca_id' => [
+                'nullable',
+                function ($attribute, $value, $fail) {
+                    if ($value && ! \App\Modules\Sistema\Models\OnuMarca::where('id', $value)->exists()) {
+                        $fail(__('validation.exists', ['attribute' => 'marca']));
+                    }
+                },
+            ],
+            'modelo_id' => [
+                'nullable',
+                function ($attribute, $value, $fail) {
+                    if ($value && ! \App\Modules\Servicios\Models\OnuModelo::where('id', $value)->exists()) {
+                        $fail(__('validation.exists', ['attribute' => 'modelo']));
+                    }
+                },
+            ],
             'usuario' => 'nullable|string|max:255',
             'password' => 'nullable|string|max:255',
             'notas' => 'nullable|string|max:1000',

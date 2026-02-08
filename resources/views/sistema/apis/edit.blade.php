@@ -22,7 +22,7 @@
                     @if($api->nombre === 'apisperu')
                         <div class="alert alert-info">
                             <i class="fas fa-info-circle mr-1"></i>
-                            Necesitas configurar el API Key para consultar nombres por DNI.
+                            <strong>APIsPERU – DNI y RUC:</strong> Pega aquí el token que te enviaron por email (ej. eyJ0eXAiOiJKV1...). Se usa en la URL como <code>?token=</code>. Sin token, en Crear Cliente no se completarán los nombres al buscar DNI/RUC.
                         </div>
                     @endif
 
@@ -54,7 +54,11 @@
                                     <strong>{{ $message }}</strong>
                                 </span>
                             @enderror
-                            <small class="form-text text-muted">Token o API key proporcionado por el proveedor de la API</small>
+                            @if($api->nombre === 'apisperu')
+                                <small class="form-text text-muted">Token de APIsPERU (soporte@apisperu.com). Sin este token, la búsqueda por DNI/RUC en Clientes no funcionará.</small>
+                            @else
+                                <small class="form-text text-muted">Token o API key proporcionado por el proveedor de la API</small>
+                            @endif
                         </div>
 
                         <div class="form-group">

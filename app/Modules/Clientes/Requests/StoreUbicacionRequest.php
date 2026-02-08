@@ -23,7 +23,14 @@ class StoreUbicacionRequest extends FormRequest
     {
         return [
             'direccion' => ['required', 'string', 'max:255'],
-            'router_id' => ['nullable', 'exists:routers,id'],
+            'router_id' => [
+                'nullable',
+                function ($attribute, $value, $fail) {
+                    if ($value && ! \App\Modules\Red\Models\Router::where('id', $value)->exists()) {
+                        $fail(__('validation.exists', ['attribute' => 'router']));
+                    }
+                },
+            ],
             'referencia' => ['nullable', 'string', 'max:255'],
             'distrito' => ['nullable', 'string', 'max:255'],
             'provincia' => ['nullable', 'string', 'max:255'],
@@ -31,6 +38,9 @@ class StoreUbicacionRequest extends FormRequest
             'latitud' => ['nullable', 'numeric'],
             'longitud' => ['nullable', 'numeric'],
             'notas' => ['nullable', 'string', 'max:1000'],
+            'foto_1' => ['nullable', 'image', 'max:2048'],
+            'foto_2' => ['nullable', 'image', 'max:2048'],
+            'foto_3' => ['nullable', 'image', 'max:2048'],
         ];
     }
 

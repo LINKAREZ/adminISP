@@ -256,6 +256,34 @@
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
+                                            <label>Departamento</label>
+                                            <select name="ubicacion_departamento" class="form-control @error('ubicacion_departamento') is-invalid @enderror">
+                                                <option value="">Seleccione un departamento</option>
+                                                <option value="Lima" {{ old('ubicacion_departamento', $servicio->ubicacion?->departamento ?? 'Lima') === 'Lima' ? 'selected' : '' }}>Lima</option>
+                                            </select>
+                                            @error('ubicacion_departamento')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Provincia</label>
+                                            <select name="ubicacion_provincia" class="form-control @error('ubicacion_provincia') is-invalid @enderror">
+                                                <option value="">Seleccione una provincia</option>
+                                                <option value="Lima" {{ old('ubicacion_provincia', $servicio->ubicacion?->provincia ?? 'Lima') === 'Lima' ? 'selected' : '' }}>Lima</option>
+                                            </select>
+                                            @error('ubicacion_provincia')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
                                             <label>Distrito</label>
                                             <select name="ubicacion_distrito" class="form-control @error('ubicacion_distrito') is-invalid @enderror">
                                                 <option value="">Seleccione un distrito</option>
@@ -310,34 +338,6 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label>Provincia</label>
-                                            <select name="ubicacion_provincia" class="form-control @error('ubicacion_provincia') is-invalid @enderror">
-                                                <option value="">Seleccione una provincia</option>
-                                                <option value="Lima" {{ old('ubicacion_provincia', $servicio->ubicacion?->provincia ?? 'Lima') === 'Lima' ? 'selected' : '' }}>Lima</option>
-                                            </select>
-                                            @error('ubicacion_provincia')
-                                                <span class="invalid-feedback" role="alert">
-                                                    <strong>{{ $message }}</strong>
-                                                </span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label>Departamento</label>
-                                            <select name="ubicacion_departamento" class="form-control @error('ubicacion_departamento') is-invalid @enderror">
-                                                <option value="">Seleccione un departamento</option>
-                                                <option value="Lima" {{ old('ubicacion_departamento', $servicio->ubicacion?->departamento ?? 'Lima') === 'Lima' ? 'selected' : '' }}>Lima</option>
-                                            </select>
-                                            @error('ubicacion_departamento')
-                                                <span class="invalid-feedback" role="alert">
-                                                    <strong>{{ $message }}</strong>
-                                                </span>
-                                            @enderror
-                                        </div>
-                                    </div>
                                 </div>
 
                                 <div class="form-group">
@@ -355,20 +355,25 @@
                                     @enderror
                                 </div>
 
-                                @if($servicio->ubicacion)
                                 <div class="form-group mt-3">
                                     <label><i class="fas fa-camera mr-1"></i> Fotos de ubicación (hasta 3)</label>
                                     <small class="d-block text-muted mb-2">Opcional. JPG/PNG, máx. 2 MB cada una.</small>
+                                    @if(!$servicio->ubicacion_id || !$servicio->ubicacion)
+                                        <p class="text-muted small mb-2">Guarda primero la dirección de la ubicación para poder subir fotos aquí.</p>
+                                    @endif
                                     <div class="row">
                                         @foreach([1 => 'ubicacion_foto_1', 2 => 'ubicacion_foto_2', 3 => 'ubicacion_foto_3'] as $num => $name)
                                             <div class="col-md-4 mb-2">
                                                 <div class="border rounded p-2 text-center" style="min-height: 100px; background: #f8f9fa;">
-                                                    @php $fKey = 'foto_' . $num; @endphp
-                                                    @if(!empty($servicio->ubicacion->$fKey))
-                                                        <img src="{{ asset('storage/' . $servicio->ubicacion->$fKey) }}" alt="Foto {{ $num }}" class="img-fluid rounded mb-1" style="max-height: 80px; object-fit: cover;">
+                                                    @php
+                                                        $fKey = 'foto_' . $num;
+                                                        $fotoPath = $servicio->ubicacion?->$fKey ?? null;
+                                                    @endphp
+                                                    @if(!empty($fotoPath))
+                                                        <img src="{{ asset('storage/' . $fotoPath) }}" alt="Foto {{ $num }}" class="img-fluid rounded mb-1" style="max-height: 80px; object-fit: cover;">
                                                         <small class="d-block text-muted">Reemplazar:</small>
                                                     @endif
-                                                    <input type="file" name="{{ $name }}" accept="image/jpeg,image/png,image/webp" class="form-control form-control-sm">
+                                                    <input type="file" name="{{ $name }}" accept="image/jpeg,image/png,image/webp" class="form-control form-control-sm" @if(!$servicio->ubicacion_id || !$servicio->ubicacion) disabled @endif>
                                                 </div>
                                             </div>
                                         @endforeach
@@ -383,7 +388,6 @@
                                         <span class="invalid-feedback d-block" role="alert"><strong>{{ $message }}</strong></span>
                                     @enderror
                                 </div>
-                                @endif
                             </div>
 
                             <!-- Pestaña: Equipo -->

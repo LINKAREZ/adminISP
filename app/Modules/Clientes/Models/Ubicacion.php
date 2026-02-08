@@ -25,6 +25,9 @@ class Ubicacion extends Model
         'latitud',
         'longitud',
         'notas',
+        'foto_1',
+        'foto_2',
+        'foto_3',
         'isp_id',
     ];
 
@@ -55,6 +58,20 @@ class Ubicacion extends Model
     public function servicios(): HasMany
     {
         return $this->hasMany(\App\Modules\Servicios\Models\Servicio::class);
+    }
+
+    /**
+     * Rutas públicas de las fotos (para usar en img src).
+     */
+    public function getFotosAttribute(): array
+    {
+        $fotos = [];
+        foreach (['foto_1', 'foto_2', 'foto_3'] as $key) {
+            if (!empty($this->attributes[$key] ?? null)) {
+                $fotos[] = \Illuminate\Support\Facades\Storage::url($this->attributes[$key]);
+            }
+        }
+        return $fotos;
     }
 
     /**

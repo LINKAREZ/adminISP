@@ -419,8 +419,11 @@ class PagoController extends Controller
         $validated = $request->validate([
             'codigo_seguridad' => ['required', 'string', 'max:10'],
             'numero_operacion' => ['required', 'string', 'max:50'],
-            'pago_id' => ['nullable', 'integer', 'exists:pagos,id'],
+            'pago_id' => ['nullable', 'integer'],
         ]);
+        if ($request->filled('pago_id') && ! Pago::where('id', $request->pago_id)->exists()) {
+            throw \Illuminate\Validation\ValidationException::withMessages(['pago_id' => [__('validation.exists', ['attribute' => 'pago'])]]);
+        }
 
         $codigoSeguridad = $validated['codigo_seguridad'];
         $numeroOperacion = $validated['numero_operacion'];
@@ -451,8 +454,11 @@ class PagoController extends Controller
         $this->authorize('create', Pago::class);
         $validated = $request->validate([
             'numero_operacion' => ['required', 'string', 'max:50'],
-            'pago_id' => ['nullable', 'integer', 'exists:pagos,id'],
+            'pago_id' => ['nullable', 'integer'],
         ]);
+        if ($request->filled('pago_id') && ! Pago::where('id', $request->pago_id)->exists()) {
+            throw \Illuminate\Validation\ValidationException::withMessages(['pago_id' => [__('validation.exists', ['attribute' => 'pago'])]]);
+        }
 
         $numeroOperacion = trim($validated['numero_operacion']);
         $pagoId = $validated['pago_id'] ?? null; // Para excluir el pago actual en edición

@@ -105,7 +105,7 @@ class DniService
         try {
             // Preparar la petición según documentación de APISPERU
             $baseUrl = config('services.dni.apisperu.url', 'https://dniruc.apisperu.com/api/v1/dni');
-            $useQueryToken = (bool) config('services.dni.apisperu.use_query_token', false);
+            $useQueryToken = (bool) config('services.dni.apisperu.use_query_token', true);
             $url = "{$baseUrl}/{$dni}";
             if ($useQueryToken) {
                 $url .= '?token=' . urlencode(trim($token));
@@ -137,46 +137,64 @@ class DniService
 
             // Verificar respuesta
             if ($statusCode === 200) {
-                $data = $response->json();
-                $this->logDebug("📋 Datos recibidos de APISPERU: " . json_encode($data));
+                $body = $response->json();
+                $this->logDebug("📋 Datos recibidos de APISPERU: " . json_encode($body));
+                // Algunas APIs devuelven { "data": { "nombres": "...", ... } }
+                $data = isset($body['data']) && is_array($body['data']) ? $body['data'] : $body;
 
-                // Según documentación: {"dni": "string", "nombres": "string", "apellidoPaterno": "string", "apellidoMaterno": "string"}
-                if (isset($data['nombres']) && isset($data['apellidoPaterno'])) {
-                    $nombre = trim(
-                        ($data['nombres'] ?? '') . ' ' .
-                            ($data['apellidoPaterno'] ?? '') . ' ' .
-                            ($data['apellidoMaterno'] ?? '')
-                    );
-                    $nombre = preg_replace('/\s+/', ' ', $nombre); // Limpiar espacios múltiples
+                // Normalizar claves: aceptar camelCase y snake_case
+                $nombres = trim($data['nombres'] ?? '');
+                $apellidoPaterno = trim($data['apellidoPaterno'] ?? $data['apellido_paterno'] ?? '');
+                $apellidoMaterno = trim($data['apellidoMaterno'] ?? $data['apellido_materno'] ?? '');
 
+                // Formato con nombres + apellidos (camelCase o snake_case)
+                if (!empty($nombres) && !empty($apellidoPaterno)) {
+                    $nombre = preg_replace('/\s+/', ' ', trim($nombres . ' ' . $apellidoPaterno . ' ' . $apellidoMaterno));
                     if (!empty($nombre)) {
                         $this->logDebug("✅ Nombre encontrado en APISPERU: {$nombre}");
-
                         return [
                             'nombre' => $nombre,
-                            'nombres' => trim($data['nombres'] ?? ''),
-                            'apellido_paterno' => trim($data['apellidoPaterno'] ?? ''),
-                            'apellido_materno' => trim($data['apellidoMaterno'] ?? ''),
-                            'dni' => $data['dni'] ?? null,
+                            'nombres' => $nombres,
+                            'apellido_paterno' => $apellidoPaterno,
+                            'apellido_materno' => $apellidoMaterno,
+                            'dni' => $data['dni'] ?? $data['numero'] ?? null,
                             'direccion' => $data['direccion'] ?? null,
                             'fuente' => 'apisperu',
                         ];
                     }
                 }
 
-                // Formato alternativo con campo 'nombre' completo
-                if (isset($data['nombre']) && !empty(trim($data['nombre']))) {
-                    $nombre = trim($data['nombre']);
-                    $this->logDebug("✅ Nombre encontrado en APISPERU (formato alternativo): {$nombre}");
-
+                // Formato con nombre_completo (algunas APIs lo devuelven así)
+                $nombreCompleto = trim($data['nombre_completo'] ?? $data['nombreCompleto'] ?? '');
+                if (!empty($nombreCompleto)) {
+                    $this->logDebug("✅ Nombre encontrado en APISPERU (nombre_completo): {$nombreCompleto}");
                     return [
-                        'nombre' => $nombre,
+                        'nombre' => $nombreCompleto,
+                        'nombres' => $nombres ?: $nombreCompleto,
+                        'apellido_paterno' => $apellidoPaterno,
+                        'apellido_materno' => $apellidoMaterno,
+                        'dni' => $data['dni'] ?? $data['numero'] ?? null,
                         'direccion' => $data['direccion'] ?? null,
                         'fuente' => 'apisperu',
                     ];
                 }
 
-                Log::warning("⚠️ APISPERU respondió 200 pero no se pudo extraer el nombre");
+                // Formato con campo 'nombre' único
+                if (isset($data['nombre']) && !empty(trim($data['nombre']))) {
+                    $nombre = trim($data['nombre']);
+                    $this->logDebug("✅ Nombre encontrado en APISPERU (nombre): {$nombre}");
+                    return [
+                        'nombre' => $nombre,
+                        'nombres' => $nombre,
+                        'apellido_paterno' => '',
+                        'apellido_materno' => '',
+                        'dni' => $data['dni'] ?? $data['numero'] ?? null,
+                        'direccion' => $data['direccion'] ?? null,
+                        'fuente' => 'apisperu',
+                    ];
+                }
+
+                Log::warning("⚠️ APISPERU respondió 200 pero no se pudo extraer el nombre. Datos: " . json_encode($data));
                 return null;
             } elseif ($statusCode === 404) {
                 $this->logDebug("ℹ️ DNI no encontrado en APISPERU (404)");
