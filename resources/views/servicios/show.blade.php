@@ -389,11 +389,13 @@
                                         @php
                                             $lat = $servicio->ubicacion->latitud;
                                             $lng = $servicio->ubicacion->longitud;
-                                            $tieneCoordenadas = $lat !== null && $lng !== null && $lat !== '' && $lng !== '' && is_numeric($lat) && is_numeric($lng);
+                                            $latNum = is_numeric($lat) ? (float)$lat : (is_numeric(str_replace(',', '.', $lat)) ? (float)str_replace(',', '.', $lat) : null);
+                                            $lngNum = is_numeric($lng) ? (float)$lng : (is_numeric(str_replace(',', '.', $lng)) ? (float)str_replace(',', '.', $lng) : null);
+                                            $tieneCoordenadas = $latNum !== null && $lngNum !== null;
                                         @endphp
-                                        @if($tieneCoordenadas)
-                                            <div class="form-group">
-                                                <label><i class="fas fa-map-marker-alt mr-1"></i> Coordenadas GPS</label>
+                                        <div class="form-group">
+                                            <label><i class="fas fa-map-marker-alt mr-1"></i> Coordenadas GPS</label>
+                                            @if($tieneCoordenadas)
                                                 <div class="row">
                                                     <div class="col-md-5">
                                                         <div class="form-control bg-light font-monospace small" style="pointer-events: none;">{{ $lat }}, {{ $lng }}</div>
@@ -405,8 +407,19 @@
                                                     </div>
                                                 </div>
                                                 <div id="mapa-ubicacion-servicio-show" class="border rounded mt-2" style="height: 220px; width: 100%;" data-lat="{{ $lat }}" data-lng="{{ $lng }}"></div>
-                                            </div>
-                                        @endif
+                                            @else
+                                                <div class="alert alert-light border mb-0">
+                                                    <small class="text-muted">No hay coordenadas guardadas.</small>
+                                                    <span class="d-block mt-1">Edita el servicio y en la pestaña <strong>Ubicación</strong> haz clic en el mapa o usa «Usar mi ubicación» y guarda.</span>
+                                                    @php $idCliente = $clienteId ?? ($cliente->id ?? $servicio->ubicacion->cliente_id ?? null); @endphp
+                                                    @if(isset($fromCliente) && $fromCliente && $idCliente)
+                                                        <a href="{{ route('clientes.servicios.edit', ['cliente' => $idCliente, 'servicio' => $servicio]) }}" class="btn btn-sm btn-outline-primary mt-2">Editar servicio</a>
+                                                    @else
+                                                        <a href="{{ route('servicios.edit', $servicio) }}" class="btn btn-sm btn-outline-primary mt-2">Editar servicio</a>
+                                                    @endif
+                                                </div>
+                                            @endif
+                                        </div>
                                         @if($servicio->ubicacion->foto_1 || $servicio->ubicacion->foto_2 || $servicio->ubicacion->foto_3)
                                             <div class="form-group mt-3">
                                                 <label><i class="fas fa-camera mr-1"></i> Fotos de ubicación</label>

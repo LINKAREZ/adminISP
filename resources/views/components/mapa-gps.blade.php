@@ -28,7 +28,9 @@
             </button>
         </div>
     </div>
-    <div id="{{ $mapId }}" class="border rounded" style="height: 280px; width: 100%;"></div>
+    <div id="{{ $mapId }}" class="border rounded bg-light" style="height: 280px; width: 100%; min-height: 280px;">
+        <span class="d-inline-block p-3 text-muted small">Cargando mapa…</span>
+    </div>
 </div>
 
 @include('components.mapa-gps-assets')
@@ -37,22 +39,22 @@
 <script>
 (function() {
     var mapId = '{{ $mapId }}';
+    function initYInvalidar() {
+        var wrapper = document.querySelector('.mapa-gps-wrapper[data-map-id="' + mapId + '"]');
+        if (!wrapper || !window.initMapaGps) return;
+        window.initMapaGps(wrapper);
+        setTimeout(function() {
+            if (window.mapaGpsInstances && window.mapaGpsInstances[mapId]) {
+                window.mapaGpsInstances[mapId].invalidate();
+            }
+        }, 150);
+    }
     var tab = document.querySelector('#tab-ubicacion');
     if (tab) {
-        tab.addEventListener('shown.bs.tab', function() {
-            var wrapper = document.querySelector('.mapa-gps-wrapper[data-map-id="' + mapId + '"]');
-            if (wrapper && window.initMapaGps) {
-                window.initMapaGps(wrapper);
-                if (window.mapaGpsInstances && window.mapaGpsInstances[mapId]) {
-                    window.mapaGpsInstances[mapId].invalidate();
-                }
-            }
-        });
+        tab.addEventListener('shown.bs.tab', initYInvalidar);
+        tab.addEventListener('click', function() { setTimeout(initYInvalidar, 50); });
     } else {
-        setTimeout(function() {
-            var wrapper = document.querySelector('.mapa-gps-wrapper[data-map-id="' + mapId + '"]');
-            if (wrapper && window.initMapaGps) window.initMapaGps(wrapper);
-        }, 300);
+        setTimeout(initYInvalidar, 300);
     }
 })();
 </script>

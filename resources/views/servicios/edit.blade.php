@@ -10,6 +10,8 @@
     ]" />
 @endsection
 
+@include('components.mapa-gps-assets')
+
 @section('content')
     <!-- Pestañas del Módulo Servicios (solo si no viene del contexto de cliente) -->
     @if(!isset($fromCliente) || !$fromCliente)
