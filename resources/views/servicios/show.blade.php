@@ -10,6 +10,8 @@
     ]" />
 @endsection
 
+@include('components.mapa-gps-assets')
+
 @section('content')
     <!-- Pestañas del Módulo Servicios (solo si no viene del contexto de cliente) -->
     @if(!isset($fromCliente) || !$fromCliente)
@@ -384,6 +386,27 @@
                                                 </div>
                                             </div>
                                         @endif
+                                        @php
+                                            $lat = $servicio->ubicacion->latitud;
+                                            $lng = $servicio->ubicacion->longitud;
+                                            $tieneCoordenadas = $lat !== null && $lng !== null && $lat !== '' && $lng !== '' && is_numeric($lat) && is_numeric($lng);
+                                        @endphp
+                                        @if($tieneCoordenadas)
+                                            <div class="form-group">
+                                                <label><i class="fas fa-map-marker-alt mr-1"></i> Coordenadas GPS</label>
+                                                <div class="row">
+                                                    <div class="col-md-5">
+                                                        <div class="form-control bg-light font-monospace small" style="pointer-events: none;">{{ $lat }}, {{ $lng }}</div>
+                                                    </div>
+                                                    <div class="col-md-7">
+                                                        <a href="https://www.google.com/maps?q={{ $lat }},{{ $lng }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary">
+                                                            <i class="fas fa-external-link-alt mr-1"></i> Ver en Google Maps
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div id="mapa-ubicacion-servicio-show" class="border rounded mt-2" style="height: 220px; width: 100%;" data-lat="{{ $lat }}" data-lng="{{ $lng }}"></div>
+                                            </div>
+                                        @endif
                                         @if($servicio->ubicacion->foto_1 || $servicio->ubicacion->foto_2 || $servicio->ubicacion->foto_3)
                                             <div class="form-group mt-3">
                                                 <label><i class="fas fa-camera mr-1"></i> Fotos de ubicación</label>
@@ -484,9 +507,27 @@
             checkJQuery();
         }
 
+        // Mapa de solo lectura en pestaña Ubicación (cuando hay coordenadas)
+        function initMapaUbicacionShow() {
+            var el = document.getElementById('mapa-ubicacion-servicio-show');
+            if (!el || !window.L) return;
+            var lat = parseFloat(el.getAttribute('data-lat'));
+            var lng = parseFloat(el.getAttribute('data-lng'));
+            if (isNaN(lat) || isNaN(lng)) return;
+            if (el._leafletMap) { el._leafletMap.invalidateSize(); return; }
+            var map = L.map('mapa-ubicacion-servicio-show').setView([lat, lng], 16);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' }).addTo(map);
+            L.marker([lat, lng]).addTo(map);
+            el._leafletMap = map;
+        }
+
         // Esperar a jQuery antes de usar eventos
         waitForJQuery(function($) {
             $(document).ready(function() {
+                $('#tab-ubicacion').on('shown.bs.tab', function() {
+                    initMapaUbicacionShow();
+                });
+
                 // Toggle password visibility
                 let mostrarPassword = true;
                 $('#toggle-password-btn').on('click', function() {

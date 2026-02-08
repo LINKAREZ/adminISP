@@ -355,6 +355,14 @@
                                     @enderror
                                 </div>
 
+                                <x-mapa-gps
+                                    nameLat="ubicacion_latitud"
+                                    nameLng="ubicacion_longitud"
+                                    :lat="$servicio->ubicacion?->latitud"
+                                    :lng="$servicio->ubicacion?->longitud"
+                                    idPrefix="servicio"
+                                />
+
                                 <div class="form-group mt-3">
                                     <label><i class="fas fa-camera mr-1"></i> Fotos de ubicación (hasta 3)</label>
                                     <small class="d-block text-muted mb-2">Opcional. JPG/PNG, máx. 2 MB cada una.</small>

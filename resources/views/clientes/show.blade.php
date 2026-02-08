@@ -11,6 +11,7 @@
 @endsection
 
 @include('clientes._show-styles')
+@include('components.mapa-gps-assets')
 
 @section('content')
     <div id="cliente-container" data-cliente-id="{{ $cliente->id }}">
@@ -1043,6 +1044,12 @@
                             drawerContent.innerHTML = sanitizeHtml(html);
                             console.log('✓ HTML insertado en drawerContent');
                             console.log('drawerContent después de insertar HTML tiene', drawerContent.children.length, 'elementos hijos');
+
+                            // Inicializar mapa GPS si el formulario incluye el componente (ej. ubicación)
+                            if (window.initMapaGps) {
+                                const mapWrappers = drawerContent.querySelectorAll('.mapa-gps-wrapper');
+                                mapWrappers.forEach(function(wrapper) { window.initMapaGps(wrapper); });
+                            }
 
                             // Actualizar tokens CSRF en todos los formularios después de cargar el contenido
                             // Primero, intentar obtener el token del formulario cargado (puede ser más reciente)

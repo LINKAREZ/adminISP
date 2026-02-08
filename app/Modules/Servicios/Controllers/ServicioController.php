@@ -404,6 +404,8 @@ class ServicioController extends Controller
                     'distrito' => $validated['ubicacion_distrito'] ?? null,
                     'provincia' => $validated['ubicacion_provincia'] ?? null,
                     'departamento' => $validated['ubicacion_departamento'] ?? null,
+                    'latitud' => $validated['ubicacion_latitud'] ?? null,
+                    'longitud' => $validated['ubicacion_longitud'] ?? null,
                 ], $clienteActual->id);
                 $validated['ubicacion_id'] = $ubicacion->id;
             }
@@ -423,10 +425,14 @@ class ServicioController extends Controller
                 $validated['onu_id'] ?? null
             );
 
-            // Extraer datos de ubicación (notas y fotos) para no enviarlos al modelo Servicio
+            // Extraer datos de ubicación (notas, GPS, fotos) para no enviarlos al modelo Servicio
             $ubicacionNotas = $validated['ubicacion_notas'] ?? null;
+            $ubicacionLatitud = isset($validated['ubicacion_latitud']) && $validated['ubicacion_latitud'] !== '' ? $validated['ubicacion_latitud'] : null;
+            $ubicacionLongitud = isset($validated['ubicacion_longitud']) && $validated['ubicacion_longitud'] !== '' ? $validated['ubicacion_longitud'] : null;
             unset(
                 $validated['ubicacion_notas'],
+                $validated['ubicacion_latitud'],
+                $validated['ubicacion_longitud'],
                 $validated['ubicacion_foto_1'],
                 $validated['ubicacion_foto_2'],
                 $validated['ubicacion_foto_3']
@@ -434,11 +440,21 @@ class ServicioController extends Controller
 
             $servicio->update($validated);
 
-            // Actualizar notas y fotos de la ubicación del servicio
+            // Actualizar notas, GPS y fotos de la ubicación del servicio
             $ubicacion = $servicio->ubicacion;
             if ($ubicacion) {
+                $ubicacionUpdates = [];
                 if ($ubicacionNotas !== null) {
-                    $ubicacion->update(['notas' => $ubicacionNotas]);
+                    $ubicacionUpdates['notas'] = $ubicacionNotas;
+                }
+                if ($ubicacionLatitud !== null) {
+                    $ubicacionUpdates['latitud'] = $ubicacionLatitud;
+                }
+                if ($ubicacionLongitud !== null) {
+                    $ubicacionUpdates['longitud'] = $ubicacionLongitud;
+                }
+                if (!empty($ubicacionUpdates)) {
+                    $ubicacion->update($ubicacionUpdates);
                 }
                 foreach (
                     ['ubicacion_foto_1' => 'foto_1', 'ubicacion_foto_2' => 'foto_2', 'ubicacion_foto_3' => 'foto_3']

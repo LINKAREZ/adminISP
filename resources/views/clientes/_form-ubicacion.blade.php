@@ -101,6 +101,14 @@
         >{{ old('notas', $ubicacion->notas ?? '') }}</textarea>
     </div>
 
+    <x-mapa-gps
+        nameLat="latitud"
+        nameLng="longitud"
+        :lat="$ubicacion->latitud ?? null"
+        :lng="$ubicacion->longitud ?? null"
+        idPrefix="ubicacion-cliente"
+    />
+
     <div class="form-group">
         <label><i class="fas fa-camera mr-1"></i> Fotos de ubicación (hasta 3)</label>
         <small class="d-block text-muted mb-2">Opcional. Imágenes JPG/PNG, máx. 2 MB cada una.</small>

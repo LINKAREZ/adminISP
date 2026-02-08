@@ -60,6 +60,8 @@ class ServicioService
             'distrito' => $data['distrito'] ?? 'San Juan de Lurigancho',
             'provincia' => $data['provincia'] ?? 'Lima',
             'departamento' => $data['departamento'] ?? 'Lima',
+            'latitud' => isset($data['latitud']) && $data['latitud'] !== '' ? $data['latitud'] : null,
+            'longitud' => isset($data['longitud']) && $data['longitud'] !== '' ? $data['longitud'] : null,
         ];
 
         $ubicacion = \App\Modules\Clientes\Models\Ubicacion::create($ubicacionData);

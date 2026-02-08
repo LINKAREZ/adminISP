@@ -63,6 +63,8 @@ class UpdateServicioRequest extends FormRequest
             }
         }];
         $rules['ubicacion_notas'] = ['nullable', 'string', 'max:1000'];
+        $rules['ubicacion_latitud'] = ['nullable', 'numeric', 'between:-90,90'];
+        $rules['ubicacion_longitud'] = ['nullable', 'numeric', 'between:-180,180'];
         $rules['ubicacion_foto_1'] = ['nullable', 'image', 'max:2048'];
         $rules['ubicacion_foto_2'] = ['nullable', 'image', 'max:2048'];
         $rules['ubicacion_foto_3'] = ['nullable', 'image', 'max:2048'];
