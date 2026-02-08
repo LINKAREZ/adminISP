@@ -523,16 +523,63 @@
         // Mapa de solo lectura en pestaña Ubicación (cuando hay coordenadas)
         function initMapaUbicacionShow() {
             var el = document.getElementById('mapa-ubicacion-servicio-show');
-            if (!el || !window.L) return;
+            if (!el) return;
             var lat = parseFloat(el.getAttribute('data-lat'));
             var lng = parseFloat(el.getAttribute('data-lng'));
             if (isNaN(lat) || isNaN(lng)) return;
-            if (el._leafletMap) { el._leafletMap.invalidateSize(); return; }
+            if (el._leafletMap) {
+                if (window.MAP_PROVIDER === 'google') google.maps.event.trigger(el._leafletMap, 'resize');
+                else if (window.MAP_PROVIDER === 'maplibre') el._leafletMap.resize();
+                else el._leafletMap.invalidateSize();
+                return;
+            }
+            if (window.MAP_PROVIDER === 'maplibre' && window.maplibregl) {
+                el.innerHTML = '';
+                var map = new maplibregl.Map({
+                    container: el,
+                    style: 'https://demotiles.maplibre.org/style.json',
+                    center: [lng, lat],
+                    zoom: 16
+                });
+                new maplibregl.Marker().setLngLat([lng, lat]).addTo(map);
+                el._leafletMap = map;
+                return;
+            }
+            if (window.MAP_PROVIDER === 'google') {
+                function createGoogleShowMap() {
+                    el.innerHTML = '';
+                    var center = { lat: lat, lng: lng };
+                    var map = new google.maps.Map(el, { center: center, zoom: 16, mapTypeId: 'roadmap' });
+                    new google.maps.Marker({ position: center, map: map });
+                    el._leafletMap = map;
+                }
+                if (window.google && window.google.maps) {
+                    createGoogleShowMap();
+                } else {
+                    window._showMapCreate = createGoogleShowMap;
+                    if (!window._showMapGoogleLoading) {
+                        window._showMapGoogleLoading = true;
+                        window._showMapReady = function() {
+                            window._showMapGoogleLoading = false;
+                            if (window._showMapCreate) window._showMapCreate();
+                        };
+                        var s = document.createElement('script');
+                        s.src = 'https://maps.googleapis.com/maps/api/js?key=' + (window.GOOGLE_MAPS_API_KEY || '') + '&callback=_showMapReady';
+                        s.async = true;
+                        document.head.appendChild(s);
+                    }
+                }
+                return;
+            }
+            if (!window.L) return;
             var map = L.map('mapa-ubicacion-servicio-show').setView([lat, lng], 16);
             var calle = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' });
             var satelite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: '&copy; Esri' });
+            var topo = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', { attribution: '&copy; Esri' });
+            var claro = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; CARTO' });
+            var oscuro = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; CARTO' });
             calle.addTo(map);
-            L.control.layers({ 'Calle': calle, 'Satélite': satelite }, null, { collapsed: true }).addTo(map);
+            L.control.layers({ 'Calle (OSM)': calle, 'Satélite': satelite, 'Topográfico': topo, 'Claro': claro, 'Oscuro': oscuro }, null, { collapsed: true }).addTo(map);
             L.marker([lat, lng]).addTo(map);
             el._leafletMap = map;
         }

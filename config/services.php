@@ -47,4 +47,13 @@ return [
         'phone_number_id' => env('WHATSAPP_PHONE_NUMBER_ID', ''),
     ],
 
+    'google' => [
+        'maps_api_key' => env('GOOGLE_MAPS_API_KEY', ''),
+    ],
+
+    /*
+     * Proveedor del mapa: 'leaflet' (por defecto), 'maplibre' (open source) o 'google' (requiere GOOGLE_MAPS_API_KEY).
+     */
+    'map_provider' => env('MAP_PROVIDER', 'leaflet'),
+
 ];
