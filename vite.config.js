@@ -59,7 +59,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['axios', 'chart.js'],
+          vendor: ['axios'],
           adminlte: ['admin-lte', 'bootstrap', 'jquery'],
           datatables: ['datatables.net', 'datatables.net-bs4'],
         },
@@ -72,6 +72,6 @@ export default defineConfig({
   },
   // Optimizaciones de desarrollo
   optimizeDeps: {
-    include: ['axios', 'chart.js', 'datatables.net', 'datatables.net-bs4'],
+    include: ['axios', 'chart.js/auto', 'datatables.net', 'datatables.net-bs4'],
   },
 });
