@@ -11,61 +11,61 @@
        ============================================ */
 
     :root {
-        /* Design Tokens - Usar solo variables, no colores directos */
-        --color-primary: #4f46e5;
-        --color-surface: #ffffff;
-        --color-background: #f8fafc;
-        --color-muted: #64748b;
-        --color-border: #e2e8f0;
+        /* ===== PALETA CORPORATIVA UNIFICADA (Admin + Super Admin) =====
+           Inspirada en IBM Carbon / estándares WCAG AA. Misma base para ambos panels. */
 
-        /* Mobile-first: breakpoints (usar min-width para progresión) */
+        --color-primary: #0f62fe;
+        --color-surface: #ffffff;
+        --color-background: #f4f6f8;
+        --color-muted: #525f7f;
+        --color-border: #d1d9e6;
+
+        /* Mobile-first: breakpoints */
         --bp-sm: 576px;
         --bp-md: 768px;
         --bp-lg: 992px;
         --bp-xl: 1200px;
 
-        /* Touch target mínimo (WCAG / Apple HIG) */
         --touch-min: 44px;
 
-        /* Safe areas (notch, home indicator) - respetar en móviles */
         --safe-top: env(safe-area-inset-top, 0);
         --safe-right: env(safe-area-inset-right, 0);
         --safe-bottom: env(safe-area-inset-bottom, 0);
         --safe-left: env(safe-area-inset-left, 0);
 
-        /* Colores Primarios - Índigo moderno */
-        --primary: #4f46e5;
-        --primary-light: #6366f1;
-        --primary-dark: #4338ca;
-        --primary-50: #eef2ff;
-        --primary-100: #e0e7ff;
+        /* Primario: azul corporativo (Carbon Blue 60), contraste ≥4.5:1 con blanco */
+        --primary: #0f62fe;
+        --primary-light: #4589ff;
+        --primary-dark: #0043ce;
+        --primary-50: #edf5ff;
+        --primary-100: #d0e2ff;
 
-        /* Colores Secundarios */
-        --secondary: #64748b;
-        --secondary-light: #94a3b8;
-        --secondary-dark: #475569;
+        /* Secundario: gris neutro alineado con escala */
+        --secondary: #525f7f;
+        --secondary-light: #6b7a9e;
+        --secondary-dark: #3d475c;
 
-        /* Estados */
-        --success: #10b981;
-        --success-light: #d1fae5;
-        --danger: #ef4444;
+        /* Estados semánticos (contraste WCAG AA) */
+        --success: #0d9488;
+        --success-light: #ccfbf1;
+        --danger: #dc2626;
         --danger-light: #fee2e2;
-        --warning: #f59e0b;
+        --warning: #d97706;
         --warning-light: #fef3c7;
-        --info: #3b82f6;
-        --info-light: #dbeafe;
+        --info: #0284c7;
+        --info-light: #e0f2fe;
 
-        /* Neutros */
-        --gray-50: #f8fafc;
-        --gray-100: #f1f5f9;
-        --gray-200: #e2e8f0;
-        --gray-300: #cbd5e1;
-        --gray-400: #94a3b8;
-        --gray-500: #64748b;
-        --gray-600: #475569;
-        --gray-700: #334155;
-        --gray-800: #1e293b;
-        --gray-900: #0f172a;
+        /* Neutros: escala única slate para armonía */
+        --gray-50: #f4f6f8;
+        --gray-100: #e8ecf1;
+        --gray-200: #d1d9e6;
+        --gray-300: #a8b4c4;
+        --gray-400: #7b8a9e;
+        --gray-500: #525f7f;
+        --gray-600: #3d475c;
+        --gray-700: #2d3548;
+        --gray-800: #1e2433;
+        --gray-900: #12161f;
 
         /* Sombras modernas */
         --shadow-xs: 0 1px 1px 0 rgb(0 0 0 / 0.04);
@@ -1725,7 +1725,7 @@
     }
 
     .bg-indigo {
-        background-color: #4f46e5 !important;
+        background-color: var(--primary) !important;
         color: white !important;
     }
 

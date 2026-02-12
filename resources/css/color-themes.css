@@ -145,9 +145,9 @@
   color: #fff;
 }
 
-/* Índigo = por defecto (variables ya en :root), solo sidebar si se usa */
+/* Índigo = mismo azul corporativo que :root (unificado) */
 [data-color-theme="indigo"] .sidebar-dark-primary {
-  background-color: #4f46e5 !important;
+  background-color: var(--primary-dark) !important;
 }
 
 /* ========== Selector de color en navbar ========== */

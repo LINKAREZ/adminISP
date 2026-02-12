@@ -23,16 +23,17 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <style>
+        /* Misma paleta corporativa que el panel (Admin + Super Admin) */
         :root {
-            --primary: #4f46e5;
-            --primary-dark: #4338ca;
-            --gray-50: #f8fafc;
-            --gray-100: #f1f5f9;
-            --gray-200: #e2e8f0;
-            --gray-300: #cbd5e1;
-            --gray-500: #64748b;
-            --gray-700: #334155;
-            --gray-900: #0f172a;
+            --primary: #0f62fe;
+            --primary-dark: #0043ce;
+            --gray-50: #f4f6f8;
+            --gray-100: #e8ecf1;
+            --gray-200: #d1d9e6;
+            --gray-300: #a8b4c4;
+            --gray-500: #525f7f;
+            --gray-700: #2d3548;
+            --gray-900: #12161f;
         }
 
         * {
@@ -40,7 +41,7 @@
         }
 
         body {
-            background: linear-gradient(135deg, var(--gray-900) 0%, #1e1b4b 50%, var(--primary-dark) 100%);
+            background: linear-gradient(135deg, var(--gray-900) 0%, #1e2433 50%, var(--primary-dark) 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;

@@ -1,15 +1,14 @@
 /**
- * Panel Super Admin — Tema sobrio y empresarial
- * Paleta con contraste WCAG AA (≥4.5:1 texto normal).
- * Texto claro sobre fondos oscuros; texto oscuro sobre fondos claros.
+ * Panel Super Admin — Misma paleta que Admin (variables :root).
+ * Uniforme, corporativo, contraste WCAG AA.
  */
 
-/* ========== SIDEBAR ========== */
+/* ========== SIDEBAR (oscuro con neutros de la paleta) ========== */
 body.superadmin-panel .main-sidebar.sidebar-dark-superadmin {
-  background-color: #2c3e50 !important;
+  background-color: var(--gray-800) !important;
 }
 body.superadmin-panel .main-sidebar.sidebar-dark-superadmin .nav-sidebar .nav-link.active {
-  background-color: #1a252f !important;
+  background-color: var(--gray-900) !important;
   color: #fff !important;
 }
 body.superadmin-panel .main-sidebar.sidebar-dark-superadmin .nav-sidebar .nav-link:hover {
@@ -22,283 +21,275 @@ body.superadmin-panel .main-sidebar.sidebar-dark-superadmin .brand-link {
 body.superadmin-panel .main-sidebar.sidebar-dark-superadmin .brand-text,
 body.superadmin-panel .main-sidebar.sidebar-dark-superadmin .nav-sidebar .nav-link p,
 body.superadmin-panel .main-sidebar.sidebar-dark-superadmin .nav-sidebar .nav-link .nav-icon {
-  color: #ecf0f1 !important;
+  color: var(--gray-100) !important;
 }
 
 /* ========== CALLOUTS ========== */
 body.superadmin-panel .callout.callout-info {
-  border-left-color: #2980b9;
-  background-color: #ebf5fb;
+  border-left-color: var(--primary);
+  background-color: var(--primary-50);
 }
 body.superadmin-panel .callout.callout-info h5,
 body.superadmin-panel .callout.callout-info .h6,
 body.superadmin-panel .callout.callout-info p {
-  color: #1a252f;
+  color: var(--gray-900);
 }
 body.superadmin-panel .callout.callout-secondary {
-  border-left-color: #5d6d7e;
-  background-color: #f4f6f7;
+  border-left-color: var(--gray-400);
+  background-color: var(--gray-50);
 }
 body.superadmin-panel .callout.callout-secondary h5,
 body.superadmin-panel .callout.callout-secondary .h6,
 body.superadmin-panel .callout.callout-secondary p {
-  color: #2c3e50;
+  color: var(--gray-700);
 }
 
-/* ========== CARDS (cabeceras con contraste ≥4.5:1 sobre blanco) ========== */
+/* ========== CARDS ========== */
 body.superadmin-panel .card.card-primary .card-header {
-  background-color: #2980b9;
-  border-color: #2980b9;
+  background-color: var(--primary) !important;
+  border-color: var(--primary) !important;
   color: #fff;
 }
 body.superadmin-panel .card.card-secondary .card-header,
 body.superadmin-panel .card.card-info .card-header {
-  background-color: #4a5568;
-  border-color: #4a5568;
+  background-color: var(--gray-600) !important;
+  border-color: var(--gray-600) !important;
   color: #fff;
 }
 body.superadmin-panel .card.card-primary.card-outline .card-header,
 body.superadmin-panel .card.card-info.card-outline .card-header,
 body.superadmin-panel .card.card-secondary.card-outline .card-header {
   background-color: transparent;
-  color: #1a252f;
-  border-bottom-color: #bdc3c7;
+  color: var(--gray-900);
+  border-bottom-color: var(--gray-200);
 }
 
 /* ========== KPI CARDS ========== */
 body.superadmin-panel .kpi-card {
-  border-color: #bdc3c7;
+  border-color: var(--gray-200);
   background: #fff;
 }
 body.superadmin-panel .kpi-card.kpi-success {
-  border-color: #27ae60;
-  background: #eafaf1;
+  border-color: var(--success);
+  background: var(--success-light);
 }
 body.superadmin-panel .kpi-card.kpi-danger {
-  border-color: #c0392b;
-  background: #fdedec;
+  border-color: var(--danger);
+  background: var(--danger-light);
 }
 body.superadmin-panel .kpi-label {
-  color: #5d6d7e;
+  color: var(--gray-500);
 }
 body.superadmin-panel .kpi-value {
-  color: #1a252f;
+  color: var(--gray-900);
 }
 
-/* ========== INFO BOXES (iconos: fondo oscuro + texto blanco; warning: fondo claro + texto oscuro) ========== */
+/* ========== INFO BOXES ========== */
 body.superadmin-panel .info-box .info-box-icon.bg-primary {
-  background-color: #2980b9 !important;
+  background-color: var(--primary) !important;
   color: #fff !important;
 }
 body.superadmin-panel .info-box .info-box-icon.bg-info,
 body.superadmin-panel .info-box .info-box-icon.bg-secondary {
-  background-color: #4a5568 !important;
+  background-color: var(--gray-600) !important;
   color: #fff !important;
 }
 body.superadmin-panel .info-box .info-box-icon.bg-success {
-  background-color: #1e8449 !important;
+  background-color: var(--success) !important;
   color: #fff !important;
 }
 body.superadmin-panel .info-box .info-box-icon.bg-warning {
-  background-color: #d68910 !important;
+  background-color: var(--warning) !important;
   color: #fff !important;
 }
 body.superadmin-panel .info-box .info-box-icon.bg-danger {
-  background-color: #a93226 !important;
+  background-color: var(--danger) !important;
   color: #fff !important;
 }
 body.superadmin-panel .info-box .info-box-text,
 body.superadmin-panel .info-box .info-box-number {
-  color: #1a252f;
+  color: var(--gray-900);
 }
 body.superadmin-panel .info-box .info-box-content .text-muted {
-  color: #5d6d7e !important;
+  color: var(--gray-500) !important;
 }
 body.superadmin-panel .info-box .small-box-footer {
-  color: #2980b9;
+  color: var(--primary);
 }
 body.superadmin-panel .info-box .small-box-footer:hover {
-  color: #1a5276;
+  color: var(--primary-dark);
 }
 
-/* ========== BOTONES (fondo/texto contraste AA) ========== */
+/* ========== BOTONES ========== */
 body.superadmin-panel .btn-primary {
-  background-color: #2980b9;
-  border-color: #2980b9;
+  background-color: var(--primary);
+  border-color: var(--primary);
   color: #fff;
 }
 body.superadmin-panel .btn-primary:hover {
-  background-color: #1a5276;
-  border-color: #1a5276;
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
   color: #fff;
 }
 body.superadmin-panel .btn-success {
-  background-color: #1e8449;
-  border-color: #1e8449;
+  background-color: var(--success);
+  border-color: var(--success);
   color: #fff;
 }
 body.superadmin-panel .btn-success:hover {
-  background-color: #196f3d;
-  border-color: #196f3d;
+  filter: brightness(0.9);
   color: #fff;
 }
 body.superadmin-panel .btn-warning {
-  background-color: #d68910;
-  border-color: #d68910;
+  background-color: var(--warning);
+  border-color: var(--warning);
   color: #fff;
 }
 body.superadmin-panel .btn-warning:hover {
-  background-color: #b9770e;
-  border-color: #b9770e;
+  filter: brightness(0.9);
   color: #fff;
 }
 body.superadmin-panel .btn-info {
-  background-color: #4a5568;
-  border-color: #4a5568;
+  background-color: var(--gray-600);
+  border-color: var(--gray-600);
   color: #fff;
 }
 body.superadmin-panel .btn-info:hover {
-  background-color: #2d3748;
-  border-color: #2d3748;
+  background-color: var(--gray-700);
+  border-color: var(--gray-700);
   color: #fff;
 }
 body.superadmin-panel .btn-outline-primary {
-  border-color: #2980b9;
-  color: #2980b9;
+  border-color: var(--primary);
+  color: var(--primary);
 }
 body.superadmin-panel .btn-outline-primary:hover {
-  background-color: #2980b9;
-  border-color: #2980b9;
+  background-color: var(--primary);
+  border-color: var(--primary);
   color: #fff;
 }
 body.superadmin-panel .btn-outline-secondary {
-  border-color: #5d6d7e;
-  color: #5d6d7e;
+  border-color: var(--gray-500);
+  color: var(--gray-600);
 }
 body.superadmin-panel .btn-outline-secondary:hover {
-  background-color: #5d6d7e;
-  border-color: #5d6d7e;
+  background-color: var(--gray-500);
+  border-color: var(--gray-500);
   color: #fff;
 }
 
-/* ========== BADGES (fondo + color de texto explícito) ========== */
+/* ========== BADGES ========== */
 body.superadmin-panel .badge.badge-success {
-  background-color: #1e8449;
+  background-color: var(--success);
   color: #fff;
 }
 body.superadmin-panel .badge.badge-danger {
-  background-color: #a93226;
+  background-color: var(--danger);
   color: #fff;
 }
 body.superadmin-panel .badge.badge-warning {
-  background-color: #d68910;
+  background-color: var(--warning);
   color: #fff;
 }
 body.superadmin-panel .badge.badge-info {
-  background-color: #2980b9;
+  background-color: var(--primary);
   color: #fff;
 }
 body.superadmin-panel .badge.badge-secondary {
-  background-color: #4a5568;
+  background-color: var(--gray-600);
   color: #fff;
 }
 body.superadmin-panel .badge.badge-dark {
-  background-color: #1a252f;
+  background-color: var(--gray-900);
   color: #fff;
 }
 
 /* ========== TABLAS ========== */
 body.superadmin-panel .content-wrapper .table td,
 body.superadmin-panel .content-wrapper .table th {
-  color: #2c3e50;
+  color: var(--gray-700);
 }
 body.superadmin-panel .content-wrapper .table .text-muted {
-  color: #5d6d7e !important;
+  color: var(--gray-500) !important;
 }
 
-/* =============================================================================
-   TEMA OSCURO — Se activa con el botón de la navbar (data-theme="dark" en <html>)
-   ============================================================================= */
+/* ========== TEMA OSCURO (variables ya invertidas en dark-mode.css) ========== */
 [data-theme="dark"] body.superadmin-panel .main-sidebar.sidebar-dark-superadmin {
-  background-color: #1a252f !important;
+  background-color: var(--gray-900) !important;
 }
 [data-theme="dark"] body.superadmin-panel .main-sidebar.sidebar-dark-superadmin .nav-sidebar .nav-link.active {
-  background-color: #0f172a !important;
+  background-color: #0a0d12 !important;
   color: #fff !important;
 }
-
 [data-theme="dark"] body.superadmin-panel .callout.callout-info {
-  background-color: #1e3a5f;
-  border-left-color: #3498db;
+  background-color: rgba(15, 98, 254, 0.2);
+  border-left-color: var(--primary);
 }
 [data-theme="dark"] body.superadmin-panel .callout.callout-info h5,
 [data-theme="dark"] body.superadmin-panel .callout.callout-info .h6,
 [data-theme="dark"] body.superadmin-panel .callout.callout-info p {
-  color: #ecf0f1;
+  color: var(--gray-700);
 }
 [data-theme="dark"] body.superadmin-panel .callout.callout-secondary {
-  background-color: #2c3e50;
-  border-left-color: #5d6d7e;
+  background-color: var(--gray-100);
+  border-left-color: var(--gray-400);
 }
 [data-theme="dark"] body.superadmin-panel .callout.callout-secondary h5,
 [data-theme="dark"] body.superadmin-panel .callout.callout-secondary .h6,
 [data-theme="dark"] body.superadmin-panel .callout.callout-secondary p {
-  color: #ecf0f1;
+  color: var(--gray-700);
 }
-
 [data-theme="dark"] body.superadmin-panel .card.card-primary .card-header {
-  background-color: #1a5276;
-  border-color: #1a5276;
+  background-color: var(--primary-dark) !important;
+  border-color: var(--primary-dark) !important;
 }
 [data-theme="dark"] body.superadmin-panel .card.card-secondary .card-header,
 [data-theme="dark"] body.superadmin-panel .card.card-info .card-header {
-  background-color: #2d3748;
-  border-color: #2d3748;
+  background-color: var(--gray-200) !important;
+  border-color: var(--gray-200) !important;
+  color: var(--gray-900) !important;
 }
 [data-theme="dark"] body.superadmin-panel .card.card-primary.card-outline .card-header,
 [data-theme="dark"] body.superadmin-panel .card.card-info.card-outline .card-header,
 [data-theme="dark"] body.superadmin-panel .card.card-secondary.card-outline .card-header {
-  color: #e2e8f0;
-  border-bottom-color: #475569;
+  color: var(--gray-700);
+  border-bottom-color: var(--gray-200);
 }
-
 [data-theme="dark"] body.superadmin-panel .kpi-card {
-  border-color: #475569;
-  background: #1e293b;
+  border-color: var(--gray-200);
+  background: var(--gray-50);
 }
 [data-theme="dark"] body.superadmin-panel .kpi-card.kpi-success {
-  border-color: #1e8449;
-  background: #0f2e1a;
+  border-color: var(--success);
+  background: rgba(13, 148, 136, 0.15);
 }
 [data-theme="dark"] body.superadmin-panel .kpi-card.kpi-danger {
-  border-color: #a93226;
-  background: #2e0f0f;
+  border-color: var(--danger);
+  background: rgba(220, 38, 38, 0.1);
 }
 [data-theme="dark"] body.superadmin-panel .kpi-label {
-  color: #94a3b8;
+  color: var(--gray-500);
 }
 [data-theme="dark"] body.superadmin-panel .kpi-value {
-  color: #f1f5f9;
+  color: var(--gray-800);
 }
-
 [data-theme="dark"] body.superadmin-panel .info-box .info-box-text,
 [data-theme="dark"] body.superadmin-panel .info-box .info-box-number {
-  color: #f1f5f9;
+  color: var(--gray-800);
 }
 [data-theme="dark"] body.superadmin-panel .info-box .info-box-content .text-muted {
-  color: #94a3b8 !important;
+  color: var(--gray-500) !important;
 }
 [data-theme="dark"] body.superadmin-panel .info-box .small-box-footer {
-  color: #7dd3fc;
+  color: var(--primary-100);
 }
 [data-theme="dark"] body.superadmin-panel .info-box .small-box-footer:hover {
-  color: #bae6fd;
+  color: var(--primary-50);
 }
-
 [data-theme="dark"] body.superadmin-panel .content-wrapper .table td,
 [data-theme="dark"] body.superadmin-panel .content-wrapper .table th {
-  color: #e2e8f0;
+  color: var(--gray-600);
 }
 [data-theme="dark"] body.superadmin-panel .content-wrapper .table .text-muted {
-  color: #94a3b8 !important;
+  color: var(--gray-500) !important;
 }

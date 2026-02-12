@@ -3,19 +3,19 @@
  * Se activa con data-theme="dark" en <html>
  */
 [data-theme="dark"] {
-    --color-surface: #1e293b;
-    --color-background: #0f172a;
-    --color-muted: #94a3b8;
-    --color-border: #334155;
-    --gray-50: #1e293b;
-    --gray-100: #334155;
-    --gray-200: #475569;
-    --gray-300: #64748b;
-    --gray-400: #94a3b8;
-    --gray-500: #cbd5e1;
-    --gray-600: #e2e8f0;
-    --gray-700: #f1f5f9;
-    --gray-800: #f8fafc;
+    --color-surface: #1e2433;
+    --color-background: #12161f;
+    --color-muted: #a8b4c4;
+    --color-border: #3d475c;
+    --gray-50: #1e2433;
+    --gray-100: #2d3548;
+    --gray-200: #3d475c;
+    --gray-300: #525f7f;
+    --gray-400: #7b8a9e;
+    --gray-500: #a8b4c4;
+    --gray-600: #d1d9e6;
+    --gray-700: #e8ecf1;
+    --gray-800: #f4f6f8;
     --gray-900: #ffffff;
 }
 
@@ -73,7 +73,7 @@
 [data-theme="dark"] .sidebar-dark-primary,
 [data-theme="dark"] .sidebar-dark-warning,
 [data-theme="dark"] .sidebar-dark-superadmin {
-    background: #1a252f !important;
+    background: #12161f !important;
 }
 
 [data-theme="dark"] .breadcrumb-item.active {
