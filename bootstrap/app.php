@@ -60,6 +60,8 @@ return Application::configure(basePath: dirname(__DIR__))
         \App\Modules\Infraestructura\ModuleServiceProvider::class,
         \App\Modules\Almacen\ModuleServiceProvider::class,
         \App\Modules\MapaRed\ModuleServiceProvider::class,
+        \App\Modules\CorteFacturacion\ModuleServiceProvider::class,
+        \App\Modules\Onboarding\ModuleServiceProvider::class,
     ])
     ->withExceptions(function (Exceptions $exceptions) {
         // Redirigir cuando falten tablas FTTH (OLT/ODF/splitters) en el tenant
