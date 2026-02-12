@@ -215,3 +215,90 @@ body.superadmin-panel .content-wrapper .table th {
 body.superadmin-panel .content-wrapper .table .text-muted {
   color: #5d6d7e !important;
 }
+
+/* =============================================================================
+   TEMA OSCURO — Se activa con el botón de la navbar (data-theme="dark" en <html>)
+   ============================================================================= */
+[data-theme="dark"] body.superadmin-panel .main-sidebar.sidebar-dark-superadmin {
+  background-color: #1a252f !important;
+}
+[data-theme="dark"] body.superadmin-panel .main-sidebar.sidebar-dark-superadmin .nav-sidebar .nav-link.active {
+  background-color: #0f172a !important;
+  color: #fff !important;
+}
+
+[data-theme="dark"] body.superadmin-panel .callout.callout-info {
+  background-color: #1e3a5f;
+  border-left-color: #3498db;
+}
+[data-theme="dark"] body.superadmin-panel .callout.callout-info h5,
+[data-theme="dark"] body.superadmin-panel .callout.callout-info .h6,
+[data-theme="dark"] body.superadmin-panel .callout.callout-info p {
+  color: #ecf0f1;
+}
+[data-theme="dark"] body.superadmin-panel .callout.callout-secondary {
+  background-color: #2c3e50;
+  border-left-color: #5d6d7e;
+}
+[data-theme="dark"] body.superadmin-panel .callout.callout-secondary h5,
+[data-theme="dark"] body.superadmin-panel .callout.callout-secondary .h6,
+[data-theme="dark"] body.superadmin-panel .callout.callout-secondary p {
+  color: #ecf0f1;
+}
+
+[data-theme="dark"] body.superadmin-panel .card.card-primary .card-header {
+  background-color: #1a5276;
+  border-color: #1a5276;
+}
+[data-theme="dark"] body.superadmin-panel .card.card-secondary .card-header,
+[data-theme="dark"] body.superadmin-panel .card.card-info .card-header {
+  background-color: #2d3748;
+  border-color: #2d3748;
+}
+[data-theme="dark"] body.superadmin-panel .card.card-primary.card-outline .card-header,
+[data-theme="dark"] body.superadmin-panel .card.card-info.card-outline .card-header,
+[data-theme="dark"] body.superadmin-panel .card.card-secondary.card-outline .card-header {
+  color: #e2e8f0;
+  border-bottom-color: #475569;
+}
+
+[data-theme="dark"] body.superadmin-panel .kpi-card {
+  border-color: #475569;
+  background: #1e293b;
+}
+[data-theme="dark"] body.superadmin-panel .kpi-card.kpi-success {
+  border-color: #1e8449;
+  background: #0f2e1a;
+}
+[data-theme="dark"] body.superadmin-panel .kpi-card.kpi-danger {
+  border-color: #a93226;
+  background: #2e0f0f;
+}
+[data-theme="dark"] body.superadmin-panel .kpi-label {
+  color: #94a3b8;
+}
+[data-theme="dark"] body.superadmin-panel .kpi-value {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] body.superadmin-panel .info-box .info-box-text,
+[data-theme="dark"] body.superadmin-panel .info-box .info-box-number {
+  color: #f1f5f9;
+}
+[data-theme="dark"] body.superadmin-panel .info-box .info-box-content .text-muted {
+  color: #94a3b8 !important;
+}
+[data-theme="dark"] body.superadmin-panel .info-box .small-box-footer {
+  color: #7dd3fc;
+}
+[data-theme="dark"] body.superadmin-panel .info-box .small-box-footer:hover {
+  color: #bae6fd;
+}
+
+[data-theme="dark"] body.superadmin-panel .content-wrapper .table td,
+[data-theme="dark"] body.superadmin-panel .content-wrapper .table th {
+  color: #e2e8f0;
+}
+[data-theme="dark"] body.superadmin-panel .content-wrapper .table .text-muted {
+  color: #94a3b8 !important;
+}

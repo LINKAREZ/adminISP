@@ -1,0 +1,85 @@
+/**
+ * Dark mode - AdminISP
+ * Se activa con data-theme="dark" en <html>
+ */
+[data-theme="dark"] {
+    --color-surface: #1e293b;
+    --color-background: #0f172a;
+    --color-muted: #94a3b8;
+    --color-border: #334155;
+    --gray-50: #1e293b;
+    --gray-100: #334155;
+    --gray-200: #475569;
+    --gray-300: #64748b;
+    --gray-400: #94a3b8;
+    --gray-500: #cbd5e1;
+    --gray-600: #e2e8f0;
+    --gray-700: #f1f5f9;
+    --gray-800: #f8fafc;
+    --gray-900: #ffffff;
+}
+
+[data-theme="dark"] body {
+    background: var(--color-background);
+    color: var(--gray-700);
+}
+
+[data-theme="dark"] .main-header {
+    background: var(--gray-50);
+    border-bottom-color: var(--gray-200);
+}
+
+[data-theme="dark"] .content-wrapper {
+    background: var(--color-background);
+}
+
+[data-theme="dark"] .card {
+    background: var(--color-surface);
+    border-color: var(--color-border);
+}
+
+[data-theme="dark"] .card-header {
+    background: var(--gray-100);
+    border-bottom-color: var(--color-border);
+}
+
+[data-theme="dark"] .card-footer {
+    background: var(--gray-100);
+    border-top-color: var(--color-border);
+}
+
+[data-theme="dark"] .table thead th {
+    background: var(--gray-100);
+    border-bottom-color: var(--color-border);
+    color: var(--gray-500);
+}
+
+[data-theme="dark"] .table td {
+    border-top-color: var(--gray-200);
+    color: var(--gray-600);
+}
+
+[data-theme="dark"] .form-control {
+    background: var(--gray-100);
+    border-color: var(--gray-200);
+    color: var(--gray-800);
+}
+
+[data-theme="dark"] .form-control:focus {
+    background: var(--gray-100);
+    border-color: var(--primary);
+}
+
+[data-theme="dark"] .sidebar-dark-primary,
+[data-theme="dark"] .sidebar-dark-warning,
+[data-theme="dark"] .sidebar-dark-superadmin {
+    background: #1a252f !important;
+}
+
+[data-theme="dark"] .breadcrumb-item.active {
+    color: var(--gray-600);
+}
+
+[data-theme="dark"] .theme-toggle-btn {
+    color: var(--gray-600);
+}
