@@ -32,6 +32,7 @@
             --gray-200: #d1d9e6;
             --gray-300: #a8b4c4;
             --gray-500: #525f7f;
+            --gray-600: #3d475c;
             --gray-700: #2d3548;
             --gray-900: #12161f;
         }
@@ -91,7 +92,7 @@
         }
 
         .login-header p {
-            color: var(--gray-500);
+            color: var(--gray-600);
             font-size: 0.9rem;
         }
 
@@ -125,7 +126,11 @@
         .form-control:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            box-shadow: 0 0 0 3px rgba(15, 98, 254, 0.2);
+        }
+
+        .form-control::placeholder {
+            color: var(--gray-500);
         }
 
         .form-control.is-invalid {
@@ -164,7 +169,7 @@
 
         .btn-login:hover {
             transform: translateY(-1px);
-            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+            box-shadow: 0 10px 15px -3px rgba(15, 98, 254, 0.35);
         }
 
         .btn-login:active {
@@ -225,7 +230,7 @@
 
         .login-footer p {
             font-size: 0.8125rem;
-            color: var(--gray-500);
+            color: var(--gray-600);
             margin: 0;
         }
 
