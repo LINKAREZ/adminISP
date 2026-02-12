@@ -76,6 +76,49 @@
     background: #12161f !important;
 }
 
+[data-theme="dark"] .sidebar-dark-primary .brand-link,
+[data-theme="dark"] .sidebar-dark-warning .brand-link,
+[data-theme="dark"] .sidebar-dark-superadmin .brand-link {
+    border-bottom-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+[data-theme="dark"] .sidebar-dark-primary .brand-text,
+[data-theme="dark"] .sidebar-dark-primary .nav-sidebar .nav-link,
+[data-theme="dark"] .sidebar-dark-primary .nav-sidebar .nav-link p,
+[data-theme="dark"] .sidebar-dark-primary .nav-sidebar .nav-link .nav-icon,
+[data-theme="dark"] .sidebar-dark-warning .brand-text,
+[data-theme="dark"] .sidebar-dark-warning .nav-sidebar .nav-link,
+[data-theme="dark"] .sidebar-dark-warning .nav-sidebar .nav-link p,
+[data-theme="dark"] .sidebar-dark-warning .nav-sidebar .nav-link .nav-icon,
+[data-theme="dark"] .sidebar-dark-superadmin .brand-text,
+[data-theme="dark"] .sidebar-dark-superadmin .nav-sidebar .nav-link,
+[data-theme="dark"] .sidebar-dark-superadmin .nav-sidebar .nav-link p,
+[data-theme="dark"] .sidebar-dark-superadmin .nav-sidebar .nav-link .nav-icon {
+    color: #e8ecf1 !important;
+}
+
+[data-theme="dark"] .sidebar-dark-primary .nav-sidebar .nav-link:hover,
+[data-theme="dark"] .sidebar-dark-warning .nav-sidebar .nav-link:hover,
+[data-theme="dark"] .sidebar-dark-superadmin .nav-sidebar .nav-link:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+    color: #fff !important;
+}
+
+[data-theme="dark"] .sidebar-dark-primary .nav-sidebar .nav-link.active,
+[data-theme="dark"] .sidebar-dark-warning .nav-sidebar .nav-link.active,
+[data-theme="dark"] .sidebar-dark-superadmin .nav-sidebar .nav-link.active {
+    background: rgba(255, 255, 255, 0.18) !important;
+    color: #fff !important;
+}
+
+[data-theme="dark"] .sidebar-dark-primary .user-panel .text-muted {
+    color: rgba(255, 255, 255, 0.75) !important;
+}
+
+[data-theme="dark"] .sidebar-dark-primary .user-panel a.text-info {
+    color: #7eb8ff !important;
+}
+
 [data-theme="dark"] .breadcrumb-item.active {
     color: var(--gray-600);
 }

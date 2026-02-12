@@ -753,52 +753,89 @@
         color: #065f46;
     }
 
-    /* === SIDEBAR MODERNA (SaaS 2026) === */
+    /* === SIDEBAR MODERNA (SaaS 2026) - Alta visibilidad === */
     .main-sidebar {
         box-shadow: var(--shadow-lg);
     }
 
+    /* Admin: sidebar oscuro - texto e iconos bien visibles */
     .sidebar-dark-primary {
         background: var(--gray-800);
     }
-
+    .sidebar-dark-primary .brand-link {
+        border-bottom-color: rgba(255, 255, 255, 0.2);
+    }
+    .sidebar-dark-primary .brand-image {
+        opacity: 1;
+    }
+    .sidebar-dark-primary .brand-text,
+    .sidebar-dark-primary .nav-sidebar .nav-link,
+    .sidebar-dark-primary .nav-sidebar .nav-link p,
+    .sidebar-dark-primary .nav-sidebar .nav-link .nav-icon {
+        color: #e8ecf1 !important;
+    }
     .sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link {
         padding: 0.625rem 0.75rem;
         transition: all var(--transition);
     }
     .sidebar-dark-primary .nav-sidebar .nav-icon {
-        opacity: 0.7;
-    }
-    .sidebar-dark-primary .nav-sidebar .nav-link:hover .nav-icon {
         opacity: 1;
     }
+    .sidebar-dark-primary .nav-sidebar .nav-link:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff !important;
+    }
+    .sidebar-dark-primary .nav-sidebar .nav-link:hover .nav-icon,
+    .sidebar-dark-primary .nav-sidebar .nav-link:hover p {
+        color: #fff !important;
+    }
     .sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link.active {
-        background: rgba(255, 255, 255, 0.08);
-        color: white;
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff !important;
         border-radius: var(--radius);
         margin: 0 0.5rem;
     }
-    .sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link.active .nav-icon {
-        opacity: 1;
+    .sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link.active .nav-icon,
+    .sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link.active p {
+        color: #fff !important;
+    }
+    .sidebar-dark-primary .user-panel .text-muted {
+        color: rgba(255, 255, 255, 0.75) !important;
+    }
+    .sidebar-dark-primary .user-panel a.text-info {
+        color: #7eb8ff !important;
+    }
+    .sidebar-dark-primary .user-panel a.text-info:hover {
+        color: #b3d4ff !important;
     }
 
     /* Superadmin sidebar - mismo estilo moderno */
     .sidebar-dark-warning {
         background: var(--gray-800);
     }
+    .sidebar-dark-warning .brand-image {
+        opacity: 1;
+    }
+    .sidebar-dark-warning .brand-text,
+    .sidebar-dark-warning .nav-sidebar .nav-link,
+    .sidebar-dark-warning .nav-sidebar .nav-link p,
+    .sidebar-dark-warning .nav-sidebar .nav-link .nav-icon {
+        color: #e8ecf1 !important;
+    }
     .sidebar-dark-warning .nav-sidebar > .nav-item > .nav-link {
         padding: 0.625rem 0.75rem;
         transition: all var(--transition);
     }
     .sidebar-dark-warning .nav-sidebar .nav-icon {
-        opacity: 0.7;
-    }
-    .sidebar-dark-warning .nav-sidebar .nav-link:hover .nav-icon {
         opacity: 1;
     }
+    .sidebar-dark-warning .nav-sidebar .nav-link:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff !important;
+    }
     .sidebar-dark-warning .nav-sidebar > .nav-item > .nav-link.active {
-        background: rgba(255, 255, 255, 0.08);
-        color: white;
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff !important;
         border-radius: var(--radius);
         margin: 0 0.5rem;
     }

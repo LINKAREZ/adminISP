@@ -3,25 +3,37 @@
  * Uniforme, corporativo, contraste WCAG AA.
  */
 
-/* ========== SIDEBAR (oscuro con neutros de la paleta) ========== */
+/* ========== SIDEBAR (oscuro, alta visibilidad) ========== */
 body.superadmin-panel .main-sidebar.sidebar-dark-superadmin {
   background-color: var(--gray-800) !important;
 }
-body.superadmin-panel .main-sidebar.sidebar-dark-superadmin .nav-sidebar .nav-link.active {
-  background-color: var(--gray-900) !important;
-  color: #fff !important;
-}
-body.superadmin-panel .main-sidebar.sidebar-dark-superadmin .nav-sidebar .nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: #fff;
-}
 body.superadmin-panel .main-sidebar.sidebar-dark-superadmin .brand-link {
-  border-color: rgba(255, 255, 255, 0.15) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.2) !important;
+}
+body.superadmin-panel .main-sidebar.sidebar-dark-superadmin .brand-image {
+  opacity: 1 !important;
 }
 body.superadmin-panel .main-sidebar.sidebar-dark-superadmin .brand-text,
+body.superadmin-panel .main-sidebar.sidebar-dark-superadmin .nav-sidebar .nav-link,
 body.superadmin-panel .main-sidebar.sidebar-dark-superadmin .nav-sidebar .nav-link p,
 body.superadmin-panel .main-sidebar.sidebar-dark-superadmin .nav-sidebar .nav-link .nav-icon {
-  color: var(--gray-100) !important;
+  color: #e8ecf1 !important;
+}
+body.superadmin-panel .main-sidebar.sidebar-dark-superadmin .nav-sidebar .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  color: #fff !important;
+}
+body.superadmin-panel .main-sidebar.sidebar-dark-superadmin .nav-sidebar .nav-link:hover p,
+body.superadmin-panel .main-sidebar.sidebar-dark-superadmin .nav-sidebar .nav-link:hover .nav-icon {
+  color: #fff !important;
+}
+body.superadmin-panel .main-sidebar.sidebar-dark-superadmin .nav-sidebar .nav-link.active {
+  background-color: rgba(255, 255, 255, 0.18) !important;
+  color: #fff !important;
+}
+body.superadmin-panel .main-sidebar.sidebar-dark-superadmin .nav-sidebar .nav-link.active p,
+body.superadmin-panel .main-sidebar.sidebar-dark-superadmin .nav-sidebar .nav-link.active .nav-icon {
+  color: #fff !important;
 }
 
 /* ========== CALLOUTS ========== */
