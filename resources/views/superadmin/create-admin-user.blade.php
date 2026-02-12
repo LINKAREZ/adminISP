@@ -13,7 +13,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-8 offset-md-2">
-            <x-card title="Crear Usuario Administrador por ISP" icon="fa-user-shield" variant="secondary">
+            <x-card title="Crear Usuario Administrador por ISP" icon="fa-user-shield" variant="primary">
                 <form action="{{ route('superadmin.store-admin-user') }}" method="POST" id="form-create-admin">
                     @csrf
                         <div class="alert alert-secondary">

@@ -18,7 +18,7 @@
         <div class="col-12 col-lg-10 offset-lg-1">
             <form action="{{ route('superadmin.isps.store') }}" method="POST">
                 @csrf
-                <x-card title="Nuevo ISP" icon="fa-building" variant="secondary">
+                <x-card title="Nuevo ISP" icon="fa-building" variant="primary">
                     <!-- Información Básica -->
                     <div class="card card-outline card-info">
                             <div class="card-header">

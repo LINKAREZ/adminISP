@@ -144,7 +144,7 @@
         @else
             <h5 class="text-muted">No hay ISPs registrados</h5>
             <p class="text-muted small d-none d-md-block">Comienza creando tu primer ISP en el sistema.</p>
-            <a href="{{ route('superadmin.isps.create') }}" class="btn btn-dark mt-2">
+            <a href="{{ route('superadmin.isps.create') }}" class="btn btn-primary mt-2">
                 <i class="fas fa-plus-circle"></i> Crear Primer ISP
             </a>
         @endif

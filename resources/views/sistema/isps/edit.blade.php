@@ -20,7 +20,7 @@
             <form action="{{ route('superadmin.isps.update', $isp) }}" method="POST">
                 @csrf
                 @method('PUT')
-                <x-card title="Editar ISP" subtitle="{{ $isp->nombre }}" icon="fa-building" variant="secondary">
+                <x-card title="Editar ISP" subtitle="{{ $isp->nombre }}" icon="fa-building" variant="primary">
                     <!-- Información Básica -->
                     <div class="card card-outline card-info">
                             <div class="card-header">

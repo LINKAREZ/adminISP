@@ -14,7 +14,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
-            <x-card title="Exportar Datos de ISP" icon="fa-download" variant="secondary">
+            <x-card title="Exportar Datos de ISP" icon="fa-download" variant="primary">
                 <p class="text-muted mb-3">Selecciona un ISP para exportar <strong>todos los datos de su base de datos tenant</strong> (clientes, servicios, recibos, etc.). Formato SQL o JSON.</p>
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">
@@ -46,7 +46,7 @@
                                     </td>
                                     <td class="text-center">
                                         @if($isp->database_name)
-                                            <a href="{{ route('superadmin.export', ['isp_id' => $isp->id, 'format' => 'sql']) }}" class="btn btn-sm btn-dark mr-1">
+                                            <a href="{{ route('superadmin.export', ['isp_id' => $isp->id, 'format' => 'sql']) }}" class="btn btn-sm btn-primary mr-1">
                                                 <i class="fas fa-download"></i> SQL
                                             </a>
                                             <form action="{{ route('superadmin.export') }}" method="GET" class="d-inline">

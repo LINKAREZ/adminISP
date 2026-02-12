@@ -18,7 +18,7 @@
         <!-- Información Principal (mobile first: contenido arriba) -->
         <div class="col-12 col-md-8 order-1 order-md-1">
             <!-- Información del ISP -->
-            <x-card title="Información del ISP" icon="fa-info-circle" variant="secondary">
+            <x-card title="Información del ISP" icon="fa-info-circle" variant="primary">
                 <x-slot name="actions">
                     <x-btn :route="route('superadmin.isps.edit', $isp)" variant="outline-secondary" size="sm" icon="fa-edit">
                         <span class="d-none d-sm-inline">Editar</span>
@@ -149,7 +149,7 @@
         <div class="col-12">
             <x-card title="Usuarios Administradores" icon="fa-user-shield" variant="secondary" :outline="true">
                 <x-slot name="actions">
-                    <a href="{{ route('superadmin.create-admin-user') }}?isp_id={{ $isp->id }}" class="btn btn-sm btn-dark">
+                    <a href="{{ route('superadmin.create-admin-user') }}?isp_id={{ $isp->id }}" class="btn btn-sm btn-primary">
                         <i class="fas fa-user-plus"></i> <span class="d-none d-sm-inline">Crear administrador</span><span class="d-sm-none">Crear</span>
                     </a>
                 </x-slot>

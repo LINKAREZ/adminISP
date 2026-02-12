@@ -46,15 +46,15 @@
     {{-- Accesos rápidos: botones estándar btn-sm --}}
     <div class="row mb-4">
         <div class="col-12">
-            <x-card title="Accesos rápidos" icon="fa-bolt" variant="secondary">
+            <x-card title="Accesos rápidos" icon="fa-bolt" variant="primary">
                 <div class="row">
                     <div class="col-12 col-md-4 mb-2 mb-md-0">
-                        <a href="{{ route('superadmin.isps.create') }}" class="btn btn-dark btn-sm btn-block">
+                        <a href="{{ route('superadmin.isps.create') }}" class="btn btn-primary btn-sm btn-block">
                             <i class="fas fa-plus mr-1"></i> Crear nuevo ISP
                         </a>
                     </div>
                     <div class="col-12 col-md-4 mb-2 mb-md-0">
-                        <a href="{{ route('superadmin.create-admin-user') }}" class="btn btn-secondary btn-sm btn-block">
+                        <a href="{{ route('superadmin.create-admin-user') }}" class="btn btn-outline-primary btn-sm btn-block">
                             <i class="fas fa-user-shield mr-1"></i> Crear admin por ISP
                         </a>
                     </div>
@@ -121,7 +121,7 @@
     {{-- Bases de datos tenant: x-card estándar --}}
     <div class="row mb-3 mb-md-4">
         <div class="col-12">
-            <x-card title="Bases de datos tenant" icon="fa-database" variant="secondary" :noPadding="true">
+            <x-card title="Bases de datos tenant" icon="fa-database" variant="primary" :noPadding="true">
                 <x-slot name="actions">
                     <a href="{{ route('superadmin.isps.index') }}" class="btn btn-sm btn-outline-secondary">Ver ISPs</a>
                 </x-slot>
@@ -187,7 +187,7 @@
             />
         </div>
         <div class="col-12 col-lg-6">
-            <x-card title="ISPs recientes" icon="fa-building" variant="secondary" class="h-100" :noPadding="true">
+            <x-card title="ISPs recientes" icon="fa-building" variant="primary" class="h-100" :noPadding="true">
                 <x-slot name="actions">
                     <a href="{{ route('superadmin.isps.index') }}" class="btn btn-sm btn-outline-secondary">Ver todos</a>
                 </x-slot>
@@ -247,7 +247,7 @@
                     <div class="text-center text-muted py-4">
                         <i class="fas fa-building fa-3x mb-3"></i>
                         <p class="mb-3">Aún no hay ISPs creados.</p>
-                        <a href="{{ route('superadmin.isps.create') }}" class="btn btn-dark btn-sm">
+                        <a href="{{ route('superadmin.isps.create') }}" class="btn btn-primary btn-sm">
                             <i class="fas fa-plus mr-1"></i> Crear primer ISP
                         </a>
                     </div>

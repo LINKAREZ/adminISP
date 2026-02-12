@@ -40,7 +40,7 @@
     </div>
 
     <!-- Card principal -->
-    <x-card title="Lista de ISPs" icon="fa-building" variant="secondary">
+    <x-card title="Lista de ISPs" icon="fa-building" variant="primary">
         <x-slot name="actions">
             <x-btn :route="route('superadmin.isps.create')" variant="dark" size="sm" icon="fa-plus-circle" class="btn-block btn-sm-block mt-2 mt-md-0">
                 <span class="d-none d-sm-inline">Nuevo ISP</span><span class="d-sm-none">Nuevo</span>

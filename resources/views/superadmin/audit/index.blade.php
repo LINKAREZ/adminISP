@@ -12,7 +12,7 @@
 
 @section('content')
 <div class="container-fluid">
-    <x-card title="Auditoría del panel central" subtitle="Acciones realizadas por super administradores" icon="fa-history" variant="secondary">
+    <x-card title="Auditoría del panel central" subtitle="Acciones realizadas por super administradores" icon="fa-history" variant="primary">
         <form method="GET" action="{{ route('superadmin.audit') }}" class="mb-3">
             <div class="row">
                 <div class="col-12 col-md-3">
@@ -42,8 +42,8 @@
                     <input type="date" name="fecha_hasta" class="form-control form-control-sm" value="{{ request('fecha_hasta') }}">
                 </div>
                 <div class="col-12 col-md-3 mt-2 mt-md-0 d-flex align-items-end">
-                    <button type="submit" class="btn btn-dark btn-sm mr-1"><i class="fas fa-search mr-1"></i> Filtrar</button>
-                    <a href="{{ route('superadmin.audit') }}" class="btn btn-secondary btn-sm"><i class="fas fa-times mr-1"></i> Limpiar</a>
+                    <button type="submit" class="btn btn-primary btn-sm mr-1"><i class="fas fa-search mr-1"></i> Filtrar</button>
+                    <a href="{{ route('superadmin.audit') }}" class="btn btn-outline-secondary btn-sm"><i class="fas fa-times mr-1"></i> Limpiar</a>
                 </div>
             </div>
         </form>
