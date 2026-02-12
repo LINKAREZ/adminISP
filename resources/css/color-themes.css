@@ -1,0 +1,181 @@
+/**
+ * Temas de color — Admin ISP
+ * Independiente del modo claro/oscuro (data-theme="light|dark").
+ * Se activa con data-color-theme en <html>: indigo | blue | green | teal
+ */
+
+/* ========== TEMA AZUL ========== */
+[data-color-theme="blue"] {
+  --color-primary: #2563eb;
+  --primary: #2563eb;
+  --primary-light: #3b82f6;
+  --primary-dark: #1d4ed8;
+  --primary-50: #eff6ff;
+  --primary-100: #dbeafe;
+}
+
+[data-color-theme="blue"] .btn-primary,
+[data-color-theme="blue"] .bg-primary {
+  background-color: #2563eb !important;
+  border-color: #2563eb !important;
+}
+[data-color-theme="blue"] .btn-primary:hover {
+  background-color: #1d4ed8 !important;
+  border-color: #1d4ed8 !important;
+}
+[data-color-theme="blue"] .card-primary .card-header {
+  background-color: #2563eb !important;
+  border-color: #2563eb !important;
+}
+[data-color-theme="blue"] .sidebar-dark-primary {
+  background-color: #1e3a8a !important;
+}
+[data-color-theme="blue"] .navbar-light .nav-link:hover,
+[data-color-theme="blue"] .navbar-light .nav-link:focus {
+  color: #2563eb;
+}
+[data-color-theme="blue"] a:not(.btn):not(.dropdown-item) {
+  color: inherit;
+}
+[data-color-theme="blue"] .text-primary {
+  color: #2563eb !important;
+}
+[data-color-theme="blue"] .border-primary {
+  border-color: #2563eb !important;
+}
+[data-color-theme="blue"] .btn-outline-primary {
+  color: #2563eb;
+  border-color: #2563eb;
+}
+[data-color-theme="blue"] .btn-outline-primary:hover {
+  background-color: #2563eb;
+  border-color: #2563eb;
+  color: #fff;
+}
+
+/* ========== TEMA VERDE ========== */
+[data-color-theme="green"] {
+  --color-primary: #059669;
+  --primary: #059669;
+  --primary-light: #10b981;
+  --primary-dark: #047857;
+  --primary-50: #ecfdf5;
+  --primary-100: #d1fae5;
+}
+
+[data-color-theme="green"] .btn-primary,
+[data-color-theme="green"] .bg-primary {
+  background-color: #059669 !important;
+  border-color: #059669 !important;
+}
+[data-color-theme="green"] .btn-primary:hover {
+  background-color: #047857 !important;
+  border-color: #047857 !important;
+}
+[data-color-theme="green"] .card-primary .card-header {
+  background-color: #059669 !important;
+  border-color: #059669 !important;
+}
+[data-color-theme="green"] .sidebar-dark-primary {
+  background-color: #064e3b !important;
+}
+[data-color-theme="green"] .navbar-light .nav-link:hover,
+[data-color-theme="green"] .navbar-light .nav-link:focus {
+  color: #059669;
+}
+[data-color-theme="green"] .text-primary {
+  color: #059669 !important;
+}
+[data-color-theme="green"] .border-primary {
+  border-color: #059669 !important;
+}
+[data-color-theme="green"] .btn-outline-primary {
+  color: #059669;
+  border-color: #059669;
+}
+[data-color-theme="green"] .btn-outline-primary:hover {
+  background-color: #059669;
+  border-color: #059669;
+  color: #fff;
+}
+
+/* ========== TEMA TEAL ========== */
+[data-color-theme="teal"] {
+  --color-primary: #0d9488;
+  --primary: #0d9488;
+  --primary-light: #14b8a6;
+  --primary-dark: #0f766e;
+  --primary-50: #f0fdfa;
+  --primary-100: #ccfbf1;
+}
+
+[data-color-theme="teal"] .btn-primary,
+[data-color-theme="teal"] .bg-primary {
+  background-color: #0d9488 !important;
+  border-color: #0d9488 !important;
+}
+[data-color-theme="teal"] .btn-primary:hover {
+  background-color: #0f766e !important;
+  border-color: #0f766e !important;
+}
+[data-color-theme="teal"] .card-primary .card-header {
+  background-color: #0d9488 !important;
+  border-color: #0d9488 !important;
+}
+[data-color-theme="teal"] .sidebar-dark-primary {
+  background-color: #134e4a !important;
+}
+[data-color-theme="teal"] .navbar-light .nav-link:hover,
+[data-color-theme="teal"] .navbar-light .nav-link:focus {
+  color: #0d9488;
+}
+[data-color-theme="teal"] .text-primary {
+  color: #0d9488 !important;
+}
+[data-color-theme="teal"] .border-primary {
+  border-color: #0d9488 !important;
+}
+[data-color-theme="teal"] .btn-outline-primary {
+  color: #0d9488;
+  border-color: #0d9488;
+}
+[data-color-theme="teal"] .btn-outline-primary:hover {
+  background-color: #0d9488;
+  border-color: #0d9488;
+  color: #fff;
+}
+
+/* Índigo = por defecto (variables ya en :root), solo sidebar si se usa */
+[data-color-theme="indigo"] .sidebar-dark-primary {
+  background-color: #4f46e5 !important;
+}
+
+/* ========== Selector de color en navbar ========== */
+.color-theme-dropdown {
+  min-width: 140px;
+}
+.color-swatch {
+  width: 28px;
+  height: 28px;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.color-swatch:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+.color-swatch.active {
+  border-color: #1f2937;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #1f2937;
+}
+[data-theme="dark"] .color-swatch.active {
+  border-color: #e5e7eb;
+  box-shadow: 0 0 0 2px #1f2937, 0 0 0 4px #e5e7eb;
+}
+.color-swatch-indigo { background-color: #4f46e5; }
+.color-swatch-blue  { background-color: #2563eb; }
+.color-swatch-green { background-color: #059669; }
+.color-swatch-teal  { background-color: #0d9488; }

@@ -45,6 +45,7 @@ export default defineConfig({
         'resources/js/app.js',
         'resources/js/adminlte.js',
         'resources/js/theme-toggle.js',
+        'resources/js/color-theme.js',
         'resources/js/logger.js',
       ],
       refresh: true,

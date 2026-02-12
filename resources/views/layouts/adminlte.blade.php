@@ -17,9 +17,9 @@
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="alternate icon" href="{{ asset('favicon.svg') }}">
 
-    <!-- Google Font: Source Sans Pro (localizado). Preconnect para fallback externo. -->
+    <!-- Google Font: Inter (única fuente principal) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-    <link rel="stylesheet" href="{{ asset('css/fonts/source-sans-pro.css') }}" onerror="this.onerror=null;this.href='https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;400i;700&display=swap'">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     {{-- CARGAR CSS AdminLTE (+ mapa en página de infraestructura) --}}
     @vite(array_filter(['resources/css/adminlte.css', request()->is('infraestructura/mapa*') ? 'resources/css/mapa-infraestructura.css' : null]))
@@ -102,7 +102,7 @@
 @include('components.alerts')
 
 {{-- CARGAR JS AdminLTE (debe estar ANTES de @stack('scripts') para que jQuery esté disponible) --}}
-@vite(['resources/js/adminlte.js'])
+@vite(['resources/js/adminlte.js', 'resources/js/theme-toggle.js', 'resources/js/color-theme.js'])
 
 @stack('scripts')
 </body>

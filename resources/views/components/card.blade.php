@@ -139,7 +139,7 @@
     
     @if($hasTabsBelow)
         {{-- Tabs debajo del título --}}
-        <div class="card-header p-0 border-bottom-0 card-header-mobile" style="border-top: 1px solid rgba(0,0,0,.125);">
+        <div class="card-header p-0 border-bottom-0 card-header-mobile card-tabs-below">
             {{ $tabsBelow }}
         </div>
     @endif
@@ -156,62 +156,92 @@
 </div>
 
 <style>
-    /* Mobile-first optimizations para cards */
-    @media (max-width: 767.98px) {
+    .card-tabs-below {
+        border-top: 1px solid var(--gray-200, #e2e8f0);
+    }
+    /* Mobile-first: base = móvil */
+    .card-mobile-optimized {
+        margin-bottom: 1rem;
+    }
+    .card-header-mobile {
+        padding: 0.875rem 1rem;
+        flex-wrap: wrap;
+    }
+    .card-title-mobile {
+        font-size: 1.125rem;
+        margin-bottom: 0.25rem;
+    }
+    .card-subtitle-mobile {
+        font-size: 0.8125rem;
+        width: 100%;
+    }
+    .card-tools-mobile {
+        margin-top: 0.5rem;
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    .card-tools-mobile > * {
+        flex: 1 1 auto;
+    }
+    .btn-tool-mobile {
+        min-width: 44px;
+        min-height: 44px;
+    }
+    .card-body-mobile {
+        padding: 1rem;
+    }
+    .card-footer-mobile {
+        padding: 0.875rem 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .card-footer-mobile .btn {
+        width: 100%;
+        margin: 0;
+    }
+    .card-footer-mobile .float-right {
+        float: none !important;
+    }
+    @media (min-width: 768px) {
         .card-mobile-optimized {
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
-        
         .card-header-mobile {
-            padding: 0.875rem 1rem;
-            flex-wrap: wrap;
+            padding: 1rem 1.25rem;
+            flex-wrap: nowrap;
         }
-        
         .card-title-mobile {
-            font-size: 1.125rem;
-            margin-bottom: 0.25rem;
+            font-size: 1rem;
+            margin-bottom: 0;
         }
-        
         .card-subtitle-mobile {
-            font-size: 0.8125rem;
-            width: 100%;
+            width: auto;
         }
-        
         .card-tools-mobile {
-            margin-top: 0.5rem;
-            width: 100%;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
+            margin-top: 0;
+            width: auto;
         }
-        
         .card-tools-mobile > * {
-            flex: 1 1 auto;
+            flex: none;
         }
-        
         .btn-tool-mobile {
-            min-width: 44px;
-            min-height: 44px;
+            min-width: auto;
+            min-height: auto;
         }
-        
         .card-body-mobile {
-            padding: 1rem;
+            padding: 1.25rem;
         }
-        
         .card-footer-mobile {
-            padding: 0.875rem 1rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
+            flex-direction: row;
         }
-        
         .card-footer-mobile .btn {
-            width: 100%;
-            margin: 0;
+            width: auto;
         }
-        
         .card-footer-mobile .float-right {
-            float: none !important;
+            float: right !important;
         }
     }
 </style>

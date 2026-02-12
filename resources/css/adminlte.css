@@ -11,6 +11,12 @@
 /* Importar estilos del drawer PPPoE */
 @import './pppoe-drawer.css';
 
+/* Dark mode */
+@import './dark-mode.css';
+
+/* Temas de color (índigo, azul, verde, teal) */
+@import './color-themes.css';
+
 /* Colores adicionales para AdminLTE */
 .bg-orange {
     background-color: #fd7e14 !important;
