@@ -1099,6 +1099,22 @@
         max-width: 100vw;
         overflow-x: hidden;
     }
+    /* Forzar contenido al 100% del espacio horizontal (gana sobre cualquier otra regla) */
+    .wrapper {
+        max-width: none !important;
+        width: 100% !important;
+    }
+    .content-wrapper,
+    .content-wrapper .content,
+    .content-wrapper .content .container-fluid,
+    .content-wrapper .content-header .container-fluid {
+        max-width: none !important;
+        width: 100% !important;
+    }
+    .main-footer {
+        max-width: none !important;
+        width: 100% !important;
+    }
     .sidebar-nav-mobile {
         padding: 0.5rem 0;
     }

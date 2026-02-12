@@ -162,6 +162,24 @@
 }
 
 /* ========== Sidebar: estándar SaaS (240–300px expandido, 48–64px colapsado) ========== */
+/* Ocupar 100% de la altura de la ventana (top to bottom) */
+.main-sidebar {
+    top: 0 !important;
+    bottom: 0 !important;
+    min-height: 100vh !important;
+    height: 100vh !important;
+}
+.main-sidebar .sidebar {
+    min-height: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+.main-sidebar .sidebar nav {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
 .main-sidebar,
 .main-sidebar::before {
     width: 280px !important;
@@ -180,9 +198,23 @@ body.sidebar-mini.sidebar-collapse .main-footer,
 body.sidebar-mini.sidebar-collapse .main-header {
     margin-left: 64px !important;
 }
+/* ========== Pantallas pequeñas (<992px): mostrar/ocultar sidebar correctamente ========== */
 @media (max-width: 991.98px) {
     .main-sidebar,
     .main-sidebar::before {
+        width: 280px !important;
+        /* Transición para abrir/cerrar (compatible con PushMenu) */
+        transition: margin-left 0.3s ease-in-out !important;
+    }
+    /* Sidebar oculto: sacarlo completamente de la vista (280px = ancho del sidebar) */
+    .sidebar-collapse .main-sidebar,
+    .sidebar-collapse .main-sidebar::before {
+        margin-left: -280px !important;
+    }
+    /* Sidebar visible al abrir con el botón hamburguesa (body.sidebar-open lo añade PushMenu) */
+    body.sidebar-open .main-sidebar,
+    body.sidebar-open .main-sidebar::before {
+        margin-left: 0 !important;
         width: 280px !important;
     }
     .content-wrapper,
@@ -190,6 +222,55 @@ body.sidebar-mini.sidebar-collapse .main-header {
     .main-header {
         margin-left: 0 !important;
     }
+    /* Overlay: encima del contenido, debajo del sidebar (z-index 1037 en AdminLTE) */
+    #sidebar-overlay {
+        z-index: 1037;
+    }
+}
+
+/* ========== Contenido al 100% del espacio horizontal disponible ========== */
+body.layout-fixed .wrapper,
+.wrapper {
+    max-width: none !important;
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 100vh;
+}
+body.layout-fixed .main-header,
+.main-header {
+    flex-shrink: 0;
+}
+body.layout-fixed .content-wrapper,
+body .content-wrapper {
+    max-width: none !important;
+    width: auto !important; /* con flex:1 ocupa el espacio restante */
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+body .content-wrapper .content,
+.content-wrapper .content {
+    max-width: none !important;
+    width: 100% !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+}
+body .content-wrapper .content .container-fluid,
+body .content-wrapper .content-header .container-fluid,
+.content-wrapper .content .container-fluid,
+.content-wrapper .content-header .container-fluid {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+}
+body .main-footer,
+.main-footer {
+    max-width: none !important;
+    width: 100% !important;
+    flex-shrink: 0;
 }
 
 /* Personalizaciones adicionales si son necesarias */

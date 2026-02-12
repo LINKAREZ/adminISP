@@ -54,6 +54,9 @@
         @include('layouts.partials.adminlte-sidebar')
     @endif
 
+    <!-- Overlay para cerrar sidebar al hacer clic fuera (móvil). AdminLTE PushMenu lo muestra con body.sidebar-open -->
+    <div id="sidebar-overlay" class="sidebar-overlay" style="display: none;" aria-hidden="true"></div>
+
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
