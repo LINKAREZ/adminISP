@@ -51,7 +51,7 @@
 [data-theme="dark"] .table thead th {
     background: var(--gray-100);
     border-bottom-color: var(--color-border);
-    color: var(--gray-500);
+    color: var(--gray-600);
 }
 
 [data-theme="dark"] .table td {
@@ -80,6 +80,183 @@
     color: var(--gray-600);
 }
 
+[data-theme="dark"] .breadcrumb-item a {
+    color: var(--gray-500);
+}
+
+[data-theme="dark"] .breadcrumb-item a:hover {
+    color: var(--gray-700);
+}
+
 [data-theme="dark"] .theme-toggle-btn {
     color: var(--gray-600);
+}
+
+/* Content header y títulos */
+[data-theme="dark"] .content-header h1,
+[data-theme="dark"] .page-title-mobile {
+    color: var(--gray-800);
+}
+
+[data-theme="dark"] .card-header,
+[data-theme="dark"] .card-header .card-title {
+    color: var(--gray-800);
+}
+
+[data-theme="dark"] .main-header .navbar-nav .nav-link {
+    color: var(--gray-600);
+}
+
+[data-theme="dark"] .main-header .navbar-nav .nav-link:hover {
+    color: var(--gray-800);
+}
+
+[data-theme="dark"] .dropdown-menu {
+    background: var(--gray-50);
+    border-color: var(--gray-200);
+}
+
+[data-theme="dark"] .dropdown-item {
+    color: var(--gray-700);
+}
+
+[data-theme="dark"] .dropdown-item:hover {
+    background: var(--gray-100);
+    color: var(--gray-900);
+}
+
+[data-theme="dark"] .dropdown-divider {
+    border-color: var(--gray-200);
+}
+
+/* Nav tabs */
+[data-theme="dark"] .nav-tabs .nav-link {
+    color: var(--gray-500);
+}
+
+[data-theme="dark"] .nav-tabs .nav-link:hover {
+    color: var(--primary-100);
+    background: var(--gray-100);
+}
+
+[data-theme="dark"] .nav-tabs .nav-link.active {
+    color: var(--primary-100);
+    background: var(--color-surface);
+}
+
+[data-theme="dark"] .nav-tabs {
+    border-bottom-color: var(--gray-200);
+}
+
+/* Info box text */
+[data-theme="dark"] .info-box-text {
+    color: var(--gray-500);
+}
+
+[data-theme="dark"] .info-box-number {
+    color: var(--gray-800);
+}
+
+/* Links en contenido */
+[data-theme="dark"] .content-wrapper a:not(.btn):not(.dropdown-item) {
+    color: var(--primary-100);
+}
+
+[data-theme="dark"] .content-wrapper a:not(.btn):not(.dropdown-item):hover {
+    color: var(--primary-50);
+}
+
+/* Paginación */
+[data-theme="dark"] .page-link {
+    background: var(--gray-100);
+    border-color: var(--gray-200);
+    color: var(--gray-700);
+}
+
+[data-theme="dark"] .page-link:hover {
+    background: var(--gray-200);
+    border-color: var(--gray-300);
+    color: var(--gray-900);
+}
+
+[data-theme="dark"] .page-item.active .page-link {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+/* Small / badge text */
+[data-theme="dark"] .small,
+[data-theme="dark"] .badge {
+    color: inherit;
+}
+
+/* Modal en dark */
+[data-theme="dark"] .modal-content {
+    background: var(--color-surface);
+    border-color: var(--color-border);
+}
+
+[data-theme="dark"] .modal-header {
+    border-bottom-color: var(--color-border);
+    color: var(--gray-800);
+}
+
+[data-theme="dark"] .modal-footer {
+    border-top-color: var(--color-border);
+}
+
+[data-theme="dark"] .close {
+    color: var(--gray-600);
+    text-shadow: none;
+}
+
+[data-theme="dark"] .close:hover {
+    color: var(--gray-800);
+}
+
+/* Super Admin en dark */
+[data-theme="dark"] body.superadmin-panel .kpi-card {
+    background: var(--gray-100);
+    border-color: var(--gray-200);
+}
+
+[data-theme="dark"] body.superadmin-panel .kpi-card.kpi-success {
+    background: rgba(13, 148, 136, 0.2);
+    border-color: var(--success);
+}
+
+[data-theme="dark"] body.superadmin-panel .kpi-card.kpi-danger {
+    background: rgba(220, 38, 38, 0.2);
+    border-color: var(--danger);
+}
+
+[data-theme="dark"] body.superadmin-panel .kpi-label {
+    color: var(--gray-500);
+}
+
+[data-theme="dark"] body.superadmin-panel .kpi-value {
+    color: var(--gray-800);
+}
+
+[data-theme="dark"] body.superadmin-panel .callout.callout-secondary {
+    background: var(--gray-100);
+    border-left-color: var(--gray-400);
+}
+
+[data-theme="dark"] body.superadmin-panel .callout.callout-secondary h5,
+[data-theme="dark"] body.superadmin-panel .callout.callout-secondary .h6,
+[data-theme="dark"] body.superadmin-panel .callout.callout-secondary p {
+    color: var(--gray-700);
+}
+
+[data-theme="dark"] body.superadmin-panel .callout.callout-info {
+    background: rgba(15, 98, 254, 0.15);
+    border-left-color: var(--primary);
+}
+
+[data-theme="dark"] body.superadmin-panel .callout.callout-info h5,
+[data-theme="dark"] body.superadmin-panel .callout.callout-info .h6,
+[data-theme="dark"] body.superadmin-panel .callout.callout-info p {
+    color: var(--gray-800);
 }

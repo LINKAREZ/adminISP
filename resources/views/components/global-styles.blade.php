@@ -1769,7 +1769,7 @@
 
     .empty-state i {
         font-size: 4rem;
-        color: var(--gray-300);
+        color: var(--gray-500);
         margin-bottom: 1rem;
     }
 
@@ -1779,7 +1779,7 @@
     }
 
     .empty-state p {
-        color: var(--gray-500);
+        color: var(--gray-600);
         margin-bottom: 1.5rem;
     }
 
@@ -2040,7 +2040,7 @@
 
     .custom-file-input:focus ~ .custom-file-label {
         border-color: var(--primary);
-        box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.25);
+        box-shadow: 0 0 0 0.2rem rgba(15, 98, 254, 0.25);
     }
 
     .custom-file-input:disabled ~ .custom-file-label,
