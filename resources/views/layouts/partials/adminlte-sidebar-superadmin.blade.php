@@ -16,7 +16,7 @@
 
                 <!-- Dashboard Global -->
                 <li class="nav-item">
-                    <a href="{{ route('superadmin.dashboard') }}" class="nav-link {{ request()->is('superadmin') || request()->is('/') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.dashboard') }}" class="nav-link {{ request()->is('superadmin') || request()->is('/') ? 'active' : '' }}" title="Dashboard">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>Dashboard</p>
                     </a>
@@ -24,7 +24,7 @@
 
                 <!-- Gestión de ISPs -->
                 <li class="nav-item">
-                    <a href="{{ route('superadmin.isps.index') }}" class="nav-link {{ request()->is('superadmin/isps*') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.isps.index') }}" class="nav-link {{ request()->is('superadmin/isps*') ? 'active' : '' }}" title="Gestionar ISPs">
                         <i class="nav-icon fas fa-building"></i>
                         <p>Gestionar ISPs</p>
                     </a>
@@ -32,15 +32,23 @@
 
                 <!-- Control de Acceso -->
                 <li class="nav-item">
-                    <a href="{{ route('users.index') }}" class="nav-link {{ request()->is('users*') || request()->is('roles*') || request()->is('permissions*') ? 'active' : '' }}">
+                    <a href="{{ route('users.index') }}" class="nav-link {{ request()->is('users*') || request()->is('roles*') || request()->is('permissions*') ? 'active' : '' }}" title="Control de Acceso">
                         <i class="nav-icon fas fa-users-cog"></i>
                         <p>Control de Acceso</p>
                     </a>
                 </li>
 
+                <!-- Auditoría -->
+                <li class="nav-item">
+                    <a href="{{ route('superadmin.audit') }}" class="nav-link {{ request()->is('superadmin/audit*') ? 'active' : '' }}" title="Auditoría">
+                        <i class="nav-icon fas fa-history"></i>
+                        <p>Auditoría</p>
+                    </a>
+                </li>
+
                 <!-- Exportar Datos -->
                 <li class="nav-item">
-                    <a href="{{ route('superadmin.export') }}" class="nav-link {{ request()->is('superadmin/export*') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.export') }}" class="nav-link {{ request()->is('superadmin/export*') ? 'active' : '' }}" title="Exportar Datos">
                         <i class="nav-icon fas fa-download"></i>
                         <p>Exportar Datos</p>
                     </a>
