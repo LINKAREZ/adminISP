@@ -13,7 +13,7 @@ Referencia basada en prácticas de UX (UX Planet, WCAG, design systems enterpris
 
 **Por qué:** Menos de 240px dificulta nombres largos; más de 300px resta espacio al contenido. En colapsado, 48–64px permite tocar cómodo (44px mínimo) y reconocer el icono.
 
-**Admin ISP:** AdminLTE define su propio ancho; `sidebar-mini` ofrece vista colapsada. Compatible con el rango si se personaliza en custom CSS.
+**Admin ISP:** Ancho fijado en `resources/css/adminlte.css`: **280 px** expandido y **64 px** colapsado (rango estándar). `content-wrapper`, `main-footer` y `main-header` con `margin-left` acorde. En viewport &lt;992px el sidebar es overlay y el contenido a ancho completo.
 
 ---
 
@@ -72,7 +72,7 @@ Referencia basada en prácticas de UX (UX Planet, WCAG, design systems enterpris
 - **Ancho resizable** (opcional): barra arrastrable dentro del rango 240–300px.
 - **Búsqueda rápida** en parte superior del sidebar para productos con muchas secciones.
 
-**Admin ISP:** Selector de ISP en sidebar para Super Admin; menú plano de primer nivel; ancho fijo por AdminLTE.
+**Admin ISP:** Selector de ISP en sidebar para Super Admin; menú plano de primer nivel; ancho 280px/64px según estándar (adminlte.css).
 
 ---
 
@@ -85,7 +85,7 @@ Referencia basada en prácticas de UX (UX Planet, WCAG, design systems enterpris
 | Dark mode completo    | ✅ Variables y overrides en dark-mode.css |
 | Active destacado      | ✅ Fondo 0.15–0.18, texto blanco |
 | Tooltips colapsado    | ✅ title en nav-link (ver vistas) |
-| Ancho expandido       | ⚪ Definido por AdminLTE (customizable) |
+| Ancho expandido       | ✅ 280px (rango 240–300); colapsado 64px |
 | Selector tenant       | ✅ Panel Super Admin (ISP actual) |
 
 ---

@@ -164,4 +164,35 @@
     max-height: calc(100vh - 8rem);
 }
 
+/* ========== Sidebar: estándar SaaS (240–300px expandido, 48–64px colapsado) ========== */
+.main-sidebar,
+.main-sidebar::before {
+    width: 280px !important;
+}
+body.sidebar-mini:not(.sidebar-collapse) .content-wrapper,
+body.sidebar-mini:not(.sidebar-collapse) .main-footer,
+body.sidebar-mini:not(.sidebar-collapse) .main-header {
+    margin-left: 280px !important;
+}
+body.sidebar-mini.sidebar-collapse .main-sidebar,
+body.sidebar-mini.sidebar-collapse .main-sidebar::before {
+    width: 64px !important;
+}
+body.sidebar-mini.sidebar-collapse .content-wrapper,
+body.sidebar-mini.sidebar-collapse .main-footer,
+body.sidebar-mini.sidebar-collapse .main-header {
+    margin-left: 64px !important;
+}
+@media (max-width: 991.98px) {
+    .main-sidebar,
+    .main-sidebar::before {
+        width: 280px !important;
+    }
+    .content-wrapper,
+    .main-footer,
+    .main-header {
+        margin-left: 0 !important;
+    }
+}
+
 /* Personalizaciones adicionales si son necesarias */
