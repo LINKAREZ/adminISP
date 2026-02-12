@@ -18,7 +18,7 @@
         <div class="col-12 col-lg-10 offset-lg-1">
             <form action="{{ route('superadmin.isps.store') }}" method="POST">
                 @csrf
-                <x-card title="Nuevo ISP" icon="fa-building" variant="primary">
+                <x-card title="Nuevo ISP" icon="fa-building" variant="secondary">
                     <!-- Información Básica -->
                     <div class="card card-outline card-info">
                             <div class="card-header">
@@ -135,29 +135,31 @@
                             </div>
                         </div>
 
-                        <!-- Estado -->
+                        <!-- Plan y estado -->
                         <div class="card card-outline card-secondary mt-3">
                             <div class="card-header">
                                 <h3 class="card-title">
-                                    <i class="fas fa-toggle-on mr-2"></i>Estado del ISP
+                                    <i class="fas fa-box mr-2"></i>Plan y estado
                                 </h3>
                             </div>
                             <div class="card-body">
-                                <div class="form-group">
+                                @if(isset($plans) && $plans->isNotEmpty())
+                                    <div class="form-group">
+                                        <label for="plan_id">Plan de la plataforma</label>
+                                        <select name="plan_id" id="plan_id" class="form-control">
+                                            <option value="">Sin plan</option>
+                                            @foreach($plans as $plan)
+                                                <option value="{{ $plan->id }}" {{ old('plan_id') == $plan->id ? 'selected' : '' }}>{{ $plan->name }} @if($plan->max_clientes)(hasta {{ $plan->max_clientes }} clientes)@endif</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                @endif
+                                <input type="hidden" name="status" value="active">
+                                <div class="form-group mb-0">
                                     <div class="custom-control custom-switch custom-switch-lg">
                                         <input type="hidden" name="activo" value="0">
-                                        <input
-                                            type="checkbox"
-                                            name="activo"
-                                            id="activo"
-                                            class="custom-control-input"
-                                            value="1"
-                                            {{ old('activo', true) ? 'checked' : '' }}
-                                        >
-                                        <label class="custom-control-label" for="activo">
-                                            <strong>ISP Activo</strong>
-                                            <small class="d-block text-muted">Si está desactivado, los usuarios no podrán acceder al sistema</small>
-                                        </label>
+                                        <input type="checkbox" name="activo" id="activo" class="custom-control-input" value="1" {{ old('activo', true) ? 'checked' : '' }}>
+                                        <label class="custom-control-label" for="activo"><strong>ISP Activo</strong> <small class="d-block text-muted">Si está desactivado, los usuarios no podrán acceder</small></label>
                                     </div>
                                 </div>
                             </div>
@@ -165,7 +167,7 @@
                     </div>
                     <x-slot name="footer">
                         <div class="d-flex flex-column flex-sm-row">
-                            <x-btn type="submit" variant="primary" icon="fa-save" class="btn-block btn-sm-block">
+                            <x-btn type="submit" variant="dark" icon="fa-save" class="btn-block btn-sm-block">
                                 Guardar ISP
                             </x-btn>
                             <x-btn :route="route('superadmin.isps.index')" variant="secondary" icon="fa-times" class="btn-block btn-sm-block">

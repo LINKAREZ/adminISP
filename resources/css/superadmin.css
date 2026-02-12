@@ -1,0 +1,162 @@
+/**
+ * Panel Super Admin — Tema sobrio y empresarial
+ * Sin colores llamativos; grises y azul oscuro neutro.
+ */
+
+/* Sidebar: gris oscuro empresarial (no warning/naranja) */
+body.superadmin-panel .main-sidebar.sidebar-dark-superadmin {
+  background-color: #2c3e50 !important;
+}
+body.superadmin-panel .main-sidebar.sidebar-dark-superadmin .nav-sidebar .nav-link.active {
+  background-color: #1a252f !important;
+  color: #ecf0f1 !important;
+}
+body.superadmin-panel .main-sidebar.sidebar-dark-superadmin .nav-sidebar .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+body.superadmin-panel .main-sidebar.sidebar-dark-superadmin .brand-link {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+body.superadmin-panel .main-sidebar.sidebar-dark-superadmin .brand-text,
+body.superadmin-panel .main-sidebar.sidebar-dark-superadmin .nav-sidebar .nav-link p {
+  color: #bdc3c7;
+}
+
+/* Callout: neutro, borde gris */
+body.superadmin-panel .callout.callout-info,
+body.superadmin-panel .callout.callout-secondary {
+  border-left-color: #6c757d;
+  background-color: #f8f9fa;
+}
+body.superadmin-panel .callout.callout-info h5,
+body.superadmin-panel .callout.callout-info .h6,
+body.superadmin-panel .callout.callout-secondary h5,
+body.superadmin-panel .callout.callout-secondary .h6 {
+  color: #495057;
+}
+
+/* Cards: cabecera gris/oscuro, sin colores vivos */
+body.superadmin-panel .card.card-primary .card-header,
+body.superadmin-panel .card.card-secondary .card-header {
+  background-color: #495057;
+  border-color: #495057;
+  color: #fff;
+}
+body.superadmin-panel .card.card-info .card-header {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: #fff;
+}
+body.superadmin-panel .card.card-primary.card-outline .card-header,
+body.superadmin-panel .card.card-info.card-outline .card-header,
+body.superadmin-panel .card.card-secondary.card-outline .card-header {
+  background-color: transparent;
+  color: #495057;
+  border-bottom-color: #dee2e6;
+}
+
+/* KPI cards en listados: tonos neutros */
+body.superadmin-panel .kpi-card {
+  border-color: #dee2e6;
+  background: #fff;
+}
+body.superadmin-panel .kpi-card.kpi-success {
+  border-color: #dee2e6;
+  background: #f8f9fa;
+}
+body.superadmin-panel .kpi-card.kpi-danger {
+  border-color: #dee2e6;
+  background: #f8f9fa;
+}
+body.superadmin-panel .kpi-label {
+  color: #6c757d;
+}
+body.superadmin-panel .kpi-value {
+  color: #212529;
+}
+
+/* Info boxes: tonos grises */
+body.superadmin-panel .info-box .info-box-icon.bg-primary {
+  background-color: #495057 !important;
+}
+body.superadmin-panel .info-box .info-box-icon.bg-info {
+  background-color: #6c757d !important;
+}
+body.superadmin-panel .info-box .info-box-icon.bg-success {
+  background-color: #5a6268 !important;
+}
+body.superadmin-panel .info-box .info-box-icon.bg-warning {
+  background-color: #545b62 !important;
+}
+body.superadmin-panel .info-box .info-box-icon.bg-danger {
+  background-color: #495057 !important;
+}
+body.superadmin-panel .info-box .info-box-icon.bg-secondary {
+  background-color: #6c757d !important;
+}
+body.superadmin-panel .info-box .small-box-footer {
+  color: #495057;
+}
+body.superadmin-panel .info-box .small-box-footer:hover {
+  color: #212529;
+}
+
+/* Botones: secundarios y outline, sin verde/naranja/azul fuerte */
+body.superadmin-panel .btn-success {
+  background-color: #495057;
+  border-color: #495057;
+}
+body.superadmin-panel .btn-success:hover {
+  background-color: #3d4248;
+  border-color: #3d4248;
+}
+body.superadmin-panel .btn-warning {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: #fff;
+}
+body.superadmin-panel .btn-warning:hover {
+  background-color: #5a6268;
+  border-color: #5a6268;
+  color: #fff;
+}
+body.superadmin-panel .btn-info {
+  background-color: #5a6268;
+  border-color: #5a6268;
+}
+body.superadmin-panel .btn-info:hover {
+  background-color: #495057;
+  border-color: #495057;
+}
+body.superadmin-panel .btn-primary {
+  background-color: #495057;
+  border-color: #495057;
+}
+body.superadmin-panel .btn-primary:hover {
+  background-color: #3d4248;
+  border-color: #3d4248;
+}
+body.superadmin-panel .btn-outline-primary {
+  border-color: #6c757d;
+  color: #495057;
+}
+body.superadmin-panel .btn-outline-primary:hover {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: #fff;
+}
+
+/* Badges en tablas: discretos */
+body.superadmin-panel .badge.badge-success {
+  background-color: #5a6268;
+}
+body.superadmin-panel .badge.badge-danger {
+  background-color: #495057;
+}
+body.superadmin-panel .badge.badge-warning {
+  background-color: #6c757d;
+}
+body.superadmin-panel .badge.badge-info {
+  background-color: #6c757d;
+}

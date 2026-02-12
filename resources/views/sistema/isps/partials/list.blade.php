@@ -25,26 +25,29 @@
                             @endif
                         </td>
                         <td class="text-center">
-                            @if($isp->activo)
-                                <span class="badge badge-success badge-lg">
-                                    <i class="fas fa-check-circle"></i> Activo
-                                </span>
+                            @php $status = $isp->status ?? 'active'; @endphp
+                            @if($status === 'active' && $isp->activo)
+                                <span class="badge badge-success badge-lg"><i class="fas fa-check-circle"></i> Activo</span>
+                            @elseif($status === 'suspended')
+                                <span class="badge badge-warning badge-lg"><i class="fas fa-pause-circle"></i> Suspendido</span>
+                            @elseif($status === 'cancelled')
+                                <span class="badge badge-secondary badge-lg"><i class="fas fa-times-circle"></i> Cancelado</span>
+                            @elseif($status === 'pending')
+                                <span class="badge badge-info badge-lg"><i class="fas fa-clock"></i> Pendiente</span>
                             @else
-                                <span class="badge badge-danger badge-lg">
-                                    <i class="fas fa-times-circle"></i> Inactivo
-                                </span>
+                                <span class="badge badge-danger badge-lg"><i class="fas fa-times-circle"></i> Inactivo</span>
                             @endif
                         </td>
                         <td class="text-center">
                             <div class="btn-group" role="group">
                                 <a href="{{ route('superadmin.isps.show', $isp) }}"
-                                   class="btn btn-info btn-xs"
+                                   class="btn btn-outline-secondary btn-xs"
                                    data-toggle="tooltip"
                                    title="Ver detalles">
                                     <i class="fas fa-eye"></i>
                                 </a>
                                 <a href="{{ route('superadmin.isps.edit', $isp) }}"
-                                   class="btn btn-warning btn-xs"
+                                   class="btn btn-outline-secondary btn-xs"
                                    data-toggle="tooltip"
                                    title="Editar">
                                     <i class="fas fa-edit"></i>
@@ -53,7 +56,7 @@
                                     @csrf
                                     @method('PATCH')
                                     <button type="submit"
-                                            class="btn btn-xs {{ $isp->activo ? 'btn-outline-secondary' : 'btn-success' }}"
+                                            class="btn btn-xs {{ $isp->activo ? 'btn-outline-secondary' : 'btn-dark' }}"
                                             data-toggle="tooltip"
                                             title="{{ $isp->activo ? 'Desactivar' : 'Activar' }}">
                                         <i class="fas {{ $isp->activo ? 'fa-toggle-off' : 'fa-toggle-on' }}"></i>
@@ -111,7 +114,7 @@
                         <form action="{{ route('superadmin.isps.toggle', $isp) }}" method="POST" class="d-inline">
                             @csrf
                             @method('PATCH')
-                            <button type="submit" class="btn {{ $isp->activo ? 'btn-outline-secondary' : 'btn-success' }}">
+                            <button type="submit" class="btn {{ $isp->activo ? 'btn-outline-secondary' : 'btn-dark' }}">
                                 <i class="fas {{ $isp->activo ? 'fa-toggle-off' : 'fa-toggle-on' }}"></i>
                                 {{ $isp->activo ? 'Desactivar' : 'Activar' }}
                             </button>
@@ -141,7 +144,7 @@
         @else
             <h5 class="text-muted">No hay ISPs registrados</h5>
             <p class="text-muted small d-none d-md-block">Comienza creando tu primer ISP en el sistema.</p>
-            <a href="{{ route('superadmin.isps.create') }}" class="btn btn-success mt-2">
+            <a href="{{ route('superadmin.isps.create') }}" class="btn btn-dark mt-2">
                 <i class="fas fa-plus-circle"></i> Crear Primer ISP
             </a>
         @endif

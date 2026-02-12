@@ -1,0 +1,31 @@
+---
+description: Flujo profesional de despliegue: commit y push a GitHub, luego en la VPS git pull y optimize:clear (y build/migrate si aplica)
+alwaysApply: true
+---
+
+# Despliegue en VPS — Flujo profesional único
+
+## Regla
+
+Tras editar código, **siempre** seguir este flujo (salvo que el usuario indique lo contrario):
+
+1. **Commit y push a GitHub**  
+   `git add <archivos>` → `git commit -m "mensaje claro"` → `git push origin main` (o la rama que use el proyecto).
+
+2. **En la VPS (por SSH)**  
+   - `cd /root/adminisp` (o `/root/adminISP` si el servidor usa mayúsculas)  
+   - `git pull origin main`  
+   - `docker compose exec -T app php artisan optimize:clear`  
+   - Si hubo cambios en JS/CSS/Vite: `docker run --rm -v "$(pwd):/app" -w /app node:20-alpine sh -c 'npm install && npm run build'`  
+   - Si hay migraciones: `docker compose exec -T app php artisan migrate --force` y `docker compose exec -T app php artisan isp:migrate-tenant` (si aplica).
+
+No usar SCP para subir archivos sueltos. La fuente de verdad es el repositorio.
+
+## Conexión SSH
+
+- Host: `panel.wan.pe` (o `161.132.4.102`)
+- Usuario: `root`
+- Llave: `~/.ssh/config` → `Host panel.wan.pe` → `IdentityFile ~/.ssh/id_ed25519_vps`
+- Ruta proyecto en VPS: `/root/adminisp/` o `/root/adminISP/`
+
+Comprobar ruta si hace falta: `ssh root@panel.wan.pe "ls /root"`

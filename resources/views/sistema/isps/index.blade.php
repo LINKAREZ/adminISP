@@ -16,7 +16,7 @@
     <!-- Header + KPIs -->
     <div class="row mb-2 mb-md-3">
         <div class="col-12">
-            <div class="callout callout-info">
+            <div class="callout callout-secondary">
                 <h5 class="h6 mb-1 mb-md-2"><i class="fas fa-building"></i> Gestión de ISPs</h5>
                 <p class="mb-0 small d-none d-md-block">Administra los ISPs registrados en el sistema. Puedes crear, editar y visualizar la información de cada ISP.</p>
             </div>
@@ -40,9 +40,9 @@
     </div>
 
     <!-- Card principal -->
-    <x-card title="Lista de ISPs" icon="fa-building" variant="primary">
+    <x-card title="Lista de ISPs" icon="fa-building" variant="secondary">
         <x-slot name="actions">
-            <x-btn :route="route('superadmin.isps.create')" variant="success" size="sm" icon="fa-plus-circle" class="btn-block btn-sm-block mt-2 mt-md-0">
+            <x-btn :route="route('superadmin.isps.create')" variant="dark" size="sm" icon="fa-plus-circle" class="btn-block btn-sm-block mt-2 mt-md-0">
                 <span class="d-none d-sm-inline">Nuevo ISP</span><span class="d-sm-none">Nuevo</span>
             </x-btn>
         </x-slot>

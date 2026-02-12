@@ -1,5 +1,5 @@
 <!-- Main Sidebar Container para Super Admin -->
-<aside class="main-sidebar sidebar-dark-warning elevation-4">
+<aside class="main-sidebar sidebar-dark-superadmin elevation-4">
     <!-- Brand Logo -->
     <a href="{{ route('superadmin.dashboard') }}" class="brand-link">
         <img src="https://adminlte.io/themes/v3/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">

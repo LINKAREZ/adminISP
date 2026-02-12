@@ -18,9 +18,9 @@
         <!-- Información Principal (mobile first: contenido arriba) -->
         <div class="col-12 col-md-8 order-1 order-md-1">
             <!-- Información del ISP -->
-            <x-card title="Información del ISP" icon="fa-info-circle" variant="primary">
+            <x-card title="Información del ISP" icon="fa-info-circle" variant="secondary">
                 <x-slot name="actions">
-                    <x-btn :route="route('superadmin.isps.edit', $isp)" variant="warning" size="sm" icon="fa-edit">
+                    <x-btn :route="route('superadmin.isps.edit', $isp)" variant="outline-secondary" size="sm" icon="fa-edit">
                         <span class="d-none d-sm-inline">Editar</span>
                     </x-btn>
                 </x-slot>
@@ -128,7 +128,7 @@
 
         <!-- Acciones (mobile first: debajo del contenido; sin duplicar Editar/Crear Admin) -->
         <div class="col-12 col-md-4 order-2 order-md-2 mb-3 mb-md-0">
-            <x-card title="Acciones" icon="fa-bolt" variant="warning">
+            <x-card title="Acciones" icon="fa-bolt" variant="secondary">
                 <a href="{{ route('superadmin.isps.index') }}" class="btn btn-secondary btn-block mb-2">
                     <i class="fas fa-arrow-left"></i> Volver a ISPs
                 </a>
@@ -147,16 +147,16 @@
     <!-- Usuarios Administradores por Defecto -->
     <div class="row mt-3">
         <div class="col-12">
-            <x-card title="Usuarios Administradores" icon="fa-user-shield" variant="warning" :outline="true">
+            <x-card title="Usuarios Administradores" icon="fa-user-shield" variant="secondary" :outline="true">
                 <x-slot name="actions">
-                    <a href="{{ route('superadmin.create-admin-user') }}?isp_id={{ $isp->id }}" class="btn btn-sm btn-success">
+                    <a href="{{ route('superadmin.create-admin-user') }}?isp_id={{ $isp->id }}" class="btn btn-sm btn-dark">
                         <i class="fas fa-user-plus"></i> <span class="d-none d-sm-inline">Crear administrador</span><span class="d-sm-none">Crear</span>
                     </a>
                 </x-slot>
                     @if($defaultAdmins->count() > 0)
                         <!-- Vista escritorio: Tabla -->
                         <div class="table-responsive d-none d-md-block">
-                            <table class="table table-hover">
+                            <table class="table table-hover mb-0">
                                 <thead class="thead-light">
                                     <tr>
                                         <th><i class="fas fa-user mr-1"></i> Nombre</th>

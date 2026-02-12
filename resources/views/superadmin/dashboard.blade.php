@@ -12,21 +12,8 @@
 
 @push('styles')
 <style>
-/* Mobile-first: Super Admin Dashboard */
-.superadmin-dashboard .dashboard-welcome { font-size: 0.9375rem; }
-.superadmin-dashboard .dashboard-quick-btn {
-    min-height: 48px;
-    padding: 0.875rem 1rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-    -webkit-tap-highlight-color: transparent;
-    border-radius: 0.5rem;
-}
-.superadmin-dashboard .dashboard-stat-card {
-    min-height: 1px;
-}
+/* Mobile-first: Super Admin Dashboard - KPIs */
+.superadmin-dashboard .dashboard-stat-card { min-height: 1px; }
 .superadmin-dashboard .dashboard-stat-card .small-box-footer {
     min-height: 44px;
     padding: 0.75rem 1rem;
@@ -35,8 +22,6 @@
     -webkit-tap-highlight-color: transparent;
 }
 @media (min-width: 768px) {
-    .superadmin-dashboard .dashboard-welcome { font-size: 1rem; }
-    .superadmin-dashboard .dashboard-quick-btn { min-height: auto; padding: 0.5rem 1rem; }
     .superadmin-dashboard .dashboard-stat-card .small-box-footer { min-height: auto; padding: 0.5rem; }
 }
 </style>
@@ -44,36 +29,42 @@
 
 @section('content')
 <div class="container-fluid superadmin-dashboard">
-    {{-- Bienvenida (corta en móvil) --}}
-    <p class="dashboard-welcome text-muted mb-3 mb-md-4">
-        Bienvenido, <strong>{{ auth()->user()->name }}</strong>.
-        <span class="d-none d-sm-inline">Gestiona ISPs, administradores y exporta datos.</span>
-    </p>
+    {{-- Callout descriptivo (estándar Super Admin) --}}
+    <div class="row mb-2 mb-md-3">
+        <div class="col-12">
+            <div class="callout callout-secondary mb-0">
+                <h5 class="h6 mb-1 mb-md-2">
+                    <i class="fas fa-home mr-1"></i> Panel Super Admin
+                </h5>
+                <p class="mb-0 small d-none d-md-block">
+                    Bienvenido, <strong>{{ auth()->user()->name }}</strong>. Gestiona ISPs, administradores y exporta datos.
+                </p>
+            </div>
+        </div>
+    </div>
 
-    {{-- Accesos rápidos primero en móvil (acciones principales visibles sin scroll) --}}
+    {{-- Accesos rápidos: botones estándar btn-sm --}}
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card mb-0">
-                <div class="card-body py-3 py-md-3">
-                    <div class="row">
-                        <div class="col-12 col-md-4 mb-2 mb-md-0">
-                            <a href="{{ route('superadmin.isps.create') }}" class="btn btn-success btn-block dashboard-quick-btn">
-                                <i class="fas fa-plus mr-2"></i> Crear nuevo ISP
-                            </a>
-                        </div>
-                        <div class="col-12 col-md-4 mb-2 mb-md-0">
-                            <a href="{{ route('superadmin.create-admin-user') }}" class="btn btn-warning btn-block dashboard-quick-btn">
-                                <i class="fas fa-user-shield mr-2"></i> Crear admin por ISP
-                            </a>
-                        </div>
-                        <div class="col-12 col-md-4">
-                            <a href="{{ route('superadmin.export') }}" class="btn btn-info btn-block dashboard-quick-btn">
-                                <i class="fas fa-download mr-2"></i> Exportar datos
-                            </a>
-                        </div>
+            <x-card title="Accesos rápidos" icon="fa-bolt" variant="secondary">
+                <div class="row">
+                    <div class="col-12 col-md-4 mb-2 mb-md-0">
+                        <a href="{{ route('superadmin.isps.create') }}" class="btn btn-dark btn-sm btn-block">
+                            <i class="fas fa-plus mr-1"></i> Crear nuevo ISP
+                        </a>
+                    </div>
+                    <div class="col-12 col-md-4 mb-2 mb-md-0">
+                        <a href="{{ route('superadmin.create-admin-user') }}" class="btn btn-secondary btn-sm btn-block">
+                            <i class="fas fa-user-shield mr-1"></i> Crear admin por ISP
+                        </a>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <a href="{{ route('superadmin.export') }}" class="btn btn-outline-secondary btn-sm btn-block">
+                            <i class="fas fa-download mr-1"></i> Exportar datos
+                        </a>
                     </div>
                 </div>
-            </div>
+            </x-card>
         </div>
     </div>
 
@@ -85,7 +76,7 @@
                 :value="number_format($totalIsps)"
                 description="Registrados"
                 icon="fas fa-building"
-                variant="info"
+                variant="secondary"
                 :link="route('superadmin.isps.index')"
                 linkText="Ver ISPs"
                 class="shadow-sm dashboard-stat-card"
@@ -97,7 +88,7 @@
                 :value="number_format($ispsActivos)"
                 :description="$totalIsps > 0 ? round(($ispsActivos / $totalIsps) * 100) . '% del total' : '—'"
                 icon="fas fa-check-circle"
-                variant="success"
+                variant="secondary"
                 :link="route('superadmin.isps.index')"
                 linkText="Ver detalles"
                 class="shadow-sm dashboard-stat-card"
@@ -109,7 +100,7 @@
                 :value="number_format($totalUsuarios)"
                 description="En el sistema"
                 icon="fas fa-users"
-                variant="warning"
+                variant="secondary"
                 :link="route('superadmin.create-admin-user')"
                 linkText="Crear admin"
                 class="shadow-sm dashboard-stat-card"
@@ -127,51 +118,46 @@
         </div>
     </div>
 
-    {{-- Lista de bases de datos tenant --}}
+    {{-- Bases de datos tenant: x-card estándar --}}
     <div class="row mb-3 mb-md-4">
         <div class="col-12">
-            <div class="card">
-                <div class="card-header py-2 py-md-3">
-                    <h3 class="card-title mb-0"><i class="fas fa-database text-info mr-1"></i> Bases de datos tenant</h3>
-                    <div class="card-tools">
-                        <a href="{{ route('superadmin.isps.index') }}" class="btn btn-sm btn-outline-primary">Ver ISPs</a>
-                    </div>
-                </div>
-                <div class="card-body p-0">
-                    @if($basesDeDatos->count() > 0)
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                                <thead class="thead-light">
+            <x-card title="Bases de datos tenant" icon="fa-database" variant="secondary" :noPadding="true">
+                <x-slot name="actions">
+                    <a href="{{ route('superadmin.isps.index') }}" class="btn btn-sm btn-outline-secondary">Ver ISPs</a>
+                </x-slot>
+                @if($basesDeDatos->count() > 0)
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>ISP</th>
+                                    <th>Base de datos</th>
+                                    <th class="text-right">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($basesDeDatos as $isp)
                                     <tr>
-                                        <th>ID</th>
-                                        <th>ISP</th>
-                                        <th>Base de datos</th>
-                                        <th class="text-right">Acción</th>
+                                        <td>{{ $isp->id }}</td>
+                                        <td><strong>{{ $isp->nombre }}</strong></td>
+                                        <td><code>{{ $isp->database_name }}</code></td>
+                                        <td class="text-right">
+                                            <a href="{{ route('superadmin.isps.show', $isp) }}" class="btn btn-sm btn-outline-secondary">Ver ISP</a>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($basesDeDatos as $isp)
-                                        <tr>
-                                            <td>{{ $isp->id }}</td>
-                                            <td><strong>{{ $isp->nombre }}</strong></td>
-                                            <td><code>{{ $isp->database_name }}</code></td>
-                                            <td class="text-right">
-                                                <a href="{{ route('superadmin.isps.show', $isp) }}" class="btn btn-sm btn-info">Ver ISP</a>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    @else
-                        <div class="p-4 text-center text-muted">
-                            <i class="fas fa-database fa-2x mb-2"></i>
-                            <p class="mb-0">Ningún ISP tiene base de datos tenant asignada.</p>
-                            <p class="small mb-0">Al crear un ISP se crea su BD; si no, ejecuta <code>php artisan isp:create-database {id}</code>.</p>
-                        </div>
-                    @endif
-                </div>
-            </div>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-database fa-2x mb-2"></i>
+                        <p class="mb-0">Ningún ISP tiene base de datos tenant asignada.</p>
+                        <p class="small mb-0">Al crear un ISP se crea su BD; si no, ejecuta <code>php artisan isp:create-database {id}</code>.</p>
+                    </div>
+                @endif
+            </x-card>
         </div>
     </div>
 
@@ -182,7 +168,7 @@
                 :value="number_format($ispsInactivos)"
                 description="Deshabilitados"
                 icon="fas fa-ban"
-                variant="danger"
+                variant="secondary"
                 :link="route('superadmin.isps.index', ['estado' => 'inactivo'])"
                 linkText="Ver inactivos"
                 class="shadow-sm dashboard-stat-card"
@@ -194,28 +180,22 @@
                 :value="number_format($totalAdminsDefault)"
                 description="Por ISP"
                 icon="fas fa-user-shield"
-                variant="primary"
+                variant="secondary"
                 :link="route('superadmin.create-admin-user')"
                 linkText="Gestionar"
                 class="shadow-sm dashboard-stat-card"
             />
         </div>
         <div class="col-12 col-lg-6">
-            <div class="card h-100">
-                <div class="card-header py-2 py-md-3">
-                    <h3 class="card-title mb-0">ISPs recientes</h3>
-                    <div class="card-tools">
-                        <a href="{{ route('superadmin.isps.index') }}" class="btn btn-sm btn-outline-primary">
-                            Ver todos
-                        </a>
-                    </div>
-                </div>
-                <div class="card-body p-0">
-                    @if($recentIsps->count() > 0)
-                        {{-- Tabla en tablet/desktop --}}
+            <x-card title="ISPs recientes" icon="fa-building" variant="secondary" class="h-100" :noPadding="true">
+                <x-slot name="actions">
+                    <a href="{{ route('superadmin.isps.index') }}" class="btn btn-sm btn-outline-secondary">Ver todos</a>
+                </x-slot>
+                @if($recentIsps->count() > 0)
+                    <div class="p-0">
                         <div class="table-responsive d-none d-md-block">
                             <table class="table table-hover mb-0">
-                                <thead>
+                                <thead class="thead-light">
                                     <tr>
                                         <th>ISP</th>
                                         <th class="text-center">Usuarios</th>
@@ -234,9 +214,9 @@
                                             <td class="text-center">{{ $isp->clientes_count }}</td>
                                             <td class="text-center">
                                                 @if($isp->activo)
-                                                    <span class="badge badge-success">Activo</span>
+                                                    <span class="badge badge-secondary">Activo</span>
                                                 @else
-                                                    <span class="badge badge-danger">Inactivo</span>
+                                                    <span class="badge badge-dark">Inactivo</span>
                                                 @endif
                                             </td>
                                             <td class="text-right text-muted small">{{ optional($isp->created_at)->diffForHumans() }}</td>
@@ -245,16 +225,15 @@
                                 </tbody>
                             </table>
                         </div>
-                        {{-- Lista tipo tarjeta en móvil --}}
                         <div class="d-md-none list-group list-group-flush">
                             @foreach($recentIsps as $isp)
                                 <a href="{{ route('superadmin.isps.show', $isp) }}" class="list-group-item list-group-item-action py-3 px-3" style="min-height: 48px;">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <span class="font-weight-bold">{{ $isp->nombre }}</span>
                                         @if($isp->activo)
-                                            <span class="badge badge-success">Activo</span>
+                                            <span class="badge badge-secondary">Activo</span>
                                         @else
-                                            <span class="badge badge-danger">Inactivo</span>
+                                            <span class="badge badge-dark">Inactivo</span>
                                         @endif
                                     </div>
                                     <div class="small text-muted mt-1">
@@ -263,17 +242,17 @@
                                 </a>
                             @endforeach
                         </div>
-                    @else
-                        <div class="p-4 text-center">
-                            <i class="fas fa-building text-muted fa-3x mb-3"></i>
-                            <p class="text-muted mb-3">Aún no hay ISPs creados.</p>
-                            <a href="{{ route('superadmin.isps.create') }}" class="btn btn-success dashboard-quick-btn" style="min-height: 48px;">
-                                <i class="fas fa-plus mr-2"></i> Crear primer ISP
-                            </a>
-                        </div>
-                    @endif
-                </div>
-            </div>
+                    </div>
+                @else
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-building fa-3x mb-3"></i>
+                        <p class="mb-3">Aún no hay ISPs creados.</p>
+                        <a href="{{ route('superadmin.isps.create') }}" class="btn btn-dark btn-sm">
+                            <i class="fas fa-plus mr-1"></i> Crear primer ISP
+                        </a>
+                    </div>
+                @endif
+            </x-card>
         </div>
     </div>
 </div>

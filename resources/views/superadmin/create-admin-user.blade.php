@@ -13,10 +13,10 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-8 offset-md-2">
-            <x-card title="Crear Usuario Administrador por ISP" icon="fa-user-shield" variant="warning">
+            <x-card title="Crear Usuario Administrador por ISP" icon="fa-user-shield" variant="secondary">
                 <form action="{{ route('superadmin.store-admin-user') }}" method="POST" id="form-create-admin">
                     @csrf
-                        <div class="alert alert-info">
+                        <div class="alert alert-secondary">
                             <i class="fas fa-info-circle"></i>
                             <strong>Importante:</strong> Este usuario será el administrador por defecto del ISP seleccionado
                             y no podrá ser eliminado por otros usuarios. Solo el super administrador root puede eliminarlo.
@@ -147,12 +147,11 @@
                                 </span>
                             @enderror
                         </div>
-                    </div>
                     <x-slot name="footer">
                         <x-btn :route="route('superadmin.dashboard')" variant="secondary" icon="fa-times">
                             Cancelar
                         </x-btn>
-                        <x-btn type="submit" form="form-create-admin" variant="warning" icon="fa-save" class="float-right">
+                        <x-btn type="submit" form="form-create-admin" variant="dark" icon="fa-save" class="float-right">
                             Crear Usuario Administrador
                         </x-btn>
                     </x-slot>

@@ -1,3 +1,7 @@
+@php
+    $user = auth()->user();
+    $isSuperAdmin = $user && method_exists($user, 'isSuperAdmin') && $user->isSuperAdmin();
+@endphp
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -27,9 +31,12 @@
     {{-- Estilos Globales Minimalistas --}}
     @include('components.global-styles')
 
+    @if($isSuperAdmin)
+        @vite('resources/css/superadmin.css')
+    @endif
     @stack('styles')
 </head>
-<body class="hold-transition sidebar-mini layout-fixed">
+<body class="hold-transition sidebar-mini layout-fixed {{ $isSuperAdmin ? 'superadmin-panel' : '' }}">
 <div class="wrapper">
 
     <!-- Preloader -->
@@ -41,10 +48,6 @@
     @include('layouts.partials.adminlte-navbar')
 
     <!-- Main Sidebar Container -->
-    @php
-        $user = auth()->user();
-        $isSuperAdmin = $user && method_exists($user, 'isSuperAdmin') && $user->isSuperAdmin();
-    @endphp
     @if($isSuperAdmin)
         @include('layouts.partials.adminlte-sidebar-superadmin')
     @else
