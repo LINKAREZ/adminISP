@@ -361,7 +361,7 @@
         font-size: 0.75rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: var(--gray-500);
+        color: var(--gray-600);
         font-weight: 500;
     }
 
@@ -381,7 +381,7 @@
     .nav-tabs .nav-link {
         border: none;
         border-bottom: 2px solid transparent;
-        color: var(--gray-500);
+        color: var(--gray-600);
         padding: 0.875rem 1.25rem;
         font-weight: 500;
         font-size: 0.875rem;
@@ -415,7 +415,7 @@
 
     /* Corregir color de pestañas en card-primary */
     .card-primary.card-tabs .nav-tabs .nav-link {
-        color: var(--gray-500) !important;
+        color: var(--gray-600) !important;
     }
 
     .card-primary.card-tabs .nav-tabs .nav-link:hover {
@@ -437,7 +437,7 @@
         font-size: 0.75rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: var(--gray-500);
+        color: var(--gray-600);
         font-weight: 600;
         padding: 14px 16px;
         min-height: 48px;
@@ -667,6 +667,11 @@
         outline: none;
     }
 
+    .form-control::placeholder {
+        color: var(--gray-600);
+        opacity: 1;
+    }
+
     .form-control-sm {
         padding: 0.5rem 0.75rem;
         font-size: 0.8125rem;
@@ -816,7 +821,7 @@
     }
 
     .breadcrumb-item a {
-        color: var(--gray-500);
+        color: var(--gray-600);
         transition: color var(--transition-fast);
     }
 
@@ -863,7 +868,7 @@
     .stat-card .stat-label {
         font-size: 0.75rem;
         text-transform: uppercase;
-        color: var(--gray-500);
+        color: var(--gray-600);
         letter-spacing: 0.05em;
         font-weight: 500;
     }
@@ -1141,7 +1146,7 @@
 
     .info-compact .info-label {
         font-size: 0.8125rem;
-        color: var(--gray-500);
+        color: var(--gray-600);
         font-weight: 500;
     }
 
@@ -1984,7 +1989,7 @@
     .input-group-text {
         background: var(--gray-100);
         border: 1px solid var(--gray-300);
-        color: var(--gray-500);
+        color: var(--gray-600);
     }
 
     /* === SCROLLBAR === */

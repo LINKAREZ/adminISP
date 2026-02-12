@@ -131,7 +131,7 @@
 
 /* Nav tabs */
 [data-theme="dark"] .nav-tabs .nav-link {
-    color: var(--gray-500);
+    color: var(--gray-600);
 }
 
 [data-theme="dark"] .nav-tabs .nav-link:hover {
@@ -150,7 +150,7 @@
 
 /* Info box text */
 [data-theme="dark"] .info-box-text {
-    color: var(--gray-500);
+    color: var(--gray-600);
 }
 
 [data-theme="dark"] .info-box-number {
