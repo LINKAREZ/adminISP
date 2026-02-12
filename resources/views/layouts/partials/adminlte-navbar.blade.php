@@ -26,13 +26,6 @@
                 <small class="d-block text-center text-muted mt-1">Color del panel</small>
             </div>
         </li>
-        <!-- Modo claro/oscuro -->
-        <li class="nav-item">
-            <button type="button" class="nav-link nav-link-mobile theme-toggle-btn" onclick="ThemeToggle.toggle()" aria-label="Cambiar tema claro/oscuro" title="Claro / Oscuro">
-                <i class="fas fa-moon theme-icon-dark d-none"></i>
-                <i class="fas fa-sun theme-icon-light"></i>
-            </button>
-        </li>
         <!-- User Dropdown Menu -->
         <li class="nav-item dropdown">
             <a class="nav-link nav-link-mobile" data-toggle="dropdown" href="#" aria-label="Menú de usuario">

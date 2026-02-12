@@ -50,7 +50,7 @@ Referencia basada en prácticas de UX (UX Planet, WCAG, design systems enterpris
 - Misma estructura y contraste en ambos modos.
 - Revisar iconos, bordes y textos secundarios en dark.
 
-**Admin ISP:** Toggle en navbar; `[data-theme="dark"]` con variables invertidas y sidebar con mismo nivel de contraste.
+**Admin ISP:** Solo tema claro; paleta unificada en `:root` y temas de color (indigo/azul/verde/teal).
 
 ---
 
@@ -82,7 +82,7 @@ Referencia basada en prácticas de UX (UX Planet, WCAG, design systems enterpris
 |------------------------|--------|
 | Contraste WCAG AA     | ✅ Texto y UI en sidebar y contenido |
 | Sidebar oscuro legible| ✅ #e8ecf1, hover/activo definidos |
-| Dark mode completo    | ✅ Variables y overrides en dark-mode.css |
+| Dark mode completo    | — Eliminado (solo tema claro) |
 | Active destacado      | ✅ Fondo 0.15–0.18, texto blanco |
 | Tooltips colapsado    | ✅ title en nav-link (ver vistas) |
 | Ancho expandido       | ✅ 280px (rango 240–300); colapsado 64px |

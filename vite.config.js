@@ -44,7 +44,6 @@ export default defineConfig({
         'resources/css/mapa-infraestructura.css',
         'resources/js/app.js',
         'resources/js/adminlte.js',
-        'resources/js/theme-toggle.js',
         'resources/js/color-theme.js',
         'resources/js/logger.js',
       ],

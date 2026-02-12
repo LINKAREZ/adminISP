@@ -1,25 +1,6 @@
 # Temas del panel (Admin ISP)
 
-Hay **dos ejes** independientes:
-
-1. **Modo claro / oscuro** — brillo del fondo (claro u oscuro).
-2. **Tema de color** — color principal del panel (índigo, azul, verde, teal).
-
-Se pueden combinar: por ejemplo “claro + azul” o “oscuro + verde”.
-
----
-
-## Modo claro / oscuro
-
-| Modo   | Descripción                    |
-|--------|--------------------------------|
-| **Claro** | Fondo blanco/gris claro (por defecto). |
-| **Oscuro** | Fondo oscuro; menos brillo. |
-
-- **Dónde:** barra superior → botón con icono **sol** / **luna**.
-- Un clic alterna entre claro y oscuro.
-- Se guarda en el navegador (`localStorage`, clave `theme`).
-- Si no has elegido nunca, se usa la preferencia del sistema (SO/navegador).
+El panel usa un **tema de color** para el color principal (índigo, azul, verde, teal). Solo hay modo claro.
 
 ---
 
@@ -44,7 +25,6 @@ Afecta a: botones primarios, cabeceras de cards, sidebar (panel tenant), enlaces
 
 | Qué              | Archivo |
 |------------------|--------|
-| Modo claro/oscuro | `resources/js/theme-toggle.js`, `resources/css/dark-mode.css` |
 | Temas de color   | `resources/js/color-theme.js`, `resources/css/color-themes.css` |
 | Navbar           | `resources/views/layouts/partials/adminlte-navbar.blade.php` |
 

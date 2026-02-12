@@ -102,7 +102,7 @@
 @include('components.alerts')
 
 {{-- CARGAR JS AdminLTE (debe estar ANTES de @stack('scripts') para que jQuery esté disponible) --}}
-@vite(['resources/js/adminlte.js', 'resources/js/theme-toggle.js', 'resources/js/color-theme.js'])
+@vite(['resources/js/adminlte.js', 'resources/js/color-theme.js'])
 
 @stack('scripts')
 </body>
