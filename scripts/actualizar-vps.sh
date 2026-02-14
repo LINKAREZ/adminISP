@@ -37,5 +37,6 @@ docker compose ps
 
 echo ""
 echo "Listo. Proyecto actualizado al 100% en la VPS."
-echo "Si cambiaste CSS/JS o package.json, en la VPS ejecuta:"
-echo "  docker run --rm -v \$(pwd):/app -w /app node:20-alpine sh -c 'npm ci && npm run build'"
+echo ""
+echo "Si cambiaste CSS/JS o Vite: NO ejecutes npm build aquí (consume mucha RAM, desconecta SSH)."
+echo "En su lugar, ejecuta LOCALMENTE: ./scripts/build-local-y-desplegar.sh"

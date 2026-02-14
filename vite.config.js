@@ -2,6 +2,10 @@ import laravel from 'laravel-vite-plugin';
 import { defineConfig } from 'vite';
 import { copyFileSync, mkdirSync, existsSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Plugin para copiar webfonts de FontAwesome
 function copyFontAwesomeWebfonts() {
@@ -10,15 +14,15 @@ function copyFontAwesomeWebfonts() {
     buildStart() {
       const fontAwesomePath = join(process.cwd(), 'node_modules/@fortawesome/fontawesome-free/webfonts');
       const publicWebfontsPath = join(process.cwd(), 'public/webfonts');
-      
+
       if (existsSync(fontAwesomePath)) {
         if (!existsSync(publicWebfontsPath)) {
           mkdirSync(publicWebfontsPath, { recursive: true });
         }
-        
+
         try {
           const files = readdirSync(fontAwesomePath);
-          files.forEach(file => {
+          files.forEach((file) => {
             const srcPath = join(fontAwesomePath, file);
             const destPath = join(publicWebfontsPath, file);
             if (statSync(srcPath).isFile()) {
@@ -30,7 +34,7 @@ function copyFontAwesomeWebfonts() {
           console.warn('⚠️ No se pudieron copiar los webfonts de FontAwesome:', error.message);
         }
       }
-    }
+    },
   };
 }
 
@@ -56,25 +60,27 @@ export default defineConfig({
       host: 'localhost',
     },
   },
+  resolve: {
+    alias: {
+      // popper.js: package.json apunta a dist/umd/ que no existe; usar dist/ directamente
+      'popper.js': path.resolve(__dirname, 'node_modules/popper.js/dist/popper.js'),
+    },
+  },
   build: {
-    // Optimizaciones de build
     cssCodeSplit: true,
     rollupOptions: {
       output: {
         manualChunks: {
           vendor: ['axios'],
-          adminlte: ['admin-lte', 'bootstrap', 'jquery'],
+          adminlte: ['admin-lte', 'jquery'],
           datatables: ['datatables.net', 'datatables.net-bs4'],
         },
       },
     },
-    // Minificar en producción, mantener sin minificar en desarrollo para mejor debugging
     minify: process.env.NODE_ENV === 'production',
-    // Chunk size warning limit
     chunkSizeWarningLimit: 1000,
   },
-  // Optimizaciones de desarrollo
   optimizeDeps: {
-    include: ['axios', 'chart.js/auto', 'datatables.net', 'datatables.net-bs4'],
+    include: ['axios', 'chart.js/auto', 'datatables.net', 'datatables.net-bs4', 'popper.js'],
   },
 });

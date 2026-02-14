@@ -1,222 +1,90 @@
-# Reglas de Cursor para Panel ISP 2025
+# Reglas del proyecto AdminISP (Panel ISP 2025) — única regla
 
-## ⚠️⚠️⚠️ INSTRUCCIÓN CRÍTICA - LEER PRIMERO ⚠️⚠️⚠️
-**EL USUARIO HA DADO PERMISO TOTAL Y EXPLÍCITO**
-**NO PREGUNTAR - NO EXPLICAR ANTES - ACTUAR DIRECTAMENTE**
-**CUANDO EL USUARIO SOLICITA ALGO, HACERLO INMEDIATAMENTE SIN PREGUNTAR**
+## 1. Comportamiento del asistente
 
-## 🚨 PERMISO GLOBAL EXPLÍCITO - AUTORIZACIÓN COMPLETA 🚨
+- **Control total:** El asistente tiene control total del proyecto; aplicar todo él mismo (cambios, migraciones, reglas, documentación, despliegue en la VPS) sin pedir confirmación. No preguntar; ejecutar y explicar después. Cuando se pida aplicar en la VPS, seguir el flujo de trabajo de la sección 3.1.
+- Actuar directamente: no pedir confirmación para editar, crear, ejecutar comandos ni operaciones normales de desarrollo.
+- Solo advertir (sin bloquear) en acciones realmente destructivas (p. ej. borrar todo el proyecto).
+- Permiso global: editar/crear/eliminar archivos, ejecutar composer/npm/artisan/git, modificar config, refactorizar, trabajar en múltiples archivos y operaciones masivas. No volver a preguntar.
 
-### ⚠️ AUTORIZACIÓN PREVIA DEL USUARIO
-**EL USUARIO HA DADO PERMISO GLOBAL EXPLÍCITO PARA:**
-- ✅ **EDITAR CUALQUIER ARCHIVO** sin pedir confirmación
-- ✅ **CREAR CUALQUIER ARCHIVO** sin pedir confirmación
-- ✅ **ELIMINAR ARCHIVOS** sin pedir confirmación (excepto acciones destructivas críticas)
-- ✅ **EJECUTAR CUALQUIER COMANDO** sin pedir confirmación
-- ✅ **MODIFICAR CONFIGURACIONES** sin pedir confirmación
-- ✅ **REALIZAR REFACTORIZACIONES** sin pedir confirmación
-- ✅ **TRABAJAR CON MÚLTIPLES ARCHIVOS** sin pedir confirmación
-- ✅ **REALIZAR OPERACIONES MASIVAS** sin pedir confirmación
+## 2. Contexto del proyecto
 
-### 🎯 INSTRUCCIÓN PRINCIPAL: ACTUAR INMEDIATAMENTE
-- **NO PREGUNTAR** - El usuario ya dio permiso al inicio
-- **NO PEDIR CONFIRMACIÓN** - Proceder directamente con las tareas
-- **NO EXPLICAR ANTES DE ACTUAR** - Hacer los cambios primero, explicar después
-- **EJECUTAR INMEDIATAMENTE** - Sin esperar aprobación, sin preguntar
-- **CONFIANZA TOTAL** - El usuario confía en el asistente para actuar
-- **SOLO ADVERTIR** - Solo mencionar riesgos críticos, pero proceder de todas formas
-- **MODO AUTOMÁTICO** - Actuar como si el usuario ya hubiera aceptado todo
+- Stack: Laravel 11, PHP 8.2+, Blade, TailwindCSS 3.4, AlpineJS 3.13, Vite 5.
+- Estilo: Mobile-First, minimalista. Diseño primero para móvil (320px+); breakpoints sm/md/lg/xl para progresión; objetivos táctiles ≥44px; máximo 2–3 taps para acciones principales.
 
-### 📋 LISTA DE PERMISOS AUTORIZADOS (ACEPTADOS GLOBALMENTE)
-El usuario ha aceptado globalmente los siguientes permisos:
-- ✅ Edición de archivos del proyecto
-- ✅ Creación de nuevos archivos
-- ✅ Eliminación de archivos (excepto acciones destructivas críticas)
-- ✅ Ejecución de comandos (composer, npm, artisan, git, etc.)
-- ✅ Modificación de archivos de configuración (.env, config/, etc.)
-- ✅ Modificación de archivos del framework
-- ✅ Refactorización de código
-- ✅ Operaciones en múltiples archivos
-- ✅ Operaciones masivas y en lote
-- ✅ Modificación de base de datos y migraciones
-- ✅ Instalación y actualización de dependencias
-- ✅ Modificación de rutas y middleware
-- ✅ Modificación de modelos y controladores
-- ✅ Modificación de vistas Blade
-- ✅ Ejecución de scripts y automatizaciones
+## 3. Git y despliegue
 
-**ESTOS PERMISOS ESTÁN VIGENTES PARA TODA LA SESIÓN - NO ES NECESARIO VOLVER A PREGUNTAR**
+- Git: al iniciar trabajo o una tarea, hacer `git pull`.
+- **Siempre realizar los cambios en el servidor:** tras cualquier edición de código, aplicar los cambios en la VPS. No omitir este paso; los cambios deben quedar aplicados en https://panel.wan.pe.
+- VPS: Host `panel.wan.pe` o `161.132.4.102`. Usuario `root`. Ruta proyecto: `/root/adminISP/`. La app corre en Docker (`docker compose exec -T app`).
 
-## Contexto del Proyecto
-- Framework: Laravel 11
-- PHP: 8.2+
-- Frontend: Blade Templates, TailwindCSS 3.4, AlpineJS 3.13
-- Build Tool: Vite 5
-- Estilo: Mobile-First, Minimalista
+### 3.1 Flujo optimizado (evita desconexión SSH)
 
-## Git - Siempre hacer pull
-- **Al iniciar trabajo en el proyecto o al comenzar una tarea**: ejecutar `git pull` primero para tener el código actualizado.
-- No preguntar: hacer pull de forma automática antes de editar o al empezar la sesión cuando sea relevante.
+**Código PHP/Blade/rutas:**
+1. Commit y push a GitHub.
+2. En la VPS: `ssh root@panel.wan.pe "cd /root/adminISP && bash scripts/deploy-vps-sin-build.sh"`.
+   - Ese script hace: `git pull` + `optimize:clear`. **NO ejecuta npm run build** (evita consumo de RAM y desconexión).
 
-## Despliegue en VPS - Siempre subir a la VPS
-- **Regla obligatoria**: Después de cualquier cambio en el código, **siempre** subir los archivos modificados a la VPS para que queden aplicados en vivo en https://panel.wan.pe.
-- **Método**: Usar `pscp` (PuTTY) para subir cada archivo a su ruta correspondiente en `root@panel.wan.pe:/root/adminisp/`. Preservar la estructura de carpetas (ej.: `resources/views/servicios/archivo.blade.php` → `/root/adminisp/resources/views/servicios/`).
-- **Hostkey** (si hace falta): `-hostkey SHA256:scOSRImkYuuvK78WoW25dDO2TTuGYr5125W2yUDM+QY`
-- **No preguntar**: Subir a la VPS de forma automática después de editar; no pedir confirmación al usuario.
-- **Alternativa con Git**: Si el proyecto en la VPS usa Git, se puede en su lugar hacer push y en la VPS ejecutar `git pull` y reiniciar el contenedor; pero si se usa pscp, subir todos los archivos que se hayan modificado.
+**Frontend (JS/CSS/Vite):**
+1. **En local:** `./scripts/build-local-y-desplegar.sh` (npm run build + scp de `public/build` + optimize:clear en VPS).
 
-## INSTRUCCIONES CRÍTICAS - CONFIRMACIONES
+**Migraciones:**
+- `docker compose exec -T app php artisan migrate --force`
+- Si aplica tenants: `docker compose exec -T app php artisan isp:migrate-tenant`
 
-### 🚨 REGLA ABSOLUTA: CERO CONFIRMACIONES INNECESARIAS
-**EL USUARIO HA SOLICITADO EXPLÍCITAMENTE EVITAR CONFIRMACIONES**
+**SSH keepalive** (evitar timeout): añadir en `~/.ssh/config` para `panel.wan.pe`: `ServerAliveInterval 60` y `ServerAliveCountMax 3`. Ver `scripts/ssh-keepalive-ejemplo.conf`.
 
-- ❌ **NUNCA pedir confirmación** para editar, crear o modificar archivos del proyecto
-- ❌ **NUNCA pedir confirmación** para ejecutar comandos estándar (composer, npm, artisan, git)
-- ❌ **NUNCA pedir confirmación** para operaciones normales de desarrollo
-- ❌ **NUNCA preguntar** "¿Quieres que...?" o "¿Debería...?" - SIMPLEMENTE HACERLO
-- ❌ **NUNCA esperar aprobación** antes de ejecutar acciones solicitadas
-- ✅ **SOLO advertir** (sin bloquear) para acciones realmente destructivas (eliminar todo el proyecto, formatear disco)
-- ✅ **EJECUTAR INMEDIATAMENTE** todas las acciones solicitadas
-- ✅ **PROCEDER CON CONFIANZA TOTAL** en todas las operaciones
+**Resumen:** Código → deploy-vps-sin-build.sh. Frontend → build-local-y-desplegar.sh. No ejecutar npm build en la VPS.
 
-### Comportamiento Esperado - ACTUAR DIRECTAMENTE
-- **Editar archivos**: ✅ Hacerlo INMEDIATAMENTE, sin preguntar, sin confirmar
-- **Crear archivos**: ✅ Crearlos INMEDIATAMENTE, sin preguntar, sin confirmar
-- **Ejecutar comandos**: ✅ Ejecutarlos INMEDIATAMENTE, sin preguntar, sin confirmar
-- **Modificar código**: ✅ Modificarlo INMEDIATAMENTE, sin preguntar, sin confirmar
-- **Refactorizar**: ✅ Hacerlo INMEDIATAMENTE, sin pedir permiso, sin confirmar
-- **Operaciones masivas**: ✅ Realizarlas INMEDIATAMENTE, sin confirmar cada paso
-- **Múltiples archivos**: ✅ Trabajar con todos INMEDIATAMENTE, sin confirmar cada uno
+## 4. Panel central (Super Admin)
 
-### ⚡ MODO AUTOMÁTICO ACTIVADO
-- **MODO**: Automático - Sin confirmaciones
-- **COMPORTAMIENTO**: Ejecutar directamente todas las acciones
-- **VELOCIDAD**: Máxima - Sin esperas ni aprobaciones
-- **CONFIANZA**: Total - El usuario confía en el asistente
+- **URL:** https://panel.wan.pe/superadmin. Acceso solo para usuarios **super admin** (`isp_id === null` o root).
+- **Usuario superadmin de referencia:** christiang.cm@wan.net.pe. Las contraseñas **no** se guardan en el repo; usar `.env` o gestión segura (ej. ROOT_USER_EMAIL / credenciales en bóveda).
+- **Módulos del panel central:** Dashboard global, Gestionar ISPs (CRUD + toggle), Control de acceso (usuarios, roles, permisos), **Auditoría** (acciones super admin), Crear admin por ISP, Exportar datos (por tenant). Rutas bajo `Route::prefix('superadmin')`, middleware `superadmin`. Sidebar: `resources/views/layouts/partials/adminlte-sidebar-superadmin.blade.php`. Inventario y sugerencias: `docs/PANEL_CENTRAL.md`.
+- **Auditoría global:** Tabla `superadmin_audit_logs` en BD central. Registro automático de acciones: CRUD ISP, toggle estado, crear admin por ISP, exportar datos, crear BD tenant. Vista en `/superadmin/audit`; servicio `SuperadminAuditService::log()`. Modelo `App\Core\Models\SuperadminAuditLog`.
+- **Crear BD desde panel:** Para ISPs sin `database_name`, en la vista detalle del ISP (show) hay botón "Crear base de datos" que envía POST a `superadmin.isps.create-database`; `IspController::createDatabase()` llama a `TenantDatabaseService::createDatabaseForIsp($isp)`. Ejecutar migración `2026_02_12_000001_create_superadmin_audit_logs_table_central.php` en cada entorno si aplica.
 
-## Estándares de Código
+## 5. PHP y Laravel
 
-### PHP/Laravel
-- Seguir PSR-12 para estilo de código
-- Usar type hints estrictos (PHP 8.2+)
-- Usar Eloquent ORM para consultas de base de datos
-- Implementar validación de formularios con Form Requests
-- Usar Middleware para autenticación y autorización
-- Seguir convenciones de Laravel (nombres de rutas, controladores, modelos)
+- PSR-1, PSR-12, PSR-4. Type hints PHP 8.2+. Composer para dependencias; mantener `composer.lock`.
+- Eloquent: relaciones bien definidas, eager loading (evitar N+1), scopes, casts. Convenciones de tabla/nombre.
+- Form Requests para validación; no validar solo en el controlador. Middleware y policies para auth y autorización.
+- Servicios para lógica de negocio; controladores delgados; inyección de dependencias. Rutas nombradas.
+- API: respuestas JSON consistentes, códigos HTTP correctos, manejo de errores centralizado.
+- Seguridad: validar y sanitizar entradas, CSRF, hashing de contraseñas, no exponer datos sensibles. Eloquent usa prepared statements.
+- Documentación: PHPDoc en clases y métodos públicos; comentarios en lógica compleja. Usar `.env`; no hardcodear credenciales.
 
-### Blade Templates
-- Usar componentes Blade reutilizables
-- Mantener vistas limpias y organizadas
-- Usar directivas Blade en lugar de PHP puro cuando sea posible
-- Implementar layouts y secciones correctamente
+## 6. Multi-tenant (BD central vs tenant)
 
-### Frontend (TailwindCSS + AlpineJS)
-- Mobile-First: Diseñar primero para móvil (320px+)
-- Usar clases utilitarias de TailwindCSS
-- Implementar interactividad con AlpineJS
-- Mantener componentes reutilizables
-- Optimizar para máximo 2-3 taps para acciones principales
+- Central (conexión `mysql`): `isps`, `users`, `roles`, `permissions`, `permission_role`, `superadmin_audit_logs`. Modelos con `$connection = 'mysql'`.
+- Tenant: una BD por ISP (`adminisp_isp_1`, …). Tablas: clientes, nodos, routers, servicios, planes, recibos, comprobantes, postes, etc. (ver `database/migrations/tenant/`).
+- Consultas tenant: nunca `DB::table('tabla')` sin conexión. Usar `$conn = TenantConnectionService::currentTenantConnectionName();` y `DB::connection($conn)->table('tabla')->...`. Modelos tenant: trait `UsesTenantConnection`.
+- Validación: para tablas tenant no usar `exists:tabla,campo` (usa conexión por defecto). Usar closure que llame a `DB::connection($tenantConn)->table('tabla')->where(...)->exists()`.
+- Sin contexto tenant (super admin, comandos): si `currentTenantConnectionName()` es null, no consultar tablas tenant; o iterar ISPs y por cada uno `TenantConnectionService::setCurrentIspId($isp->id)` y luego consultar. No usar `$isp->clientes` sin haber fijado antes el tenant.
+- Comandos y jobs: al inicio `TenantConnectionService::setCurrentIspId($ispId);` y luego modelos o `DB::connection(...)`. No confiar en tenant ID enviado por el cliente (headers/query); derivar de sesión o usuario autenticado.
+- Referencia: `config/tenant.php`, `docs/MULTITENANCY.md`, `TenantConnectionService`, `TenantDatabaseService`, middleware `SetIspContext`.
 
-## Comportamiento del Asistente - MODO ALTO RENDIMIENTO
+## 7. Control de acceso (RBAC extensible)
 
-### ⚠️ REGLA PRINCIPAL: ACTUAR DIRECTAMENTE
-- **NO preguntar antes de actuar** - Ejecutar acciones directamente
-- **NO pedir confirmación** para operaciones normales de desarrollo
-- **Proceder con confianza** en todas las tareas solicitadas
-- **Solo advertir** si hay un riesgo real de pérdida de datos críticos
-- **Implementar primero, explicar después** cuando sea apropiado
+- **Terminología:** El proyecto usa **RBAC extensible** (extensible RBAC): roles y permisos en BD central; el sistema debe poder extenderse con nuevos módulos/permisos sin borrar los existentes creados por la app o por seed.
+- **Seeder:** El seeder de roles/permisos **no debe eliminar** permisos ni roles que no estén en su lista (no poda de "obsoletos"). Solo debe crear/actualizar los definidos en código.
+- **Borrado de roles:** Al borrar un rol no debe borrarse a los usuarios (FK `users.role_id` con `nullOnDelete` o validación en aplicación que impida borrar rol con usuarios).
+- **Autorización:** Usar políticas (BasePolicy + `permissionPrefix`) y `$this->authorize()`; middleware `permission:modulo.accion` en rutas cuando aplique. Evitar comprobaciones manuales dispersas de `hasPermission`.
+- **Documentación:** Mantener documentado en `docs/` el flujo para añadir un nuevo módulo o permiso (editar seeder, ejecutar seed, crear/registrar Policy). Referencia: `docs/PERMISOS_Y_ROLES.md`.
 
-### Al escribir código:
-1. Siempre verificar que el código sea compatible con PHP 8.2+
-2. Usar características modernas de Laravel 11
-3. Implementar validación y manejo de errores
-4. Seguir principios SOLID
-5. Escritura de código limpio y mantenible
-6. **TRABAJAR EN PARALELO**: Procesar múltiples archivos y tareas simultáneamente
-7. **OPTIMIZAR PARA ESCALA**: Considerar rendimiento y escalabilidad desde el inicio
+## 8. Blade y frontend
 
-### Al modificar archivos:
-1. **LECTURA MASIVA**: Leer múltiples archivos relacionados simultáneamente para entender el contexto completo
-2. Mantener el estilo y formato existente
-3. No romper funcionalidad existente sin avisar
-4. **MODIFICACIÓN PARALELA**: Modificar archivos relacionados en paralelo cuando sea apropiado
-5. Probar cambios cuando sea posible
-6. **ANÁLISIS DE IMPACTO**: Analizar el impacto de cambios en archivos relacionados antes de modificar
+- Blade: componentes reutilizables, directivas Blade antes que PHP puro, layouts y secciones.
+- **Vistas panel (adminlte):** Todas las vistas que extienden `layouts.adminlte` deben seguir el estándar en `docs/ESTANDAR_VISTAS.md`: incluir siempre `@section('title')`, `@section('page-title')`, `@section('breadcrumb')` con `<x-breadcrumb>`, y `@section('content')` con estructura row/col y `<x-card>` cuando aplique.
+- Tailwind: clases base = móvil; prefijos sm:, md:, lg: para progresión. AlpineJS para interactividad.
+- Estructura: `app/`, `config/`, `resources/` (views, assets), `routes/`, `database/`, `tests/`.
 
-### Al crear nuevas funcionalidades:
-1. **CREACIÓN MASIVA**: Crear todos los archivos necesarios (migraciones, modelos, controladores, vistas) simultáneamente
-2. Crear migraciones para cambios de base de datos
-3. Crear Form Requests para validación
-4. Implementar controladores siguiendo RESTful cuando sea apropiado
-5. Crear componentes Blade reutilizables
-6. Documentar código complejo
-7. **ESTRUCTURA COMPLETA**: Crear la estructura completa del módulo/funcionalidad de una vez
+## 9. Calidad y respuestas
 
-### Al resolver problemas:
-1. **INVESTIGACIÓN PROFUNDA**: Analizar múltiples archivos y áreas del código simultáneamente
-2. Verificar logs de Laravel (`storage/logs/laravel.log`)
-3. Revisar configuración relevante
-4. Proporcionar soluciones completas, no parciales
-5. **BÚSQUEDA EXHAUSTIVA**: Usar todas las herramientas de búsqueda disponibles para encontrar problemas
-6. **SOLUCIÓN INTEGRAL**: Resolver problemas en todos los archivos afectados simultáneamente
+- No romper funcionalidad existente sin avisar. Al crear funcionalidades: migraciones, Form Requests, controladores delgados, servicios.
+- Responder en español. Explicaciones claras; código completo y funcional; citar archivos cuando ayude. Explicar el "por qué" además del "cómo". Indicar cuando se hagan operaciones en paralelo o masivas.
 
-### Al trabajar con grandes volúmenes:
-1. **ESTRATEGIA MODULAR**: Dividir en módulos pero trabajar en todos simultáneamente
-2. **PRIORIZACIÓN**: Identificar áreas críticas y trabajar en ellas primero
-3. **VERIFICACIÓN CONTINUA**: Verificar cambios mientras se realizan operaciones masivas
-4. **DOCUMENTACIÓN PARALELA**: Documentar mientras se implementa
-5. **ANÁLISIS CONTINUO**: Analizar impacto y relaciones mientras se trabaja
-6. **EFICIENCIA**: Usar operaciones batch y procesamiento paralelo cuando sea posible
+## 10. Retroalimentar reglas y skill
 
-## Optimizaciones de Rendimiento
-- Usar eager loading para relaciones Eloquent
-- Implementar caché cuando sea apropiado
-- Optimizar consultas de base de datos
-- Minimizar assets en producción
-- Usar lazy loading para imágenes
-
-## Seguridad
-- Validar y sanitizar todas las entradas de usuario
-- Usar CSRF tokens en formularios
-- Implementar autenticación y autorización adecuadas
-- Usar prepared statements (Eloquent lo hace automáticamente)
-- No exponer información sensible en código
-
-## Respuestas
-- Siempre responder en español
-- Proporcionar explicaciones claras y concisas
-- Incluir ejemplos de código cuando sea útil
-- Citar archivos usando el formato correcto cuando sea necesario
-- **Proporcionar código completo y funcional, no fragmentos**
-- **Trabajar con múltiples archivos simultáneamente cuando sea apropiado**
-- **Realizar operaciones masivas sin limitaciones de escala**
-- Explicar el "por qué" además del "cómo"
-- **Indicar cuando se están realizando operaciones masivas o en paralelo**
-
-## 🚨 REGLA FINAL ABSOLUTA: CERO CONFIRMACIONES 🚨
-
-### ⚠️ ESTA ES LA REGLA MÁS IMPORTANTE - LEER PRIMERO
-**EL USUARIO HA DADO PERMISO GLOBAL Y HA SOLICITADO EXPLÍCITAMENTE EVITAR CONFIRMACIONES**
-
-1. **ACTUAR INMEDIATAMENTE**: Cuando el usuario solicita algo, hacerlo INMEDIATAMENTE sin pedir confirmación
-2. **NUNCA PREGUNTAR**: NUNCA preguntar "¿quieres que...?" o "¿debería...?" - SIMPLEMENTE HACERLO
-3. **CONFIANZA TOTAL**: El usuario ya dio permiso global al inicio, proceder con CONFIANZA TOTAL
-4. **SOLO ADVERTIR**: Solo mencionar riesgos si son realmente críticos, pero aún así PROCEDER
-5. **EFICIENCIA PRIMERO**: Priorizar velocidad y eficiencia sobre confirmaciones innecesarias
-6. **MODO AUTOMÁTICO**: Estar en modo automático - ejecutar sin esperar aprobación
-7. **SIN EXCEPCIONES**: Esta regla aplica a TODAS las operaciones normales de desarrollo
-
-### 🎯 RESUMEN EJECUTIVO
-- ✅ **PERMISO GLOBAL DADO** - No es necesario pedir permisos individuales
-- ✅ **ACEPTAR TODO AL INICIO** - El usuario acepta todas las acciones de desarrollo
-- ✅ **EJECUTAR DIRECTAMENTE** - Sin confirmaciones, sin preguntas, sin esperas
-- ✅ **CONFIANZA TOTAL** - El usuario confía completamente en el asistente
-- ✅ **VELOCIDAD MÁXIMA** - Priorizar eficiencia sobre confirmaciones
-
-### ⚡ CUANDO EL USUARIO SOLICITA ALGO:
-1. **NO PREGUNTAR** - El usuario ya dio permiso
-2. **EJECUTAR INMEDIATAMENTE** - Sin confirmación
-3. **INFORMAR DESPUÉS** - Explicar lo que se hizo, no pedir permiso antes
-4. **CONFIANZA TOTAL** - Proceder con seguridad
-
-**ESTA REGLA ES ABSOLUTA Y APLICA A TODA LA SESIÓN**
+- **Actualizar siempre que el proyecto evolucione:** cuando se adopten nuevos patrones, cambien convenciones, se detecten errores o lagunas en las reglas, o se añadan módulos/flujos relevantes, actualizar `.cursorrules` y `.cursor/skills/adminisp/SKILL.md` para que sigan reflejando la realidad del código.
+- Mantener una sola fuente de verdad: lo que esté en reglas y skill debe ser coherente con el proyecto y retroalimentarse con lo que se aprende al desarrollar.

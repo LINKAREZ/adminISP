@@ -1,47 +1,44 @@
 ---
 name: subir-vps
-description: Despliega cambios a la VPS siguiendo el flujo profesional: commit y push a GitHub, luego en la VPS git pull y optimize:clear (y build/migrate si aplica). Usar tras editar código.
+description: Despliega en VPS. Código: deploy-vps-sin-build.sh. Frontend: build-local-y-desplegar.sh. NO ejecutar npm build en la VPS (evita desconexión).
 ---
 
-# Skill: Desplegar en la VPS (flujo profesional)
+# Skill: Desplegar en la VPS (flujo optimizado)
 
 ## Cuándo usar
 
-- Después de editar cualquier archivo del proyecto (Blade, PHP, JS, CSS, config, rutas, etc.).
+- Después de editar código (Blade, PHP, JS, CSS, config, rutas).
 - Cuando el usuario pida "subir a la VPS", "aplicar en producción" o "desplegar".
 
-## Flujo único (obligatorio)
+## Flujo (evita desconexión SSH)
 
-1. **Commit y push a GitHub**
-   - `git add` los archivos modificados (o `git add -A` si aplica).
-   - `git commit -m "mensaje descriptivo del cambio"`.
-   - `git push origin main` (o la rama que use el proyecto: `master`, `develop`).
+### Solo código PHP/Blade/rutas
 
-2. **En la VPS por SSH**
-   - Conectar: `ssh root@panel.wan.pe`.
-   - Ir al proyecto: `cd /root/adminisp` (o `cd /root/adminISP`).
-   - Actualizar código: `git pull origin main` (o `git pull` si la rama está configurada).
-   - Limpiar caché: `docker compose exec -T app php artisan optimize:clear`.
-   - Si se tocó frontend (resources/js, resources/css, vite.config.js):  
-     `docker run --rm -v "$(pwd):/app" -w /app node:20-alpine sh -c 'npm install && npm run build'`.
-   - Si hay migraciones nuevas:  
-     `docker compose exec -T app php artisan migrate --force`  
-     y si aplica: `docker compose exec -T app php artisan isp:migrate-tenant`.
+1. Commit y push: `git add ... && git commit -m "..." && git push origin main`
+2. En la VPS: `ssh root@panel.wan.pe "cd /root/adminISP && bash scripts/deploy-vps-sin-build.sh"`
 
-## Ejemplo en una sola línea (VPS)
+### Cambios en frontend (JS/CSS/Vite)
+
+1. **En local:** `./scripts/build-local-y-desplegar.sh`
+   - Hace: npm run build, scp public/build a la VPS, optimize:clear en VPS.
+   - **NO ejecutar npm run build en la VPS** (consume mucha RAM, desconecta SSH).
+
+### Migraciones
+
+- `docker compose exec -T app php artisan migrate --force`
+- Si aplica: `docker compose exec -T app php artisan isp:migrate-tenant`
+
+## Comando rápido (solo código)
 
 ```bash
-ssh root@panel.wan.pe "cd /root/adminisp && git pull origin main && docker compose exec -T app php artisan optimize:clear"
+ssh root@panel.wan.pe "cd /root/adminISP && bash scripts/deploy-vps-sin-build.sh"
 ```
-
-Ajustar `adminisp` por `adminISP` y `main` por la rama correcta si hace falta.
 
 ## Requisitos
 
-- Repositorio en GitHub con `origin` configurado.
-- En la VPS, el proyecto debe ser un clon del mismo repo y tener `origin` y la rama (p. ej. `main`) configurados.
-- SSH: `~/.ssh/config` con `Host panel.wan.pe` e `IdentityFile ~/.ssh/id_ed25519_vps`; clave pública en `authorized_keys` del servidor.
+- Repo en GitHub. VPS con clon en `/root/adminISP/`.
+- SSH: `~/.ssh/config` con `Host panel.wan.pe`, `IdentityFile`, y opcionalmente `ServerAliveInterval 60` para evitar timeout.
 
 ## Regla asociada
 
-`.cursor/rules/vps-despliegue.mdc` y la sección 3 de `.cursorrules`: un solo flujo (GitHub → pull en VPS → optimize:clear). No usar SCP para desplegar.
+`.cursor/rules/vps-despliegue.mdc`
