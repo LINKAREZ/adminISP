@@ -15,8 +15,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    {{-- CARGAR ASSETS AdminLTE --}}
-    @vite(['resources/css/adminlte.css', 'resources/js/adminlte.js'])
+    {{-- CARGAR ASSETS AdminLTE (fallback si no hay build para evitar 500) --}}
+    @if(file_exists(public_path('build/manifest.json')))
+        @vite(['resources/css/adminlte.css', 'resources/js/adminlte.js'])
+    @endif
 
     {{-- Font Awesome CDN (cargar DESPUÉS del CSS compilado para que tenga prioridad) --}}
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
