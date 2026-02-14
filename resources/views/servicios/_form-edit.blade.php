@@ -523,6 +523,7 @@
                             <!-- Pestaña: Equipo -->
                             <div class="tab-pane fade" id="content-tab-equipo" role="tabpanel" aria-labelledby="tab-equipo">
                                 <h5 class="mb-3">Equipo ONU</h5>
+                                <p class="small text-muted mb-3">ONU: dispositivo en la casa del cliente que recibe la señal de fibra óptica</p>
 
                                 @if($servicio->mac_address || $servicio->onu)
                                     @if($servicio->onu)
@@ -595,7 +596,7 @@
                                                 >
                                                 <small class="form-text text-muted">
                                                     <span id="serial-help-transformacion" style="display: none;">Número completo como aparece en la etiqueta (16 caracteres hexadecimales, ej: 41434847183001f9)</span>
-                                                    <span id="serial-help-normal">Número de serie completo de la ONU</span>
+                                                    <span id="serial-help-normal">Número de serie de la ONU (identificador único del dispositivo)</span>
                                                 </small>
                                                 @error('onu_serial_number_completo')
                                                     <span class="invalid-feedback" role="alert">
@@ -616,7 +617,7 @@
                                                     placeholder="Serial OLT (formato OLT)"
                                                 >
                                                 <small class="form-text text-muted" id="serial-olt-help" style="display: none;">
-                                                    Este campo se calcula automáticamente desde el Serial Completo
+                                                    Identificador de la ONU en el equipo del ISP (OLT). Se calcula automáticamente desde el Serial Completo.
                                                 </small>
                                                 @error('onu_serial_number_olt')
                                                     <span class="invalid-feedback" role="alert">

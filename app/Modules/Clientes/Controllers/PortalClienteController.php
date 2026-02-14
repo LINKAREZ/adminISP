@@ -119,6 +119,6 @@ class PortalClienteController extends Controller
             'numero_operacion' => $request->numero_operacion,
         ]);
 
-        return redirect()->route('portal.reportar-pago')->with('success', 'Su reporte de pago fue enviado. La administración lo revisará y aplicará el pago.');
+        return redirect()->route('portal.reportar-pago')->with('success', 'Pago reportado correctamente. Estado: Pendiente de verificación. Te notificaremos cuando se aplique el pago.');
     }
 }

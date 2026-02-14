@@ -11,6 +11,26 @@
 
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
+        <!-- Ayuda -->
+        <li class="nav-item dropdown">
+            <a class="nav-link nav-link-mobile" data-toggle="dropdown" href="#" aria-label="Ayuda" title="Ayuda">
+                <i class="fas fa-question-circle"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right dropdown-menu-mobile">
+                <a href="{{ route('dashboard') }}" class="dropdown-item dropdown-item-mobile">
+                    <i class="fas fa-clipboard-list mr-2"></i> Primeros pasos
+                </a>
+                @if(Route::has('ayuda.faq'))
+                <a href="{{ route('ayuda.faq') }}" class="dropdown-item dropdown-item-mobile">
+                    <i class="fas fa-book mr-2"></i> Preguntas frecuentes
+                </a>
+                @endif
+                <div class="dropdown-divider"></div>
+                <a href="mailto:soporte@panel.wan.pe" class="dropdown-item dropdown-item-mobile">
+                    <i class="fas fa-envelope mr-2"></i> Contactar soporte
+                </a>
+            </div>
+        </li>
         <!-- Tema de color -->
         <li class="nav-item dropdown">
             <a class="nav-link nav-link-mobile" data-toggle="dropdown" href="#" aria-label="Tema de color" title="Tema de color">

@@ -4,7 +4,10 @@
 
 @section('content')
     <h1>Reportar un pago</h1>
-    <p>Indique el recibo que pagó y los datos del pago. La administración revisará y aplicará el pago.</p>
+    <div class="alert alert-info mb-4">
+        <i class="fas fa-info-circle mr-2"></i>
+        <strong>¿Cómo funciona?</strong> Indica la fecha, monto y medio de pago. Un operador verificará y actualizará tu estado en las próximas horas. Si tienes el número de operación (Yape, Plin, transferencia), inclúyelo para una verificación más rápida.
+    </div>
     <div class="card">
         <form method="POST" action="{{ route('portal.reportar-pago.store') }}">
             @csrf

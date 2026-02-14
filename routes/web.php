@@ -54,6 +54,13 @@ Route::prefix('portal')->name('portal.')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/', [\App\Modules\Dashboard\Controllers\DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard', [\App\Modules\Dashboard\Controllers\DashboardController::class, 'index']);
+    Route::post('/onboarding/completar', function () {
+        session(['onboarding_completed' => true]);
+        return response()->json(['ok' => true]);
+    })->name('onboarding.completar');
+    Route::get('/ayuda/faq', function () {
+        return view('ayuda.faq');
+    })->name('ayuda.faq');
 });
 
 // Módulo Instalaciones - Cargado aquí para que route('instalaciones.index') esté siempre definida

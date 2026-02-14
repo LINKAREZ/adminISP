@@ -32,92 +32,82 @@
             </div>
         @endif
 
-        <!-- Sidebar Menu: un solo nivel por módulo (estándar CRM empresarial) -->
+        <!-- Sidebar Menu: agrupado por flujos de trabajo -->
         <nav class="mt-2 sidebar-nav-mobile">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                <!-- 1. Dashboard -->
+                <!-- Dashboard -->
                 <li class="nav-item nav-item-mobile">
-                    <a href="{{ route('dashboard') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('dashboard') || request()->is('/') ? 'active' : '' }}" title="Dashboard">
+                    <a href="{{ route('dashboard') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('dashboard') || request()->is('/') ? 'active' : '' }}" title="Panel principal con estadísticas">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>Dashboard</p>
                     </a>
                 </li>
 
-                <!-- 2. Clientes -->
+                <li class="nav-header">Operación</li>
                 <li class="nav-item nav-item-mobile">
-                    <a href="{{ route('clientes.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('clientes*') && !request()->is('tickets*') ? 'active' : '' }}" title="Clientes">
+                    <a href="{{ route('clientes.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('clientes*') && !request()->is('tickets*') ? 'active' : '' }}" title="Listado y gestión de clientes">
                         <i class="nav-icon fas fa-users"></i>
                         <p>Clientes</p>
                     </a>
                 </li>
-
-                <!-- 3. Tickets -->
                 @hasPermission('tickets.read')
                 <li class="nav-item nav-item-mobile">
-                    <a href="{{ route('tickets.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('tickets*') ? 'active' : '' }}" title="Tickets">
+                    <a href="{{ route('tickets.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('tickets*') ? 'active' : '' }}" title="Soporte y atención al cliente">
                         <i class="nav-icon fas fa-ticket-alt"></i>
                         <p>Tickets</p>
                     </a>
                 </li>
                 @endhasPermission
-
-                <!-- 4. Servicios -->
-                <li class="nav-item nav-item-mobile">
-                    <a href="{{ route('servicios.home') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('servicios*') && !request()->is('clientes*/servicios*') ? 'active' : '' }}" title="Servicios">
-                        <i class="nav-icon fas fa-wifi"></i>
-                        <p>Servicios</p>
-                    </a>
-                </li>
-
-                <!-- 5. Instalaciones -->
                 @hasPermission('instalaciones.read')
                 <li class="nav-item nav-item-mobile">
-                    <a href="{{ route('instalaciones.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('instalaciones*') ? 'active' : '' }}" title="Instalaciones">
+                    <a href="{{ route('instalaciones.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('instalaciones*') ? 'active' : '' }}" title="Gestión de instalaciones">
                         <i class="nav-icon fas fa-tools"></i>
                         <p>Instalaciones</p>
                     </a>
                 </li>
                 @endhasPermission
 
-                <!-- 5b. Almacén -->
+                <li class="nav-header">Servicios y planes</li>
+                <li class="nav-item nav-item-mobile">
+                    <a href="{{ route('servicios.home') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('servicios*') && !request()->is('clientes*/servicios*') ? 'active' : '' }}" title="Planes de internet, IPTV y CATV">
+                        <i class="nav-icon fas fa-wifi"></i>
+                        <p>Servicios</p>
+                    </a>
+                </li>
+
+                <li class="nav-header">Red e infraestructura</li>
+                <li class="nav-item nav-item-mobile">
+                    <a href="{{ route('red.nodos.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('red*') ? 'active' : '' }}" title="Nodos, routers y equipos de red">
+                        <i class="nav-icon fas fa-network-wired"></i>
+                        <p>Red</p>
+                    </a>
+                </li>
+                @if(Route::has('infraestructura.mapa.index') && auth()->user()->hasPermission('infraestructura.read'))
+                <li class="nav-item nav-item-mobile">
+                    <a href="{{ route('infraestructura.mapa.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('infraestructura*') ? 'active' : '' }}" title="Mapa de postes y cables">
+                        <i class="nav-icon fas fa-map"></i>
+                        <p>Infraestructura</p>
+                    </a>
+                </li>
+                @endif
+                @if(Route::has('mapa-red.index') && (auth()->user()->hasPermission('mapa-red.read') || auth()->user()->hasPermission('infraestructura.read')))
+                <li class="nav-item nav-item-mobile">
+                    <a href="{{ route('mapa-red.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('mapa-red*') ? 'active' : '' }}" title="Mapa visual de la red">
+                        <i class="nav-icon fas fa-project-diagram"></i>
+                        <p>Mapa de Red</p>
+                    </a>
+                </li>
+                @endif
                 @hasPermission('almacen.read')
                 <li class="nav-item nav-item-mobile">
-                    <a href="{{ route('almacen.articulos.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('almacen*') ? 'active' : '' }}" title="Almacén">
+                    <a href="{{ route('almacen.articulos.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('almacen*') ? 'active' : '' }}" title="Inventario de equipos y materiales">
                         <i class="nav-icon fas fa-warehouse"></i>
                         <p>Almacén</p>
                     </a>
                 </li>
                 @endhasPermission
 
-                <!-- 6. Red -->
-                <li class="nav-item nav-item-mobile">
-                    <a href="{{ route('red.nodos.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('red*') ? 'active' : '' }}" title="Red">
-                        <i class="nav-icon fas fa-network-wired"></i>
-                        <p>Red</p>
-                    </a>
-                </li>
-
-                <!-- 7. Infraestructura -->
-                @if(Route::has('infraestructura.mapa.index') && auth()->user()->hasPermission('infraestructura.read'))
-                <li class="nav-item nav-item-mobile">
-                    <a href="{{ route('infraestructura.mapa.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('infraestructura*') ? 'active' : '' }}" title="Infraestructura">
-                        <i class="nav-icon fas fa-map"></i>
-                        <p>Infraestructura</p>
-                    </a>
-                </li>
-                @endif
-
-                <!-- 7b. Mapa de Red -->
-                @if(Route::has('mapa-red.index') && (auth()->user()->hasPermission('mapa-red.read') || auth()->user()->hasPermission('infraestructura.read')))
-                <li class="nav-item nav-item-mobile">
-                    <a href="{{ route('mapa-red.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('mapa-red*') ? 'active' : '' }}" title="Mapa de Red">
-                        <i class="nav-icon fas fa-project-diagram"></i>
-                        <p>Mapa de Red</p>
-                    </a>
-                </li>
-                @endif
-
-                <!-- 8. Finanzas -->
+                <li class="nav-header">Finanzas</li>
                 @php
                     $user = auth()->user();
                     $isAdmin = false;
@@ -144,7 +134,7 @@
                 </li>
                 @endif
 
-                <!-- 9. Sistema -->
+                <li class="nav-header">Administración</li>
                 @hasPermission('sistema.read')
                 <li class="nav-item nav-item-mobile">
                     <a href="{{ route('sistema.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('sistema*') || request()->is('medios-pago*') ? 'active' : '' }}" title="Sistema">

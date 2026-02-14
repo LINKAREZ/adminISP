@@ -5,6 +5,7 @@
     'title' => '',
     'value' => '',
     'description' => null,
+    'tooltip' => null, // texto para title (tooltip al pasar el mouse)
     'progress' => null, // 0-100 para mostrar barra de progreso
     'progressVariant' => null, // Color de la barra de progreso
     'link' => null,
@@ -24,7 +25,7 @@
     $bgClass = $bgClasses[$variant] ?? 'bg-info';
 @endphp
 
-<div {{ $attributes->merge(['class' => 'info-box ' . $class]) }}>
+<div {{ $attributes->merge(['class' => 'info-box ' . $class]) }} @if($tooltip) title="{{ $tooltip }}" @endif>
     <span class="info-box-icon {{ $bgClass }}">
         <i class="{{ $icon }}"></i>
     </span>

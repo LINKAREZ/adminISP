@@ -29,13 +29,22 @@ class DashboardController extends Controller
 
         try {
             $estadisticas = $this->dashboardService->getEstadisticas();
-            return view('dashboard', $estadisticas);
+            $checklist = $this->dashboardService->getChecklistPrimerosPasos($estadisticas);
+            $user = auth()->user();
+            $isSuperAdmin = $user && method_exists($user, 'isSuperAdmin') && $user->isSuperAdmin();
+            $mostrarOnboardingWizard = !$isSuperAdmin
+                && !session('onboarding_completed')
+                && ($estadisticas['totalClientes'] ?? 0) == 0
+                && ($estadisticas['totalRouters'] ?? 0) == 0;
+            return view('dashboard', array_merge($estadisticas, $checklist, [
+                'mostrarOnboardingWizard' => $mostrarOnboardingWizard,
+            ]));
         } catch (\Exception $e) {
             $this->logError('Error en DashboardController::index', [
                 'action' => 'dashboard_index',
             ], $e);
 
-            return view('dashboard', [
+            $fallback = [
                 'totalClientes' => 0,
                 'clientesNuevosMes' => 0,
                 'clientesAlDia' => 0,
@@ -65,7 +74,9 @@ class DashboardController extends Controller
                 'serviciosPorEstado' => ['activos' => 0, 'cortados' => 0],
                 'recibosPorEstado' => ['pendientes' => 0, 'vencidas' => 0, 'pagadas' => 0],
                 'ingresosMensuales' => []
-            ])->with('error', 'Error al cargar las estadísticas. Por favor, intenta nuevamente.');
+            ];
+            $checklist = $this->dashboardService->getChecklistPrimerosPasos($fallback);
+            return view('dashboard', array_merge($fallback, $checklist, ['mostrarOnboardingWizard' => false]))->with('error', 'Error al cargar las estadísticas. Por favor, intenta nuevamente.');
         }
     }
 }

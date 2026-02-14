@@ -27,6 +27,16 @@
                     </x-btn>
                 </x-slot>
 
+                @if($routers->isEmpty())
+                    {{-- Sin routers configurados: guiar al usuario a Red --}}
+                    <x-empty-state
+                        icon="fa-server"
+                        title="Configura tu primer router"
+                        description="Para gestionar clientes primero debes configurar al menos un router en la sección Red."
+                        action-label="Ir a Red - Routers"
+                        action-route="red.routers.create"
+                    />
+                @else
                 <form method="GET" action="{{ route('clientes.index') }}" class="mb-3">
                     <div class="row">
                         <div class="col-12 col-md-6 col-lg-4">
@@ -45,9 +55,9 @@
 
                 @if(empty($routerId))
                     <x-empty-state
-                        icon="fa-router"
+                        icon="fa-server"
                         title="Selecciona un router"
-                        description="Debes elegir un router para listar los clientes"
+                        description="Elige un router del listado para ver los clientes asociados"
                     />
                 @else
                 {{-- Barra de herramientas: Búsqueda y acciones masivas --}}
@@ -97,11 +107,11 @@
                                     <span class="d-sm-none">Eliminar</span>
                                 </x-btn>
                                 @endhasPermission
-                                <form method="POST" action="{{ route('clientes.cortar-servicios-vencidos') }}" class="d-inline" onsubmit="return confirm('¿Cortar servicios con recibos pasados de fecha de corte? (vencimiento + días de gracia). Solo se cortarán los que ya superaron esa fecha.');">
+                                <form method="POST" action="{{ route('clientes.cortar-servicios-vencidos') }}" class="d-inline" onsubmit="return confirm('¿Suspender servicios con recibos pasados de fecha de corte? (vencimiento + días de gracia). Solo se suspenderán los que ya superaron esa fecha.');">
                                     @csrf
-                                    <x-btn type="submit" variant="warning" icon="fa-ban" size="sm">
-                                        <span class="d-none d-sm-inline">Cortar Servicios</span>
-                                        <span class="d-sm-none">Cortar</span>
+                                    <x-btn type="submit" variant="warning" icon="fa-ban" size="sm" title="Suspender por mora: corta el servicio a clientes con recibos vencidos">
+                                        <span class="d-none d-sm-inline">Suspender por mora</span>
+                                        <span class="d-sm-none">Suspender</span>
                                     </x-btn>
                                 </form>
                                 @hasPermission('clientes.delete')
@@ -297,6 +307,7 @@
                             </tbody>
                         </table>
                     </div>
+                @endif
                 @endif
             </x-card>
         </div>

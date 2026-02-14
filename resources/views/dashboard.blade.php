@@ -10,11 +10,48 @@
 @endsection
 
 @section('content')
-    <div class="d-flex justify-content-end mb-2">
-        <a href="{{ route('dashboard', ['actualizar' => 1]) }}" class="btn btn-sm btn-outline-secondary" title="Recargar estadísticas (limpiar caché)">
-            <i class="fas fa-sync-alt mr-1"></i>Actualizar datos
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+        <div></div>
+        <a href="{{ route('dashboard', ['actualizar' => 1]) }}" class="btn btn-sm btn-outline-secondary" title="Recargar estadísticas del dashboard">
+            <i class="fas fa-sync-alt mr-1"></i>Actualizar estadísticas
         </a>
     </div>
+
+    @if(!empty($tienePendientes) && $tienePendientes)
+    {{-- Checklist primeros pasos para ISPs nuevos --}}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card card-outline card-info shadow-sm">
+                <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="fas fa-clipboard-list mr-2"></i>Para empezar</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Completa estos pasos para configurar tu panel:</p>
+                    <ul class="list-unstyled mb-0">
+                        @foreach($items ?? [] as $item)
+                            <li class="mb-2 d-flex align-items-center">
+                                @if($item['done'])
+                                    <span class="text-success mr-2"><i class="fas fa-check-circle"></i></span>
+                                    <span class="text-muted text-decoration-line-through">{{ $item['label'] }}</span>
+                                @else
+                                    <span class="text-muted mr-2"><i class="far fa-circle"></i></span>
+                                    @php
+                                        $ruta = route($item['route'] ?? 'dashboard', $item['params'] ?? []);
+                                    @endphp
+                                    <a href="{{ $ruta }}">{{ $item['label'] }}</a>
+                                    <i class="fas fa-external-link-alt ml-1 text-muted small"></i>
+                                @endif
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    <x-onboarding-wizard :mostrar="$mostrarOnboardingWizard ?? false" />
+
     <!-- Estadísticas Principales -->
     <div class="row mb-4">
         <!-- Clientes Totales -->
@@ -50,6 +87,7 @@
                 icon="fas fa-check-circle"
                 variant="success"
                 class="shadow-sm dashboard-stat-card"
+                tooltip="Clientes sin deudas pendientes"
             />
         </div>
 
@@ -89,6 +127,7 @@
                 icon="fas fa-exclamation-triangle"
                 variant="danger"
                 class="shadow-sm dashboard-stat-card"
+                tooltip="Recibos cuya fecha de vencimiento ya pasó"
             />
         </div>
 
@@ -101,6 +140,7 @@
                 icon="fas fa-exclamation-circle"
                 variant="danger"
                 class="shadow-sm dashboard-stat-card"
+                tooltip="Servicios activos con recibos vencidos que pueden suspenderse"
             />
         </div>
 
@@ -113,6 +153,7 @@
                 icon="fas fa-money-bill-wave"
                 variant="warning"
                 class="shadow-sm dashboard-stat-card"
+                tooltip="Total de pagos registrados en el mes actual"
             />
         </div>
     </div>

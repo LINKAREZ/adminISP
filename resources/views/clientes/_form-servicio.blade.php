@@ -562,6 +562,7 @@
             >
                 <option value="">Seleccione un router</option>
             </select>
+            <small class="form-text text-muted">Equipo MikroTik o similar donde el cliente se conectará (PPPoE)</small>
             @error('router_id')
                 <span class="invalid-feedback d-block" role="alert">
                     <strong>{{ $message }}</strong>
@@ -590,6 +591,7 @@
             >
                 <option value="">Seleccione un plan</option>
             </select>
+            <small class="form-text text-muted">Plan de velocidad y precio definido en Servicios > Planes</small>
             @error('plan_id')
                 <span class="invalid-feedback d-block" role="alert">
                     <strong>{{ $message }}</strong>
@@ -610,12 +612,13 @@
             <small class="text-muted">Para planes IP estática. Luego podrá aplicar velocidad (Simple Queue) desde la ficha del servicio.</small>
         </div>
 
-    <div class="form-group">
+        <div class="form-group">
         <label>Modo PPPoE</label>
         <select name="tipo_pppoe" id="select-tipo-pppoe" class="form-control" required>
             <option value="usuario_compartido">Usuario compartido (credenciales por defecto)</option>
-            <option value="usuario_unico">Usuario unico (credenciales de cliente)</option>
+            <option value="usuario_unico">Usuario único (credenciales de cliente)</option>
         </select>
+        <small class="form-text text-muted">PPPoE: tipo de conexión habitual para fibra. Usuario único = cada cliente con sus credenciales</small>
     </div>
 
     <div id="campos-usuario-pppoe" class="border-top pt-3" style="display: none;">
@@ -629,6 +632,7 @@
                 placeholder="Ej: cliente123"
                 value="{{ old('usuario_pppoe', $servicio?->usuario_pppoe ?? '') }}"
             >
+            <small class="form-text text-muted">Usuario con el que el cliente se conecta a internet (ej: DNI o código)</small>
         </div>
         <div class="form-group">
             <label>Password PPPoE</label>

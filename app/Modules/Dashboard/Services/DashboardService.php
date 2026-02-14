@@ -50,4 +50,42 @@ class DashboardService
             'ingresosMensuales' => $estadisticas['ingresosMensuales'],
         ];
     }
+
+    /**
+     * Checklist de primeros pasos para ISPs nuevos.
+     * Solo incluye ítems pendientes para mostrar en el dashboard.
+     */
+    public function getChecklistPrimerosPasos(array $estadisticas): array
+    {
+        $totalRouters = $estadisticas['totalRouters'] ?? 0;
+        $totalPlanes = $estadisticas['totalPlanes'] ?? 0;
+        $totalClientes = $estadisticas['totalClientes'] ?? 0;
+
+        $items = [
+            [
+                'label' => 'Configurar router',
+                'done' => $totalRouters > 0,
+                'route' => 'red.routers.create',
+                'params' => [],
+            ],
+            [
+                'label' => 'Crear plan de internet',
+                'done' => $totalPlanes > 0,
+                'route' => 'servicios.planes.index',
+                'params' => [],
+            ],
+            [
+                'label' => 'Registrar primer cliente',
+                'done' => $totalClientes > 0,
+                'route' => 'clientes.index',
+                'params' => [],
+            ],
+        ];
+
+        $pendientes = array_filter($items, fn ($i) => !$i['done']);
+        return [
+            'items' => $items,
+            'tienePendientes' => count($pendientes) > 0,
+        ];
+    }
 }
