@@ -40,8 +40,17 @@ Host panel.wan.pe
 - `popper.js` en `optimizeDeps.include`.
 - Bootstrap excluido de `manualChunks` para evitar resolución de popper como dependencia transitiva.
 
+## Si necesitas hacer build en la VPS
+
+Si no tienes Node local y debes compilar en la VPS:
+
+1. **Añadir swap** (2 GB): ver `docs/BUILD_EN_VPS_OPTIMIZADO.md`
+2. **Usar script optimizado:** `scripts/build-en-vps-optimizado.sh` (limita RAM de Node a 512 MB)
+3. **Ejecutar dentro de tmux** para que si se cae SSH, el build siga:  
+   `tmux new -s build` → ejecutar el script → `tmux attach -s build` para reconectar
+
 ## Resumen
 
 1. **Código:** commit/push → en VPS `deploy-vps-sin-build.sh`
-2. **Frontend:** en local `build-local-y-desplegar.sh`
-3. **No ejecutar** `npm run build` ni `npm install` en la VPS para evitar desconexión.
+2. **Frontend:** en local `build-local-y-desplegar.sh` (recomendado)
+3. **Build en VPS (excepcional):** `build-en-vps-optimizado.sh` + swap + tmux

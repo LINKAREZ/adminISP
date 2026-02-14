@@ -46,9 +46,9 @@
         <td colspan="{{ $colspan }}" class="text-center py-5">
 @endif
 
-<div class="empty-state text-center py-4">
-    <div class="empty-state-icon mb-3">
-        <i class="fas {{ $icon }} fa-4x"></i>
+<div class="empty-state text-center py-5">
+    <div class="empty-state-icon-wrapper mb-4">
+        <i class="fas {{ $icon }} empty-state-icon"></i>
     </div>
     <h5 class="empty-state-title mb-2">{{ $title }}</h5>
     @if($description)
@@ -71,22 +71,26 @@
     .empty-state {
         padding: 2rem 1rem;
     }
-
+    .empty-state-icon-wrapper {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 80px;
+        height: 80px;
+        border-radius: 1rem;
+        background: linear-gradient(135deg, var(--primary-50, #edf5ff) 0%, var(--gray-100, #e8ecf1) 100%);
+        color: var(--primary);
+        opacity: 0.9;
+    }
     .empty-state-icon {
-        opacity: 0.45;
-        color: var(--gray-400);
+        font-size: 2rem !important;
     }
-
-    .empty-state-icon i {
-        color: var(--gray-400);
-    }
-
     .empty-state-title {
         font-size: 1.125rem;
         font-weight: 600;
-        color: var(--gray-600);
+        color: var(--gray-700);
+        letter-spacing: -0.02em;
     }
-
     .empty-state-description {
         font-size: 0.875rem;
         font-weight: 400;
@@ -99,22 +103,25 @@
         width: 100%;
         min-height: 44px;
     }
-    /* Mobile-first: base = móvil; desde 768px ajustes desktop */
     .empty-state {
-        padding: 1.5rem 1rem;
+        padding: 2rem 1rem;
     }
     .empty-state-icon {
-        font-size: 2.5rem !important;
+        font-size: 2rem !important;
     }
     .empty-state-title {
         font-size: 1rem;
     }
     @media (min-width: 768px) {
         .empty-state {
-            padding: 2rem;
+            padding: 3rem 2rem;
+        }
+        .empty-state-icon-wrapper {
+            width: 96px;
+            height: 96px;
         }
         .empty-state-icon {
-            font-size: 3rem !important;
+            font-size: 2.5rem !important;
         }
         .empty-state-title {
             font-size: 1.125rem;

@@ -1,0 +1,16 @@
+---
+description: Credenciales para iniciar sesión en el panel (MCP / pruebas en navegador)
+alwaysApply: false
+---
+
+# Login panel Admin ISP (para MCP / pruebas)
+
+Cuando el usuario pida que te loguees, que revises el panel con MCP o que compruebes algo entrando al panel, usar:
+
+- **URL:** https://panel.wan.pe/login
+- **Email:** christiang.cm@gmail.com
+- **Contraseña:** L1N24R3Z
+
+Pasos con MCP browser: navegar a la URL de login, rellenar email y contraseña en los campos, enviar el formulario (botón "Iniciar Sesión" o submit del form).
+
+**Seguridad:** Si este archivo está en el repositorio, valora añadir `.cursor/rules/mcp-login.mdc` a `.gitignore` para no versionar la contraseña.

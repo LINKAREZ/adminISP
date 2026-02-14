@@ -1,12 +1,8 @@
-@php
-    $user = auth()->user();
-    $isSuperAdmin = $user && method_exists($user, 'isSuperAdmin') && $user->isSuperAdmin();
-@endphp
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -17,12 +13,12 @@
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="alternate icon" href="{{ asset('favicon.svg') }}">
 
-    <!-- Google Font: Inter (única fuente principal) -->
+    <!-- Google Font: Source Sans Pro (localizado). Preconnect para fallback externo. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="{{ asset('css/fonts/source-sans-pro.css') }}" onerror="this.onerror=null;this.href='https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;400i;700&display=swap'">
 
-    {{-- CARGAR CSS AdminLTE (+ mapa en página de infraestructura) --}}
-    @vite(array_filter(['resources/css/adminlte.css', request()->is('infraestructura/mapa*') ? 'resources/css/mapa-infraestructura.css' : null]))
+    {{-- CARGAR CSS AdminLTE --}}
+    @vite(['resources/css/adminlte.css'])
 
     {{-- Font Awesome CDN (cargar DESPUÉS del CSS compilado para que tenga prioridad) --}}
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -31,12 +27,9 @@
     {{-- Estilos Globales Minimalistas --}}
     @include('components.global-styles')
 
-    @if($isSuperAdmin)
-        @vite('resources/css/superadmin.css')
-    @endif
     @stack('styles')
 </head>
-<body class="hold-transition sidebar-mini layout-fixed {{ $isSuperAdmin ? 'superadmin-panel' : '' }}">
+<body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
 
     <!-- Preloader -->
@@ -48,14 +41,15 @@
     @include('layouts.partials.adminlte-navbar')
 
     <!-- Main Sidebar Container -->
+    @php
+        $user = auth()->user();
+        $isSuperAdmin = $user && method_exists($user, 'isSuperAdmin') && $user->isSuperAdmin();
+    @endphp
     @if($isSuperAdmin)
         @include('layouts.partials.adminlte-sidebar-superadmin')
     @else
         @include('layouts.partials.adminlte-sidebar')
     @endif
-
-    <!-- Overlay para cerrar sidebar al hacer clic fuera (móvil). AdminLTE PushMenu lo muestra con body.sidebar-open -->
-    <div id="sidebar-overlay" class="sidebar-overlay" style="display: none;" aria-hidden="true"></div>
 
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
@@ -105,7 +99,7 @@
 @include('components.alerts')
 
 {{-- CARGAR JS AdminLTE (debe estar ANTES de @stack('scripts') para que jQuery esté disponible) --}}
-@vite(['resources/js/adminlte.js', 'resources/js/color-theme.js'])
+@vite(['resources/js/adminlte.js'])
 
 @stack('scripts')
 </body>

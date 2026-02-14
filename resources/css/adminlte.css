@@ -14,6 +14,9 @@
 /* Temas de color (índigo, azul, verde, teal) */
 @import './color-themes.css';
 
+/* Premium enhancements: gradientes, profundidad, micro-interacciones */
+@import './premium-enhancements.css';
+
 /* Colores adicionales para AdminLTE */
 .bg-orange {
     background-color: #fd7e14 !important;
