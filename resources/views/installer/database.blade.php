@@ -64,7 +64,7 @@
                     <input type="password" id="DB_PASSWORD" name="DB_PASSWORD" class="form-control" value="{{ old('DB_PASSWORD', $current['DB_PASSWORD']) }}" placeholder="adminisp%" autocomplete="off">
                     <button type="button" class="btn-password-toggle btn btn-outline-secondary" data-target="DB_PASSWORD">Ver</button>
                 </div>
-                <small class="text-muted">Por defecto: <code>adminisp%</code>. Si ves «Access denied» y el contenedor es antiguo, prueba con <code>secret</code>.</small>
+                <small class="text-muted">Por defecto: <code>adminisp%</code>. Si ves «Access denied»: prueba contraseña <code>secret</code> (contenedor antiguo) o usa usuario <code>adminisp</code> en vez de root.</small>
             </div>
         </div>
 
