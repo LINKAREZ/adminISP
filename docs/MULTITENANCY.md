@@ -7,6 +7,7 @@ Este proyecto usa el patrón **database-per-tenant** (también llamado *silo* o 
 ## 1. Patrón: Database-per-tenant (silo)
 
 - **Siempre una base de datos por tenant.** En AdminISP no se usa tabla compartida ni schema-per-tenant: cada ISP tiene su propia base de datos física. No hay opción de “una sola BD para todos los tenants”.
+- **Un ISP no puede existir sin BD.** Todo ISP tiene obligatoriamente `database_name` (NOT NULL). Al crear un ISP se asigna nombre y se crea la BD física; la migración central garantiza que ISPs existentes sin BD la reciban y que la columna sea NOT NULL.
 - **Una base de datos física por tenant (ISP).** Cada ISP tiene su propio `database_name` (ej. `adminisp_isp_1`, `adminisp_isp_2`).
 - **BD central:** Una sola BD (conexión `mysql` por defecto) contiene:
   - `isps` (con `database_name` por tenant)

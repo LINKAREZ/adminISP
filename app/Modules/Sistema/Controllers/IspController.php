@@ -142,6 +142,10 @@ class IspController extends Controller
 
         $isp = Isp::create($validated);
 
+        // Garantizar que el ISP tenga database_name antes de crear la BD física (invariante: no existe ISP sin BD)
+        $isp->update(['database_name' => TenantDatabaseService::generateDatabaseName($isp)]);
+        $isp->refresh();
+
         try {
             TenantDatabaseService::createDatabaseForIsp($isp);
         } catch (\Throwable $e) {
@@ -235,6 +239,9 @@ class IspController extends Controller
 
         // Normalizar checkbox (0/1) a booleano
         $validated['activo'] = $request->boolean('activo');
+
+        // No permitir nunca quitar o vaciar database_name (todo ISP debe tener BD)
+        unset($validated['database_name']);
 
         $isp->update($validated);
 

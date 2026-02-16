@@ -19,6 +19,7 @@ class UpdateIspRequest extends FormRequest
             'moneda' => 'required|string|size:3',
             'simbolo_moneda' => 'required|string|max:10',
             'igv' => 'required|numeric|min:0|max:100',
+            'database_name' => 'prohibited', // No se puede modificar; todo ISP debe conservar su BD
         ];
     }
 }
