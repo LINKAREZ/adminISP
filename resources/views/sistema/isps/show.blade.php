@@ -84,6 +84,13 @@
                             </dl>
                         </div>
                     </div>
+                    @if($isp->database_name && auth()->user() && method_exists(auth()->user(), 'isSuperAdmin') && auth()->user()->isSuperAdmin())
+                        <hr>
+                        <p class="mb-2 text-muted small">Para ver Red, Clientes, Servicios, etc. de este ISP en el panel, selecciónalo como ISP actual:</p>
+                        <a href="{{ route('session.switch-isp', ['isp_id' => $isp->id]) }}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-eye mr-1"></i> Usar este ISP en el panel
+                        </a>
+                    @endif
             </x-card>
 
             <!-- Estadísticas -->

@@ -2,6 +2,7 @@
 
 namespace App\Core\View;
 
+use App\Core\Services\TenantConnectionService;
 use Illuminate\View\View;
 
 /**
@@ -28,13 +29,21 @@ class ViewComposer
 
             $isp = null;
 
-            // Obtener ISP desde usuario autenticado
+            // Obtener ISP: usuario con isp_id usa el suyo; super admin usa el de sesión (tenant actual)
             if (auth()->check()) {
                 try {
                     $user = auth()->user();
+                    $ispId = null;
                     if ($user && property_exists($user, 'isp_id') && $user->isp_id) {
+                        $ispId = (int) $user->isp_id;
+                    } elseif ($user && (method_exists($user, 'isSuperAdmin') && $user->isSuperAdmin()) && session()->has('current_isp_id')) {
+                        $ispId = (int) session('current_isp_id');
+                    }
+                    if ($ispId) {
                         try {
-                            $isp = \App\Modules\Sistema\Models\Isp::withoutGlobalScope(\App\Core\Scopes\IspScope::class)->find($user->isp_id);
+                            $isp = \App\Modules\Sistema\Models\Isp::on(\App\Core\Services\TenantConnectionService::centralConnection())
+                                ->withoutGlobalScope(\App\Core\Scopes\IspScope::class)
+                                ->find($ispId);
                         } catch (\Exception $e) {
                             // Si hay error al obtener ISP, continuar sin ISP
                         }

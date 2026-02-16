@@ -94,7 +94,9 @@
                             <x-empty-state
                                 icon="fa-network-wired"
                                 title="No hay routers registrados"
-                                description="Aún no hay routers en el sistema"
+                                :description="(auth()->user() && method_exists(auth()->user(), 'isSuperAdmin') && auth()->user()->isSuperAdmin() && ($currentIsp ?? null))
+                                    ? 'Estás viendo el ISP «' . $currentIsp->nombre . '». Si este no es el correcto, ve a Super Admin → Gestionar ISPs, abre el ISP que tenga datos y pulsa «Usar este ISP en el panel».'
+                                    : 'Aún no hay routers en el sistema'"
                                 action-label="Agregar Router"
                                 action-route="red.routers.create"
                             />
@@ -144,7 +146,9 @@
                             <x-empty-state
                                 icon="fa-network-wired"
                                 title="No hay routers registrados"
-                                description="Aún no hay routers en el sistema"
+                                :description="(auth()->user() && method_exists(auth()->user(), 'isSuperAdmin') && auth()->user()->isSuperAdmin() && ($currentIsp ?? null))
+                                    ? 'Estás viendo el ISP «' . $currentIsp->nombre . '». Si este no es el correcto, ve a Super Admin → Gestionar ISPs, abre el ISP que tenga datos y pulsa «Usar este ISP en el panel».'
+                                    : 'Aún no hay routers en el sistema'"
                                 action-label="Agregar Router"
                                 action-route="red.routers.create"
                             />
