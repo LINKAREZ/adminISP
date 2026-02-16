@@ -472,6 +472,12 @@ body.superadmin-panel .badge.badge-success i,
 body.superadmin-panel .badge.status-activo i {
   color: #fff !important;
   opacity: 1;
+  vertical-align: middle;
+}
+body.superadmin-panel .badge.status-activo i {
+  font-size: 0.9rem;
+  margin-right: 0.4em;
+  line-height: 1;
 }
 body.superadmin-panel .badge.badge-danger {
   background-color: var(--sa-danger);

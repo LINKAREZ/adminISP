@@ -21,7 +21,7 @@
             default => ['label' => ucfirst($status), 'color' => 'secondary', 'icon' => 'fa-question-circle'],
         },
         'usuario' => match($status) {
-            'activo', 'active' => ['label' => 'Activo', 'color' => 'success', 'icon' => 'fa-check-circle'],
+            'activo', 'active' => ['label' => 'Activo', 'color' => 'success', 'icon' => 'fa-check'],
             'inactivo', 'inactive' => ['label' => 'Inactivo', 'color' => 'danger', 'icon' => 'fa-times-circle'],
             'pendiente', 'pending' => ['label' => 'Pendiente', 'color' => 'warning', 'icon' => 'fa-clock'],
             default => ['label' => ucfirst($status), 'color' => 'secondary', 'icon' => 'fa-question-circle'],
