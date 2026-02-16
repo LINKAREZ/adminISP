@@ -56,4 +56,13 @@ return [
      */
     'map_provider' => env('MAP_PROVIDER', 'leaflet'),
 
+    /*
+     * Adminer: interfaz web tipo phpMyAdmin para ver/gestionar la base de datos.
+     * Si está definido, en el dashboard super admin se muestra el enlace "Abrir Adminer".
+     * Ejemplo: https://panel.wan.pe:8080 (con el servicio adminer en puerto 8080 y firewall abierto).
+     */
+    'adminer' => [
+        'url' => env('ADMINER_URL', ''),
+    ],
+
 ];

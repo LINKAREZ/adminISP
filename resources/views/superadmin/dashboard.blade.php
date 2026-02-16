@@ -146,6 +146,14 @@
                             </div>
                         </div>
                     @endif
+                    @if(config('services.adminer.url'))
+                    <div class="mt-3 pt-2 border-top">
+                        <a href="{{ config('services.adminer.url') }}" target="_blank" rel="noopener noreferrer" class="btn btn-info btn-sm" style="min-height: 44px;">
+                            <i class="fas fa-external-link-alt mr-1" aria-hidden="true"></i> Abrir Adminer (gestión BD tipo phpMyAdmin)
+                        </a>
+                        <span class="text-muted small d-block mt-1">Ver tablas, datos y ejecutar SQL en la base de datos.</span>
+                    </div>
+                    @endif
                 @endif
             </x-card>
         </div>

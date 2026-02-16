@@ -244,6 +244,8 @@ Con el servicio `adminer` levantado (`docker compose up -d`), abre en el navegad
 
 - **http://TU_IP:8080** o **https://TU_IP:8080** (si tu firewall permite 8080)
 
+Para que en el **dashboard de super admin** aparezca el botón "Abrir Adminer (gestión BD tipo phpMyAdmin)", define en `.env` la URL donde está Adminer, por ejemplo: `ADMINER_URL=https://panel.wan.pe:8080`. Así podrás ir directo desde el panel a la interfaz tipo phpMyAdmin.
+
 En la pantalla de login:
 
 - **Sistema:** MySQL
