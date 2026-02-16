@@ -18,7 +18,10 @@
         <p><strong>Mensaje:</strong></p>
         <pre>{{ $message }}</pre>
         <p class="small">{{ $file }} (línea {{ $line }})</p>
-        <p><a href="{{ url('/superadmin') }}">Reintentar</a></p>
+        <p>
+            <a href="{{ url('/superadmin') }}">Reintentar</a> |
+            <a href="{{ url('/superadmin?minimal=1') }}">Vista mínima</a>
+        </p>
     </div>
 </body>
 </html>
