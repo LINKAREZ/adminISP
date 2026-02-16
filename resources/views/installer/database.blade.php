@@ -68,14 +68,16 @@
                     <small class="text-muted">Usuario de MySQL, no el correo del administrador del panel (ej: <code>root</code>, <code>adminisp</code>).</small>
                 </div>
                 <div class="form-group" style="margin-bottom: 0;">
-                    <label for="DB_PASSWORD">Contraseña</label>
+                    <label for="DB_PASSWORD">Contraseña MySQL</label>
                     <div class="row-of-fields">
                         <span class="password-wrap">
-                            <input type="password" id="DB_PASSWORD" name="DB_PASSWORD" class="form-control" value="{{ old('DB_PASSWORD', $current['DB_PASSWORD']) }}" placeholder="(vacía si no aplica)">
+                            <input type="password" id="DB_PASSWORD" name="DB_PASSWORD" class="form-control" value="{{ old('DB_PASSWORD', $current['DB_PASSWORD']) }}" placeholder="Ej. adminisp% (Docker)" autocomplete="off">
                             <button type="button" class="btn-password-toggle btn btn-outline-secondary" title="Ver contraseña" data-target="DB_PASSWORD">Ver</button>
                         </span>
                         <button type="button" id="btn-create-user" class="btn btn-outline-secondary" title="Crear este usuario en MySQL">Crear usuario</button>
                     </div>
+                    <small class="text-muted">Por defecto en Docker: usuario <code>root</code>, contraseña <code>adminisp%</code> (la del compose).</small>
+                </div>
                     <div id="create-user-admin-wrap" style="display: none; margin-top: 0.5rem;">
                         <div class="row-of-fields">
                             <input type="text" id="DB_ADMIN_USERNAME" class="form-control form-control-sm" placeholder="root" title="Usuario con permiso" style="flex: 1; min-width: 0;">
