@@ -23,7 +23,10 @@ trait Auditable
             return true;
         }
         $request = request();
-        if ($request && $request->is('install/*')) {
+        if (!$request) {
+            return true;
+        }
+        if ($request->is('install/*')) {
             return true;
         }
         return false;
