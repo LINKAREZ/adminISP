@@ -222,10 +222,8 @@ document.getElementById('btn-create-user').addEventListener('click', function ()
         result.innerHTML = 'Escribe el usuario de aplicación (el que se creará en MySQL).';
         return;
     }
-    if (!adminUser) {
-        adminUser = 'root';
-        adminPass = password || 'adminisp%';
-    }
+    if (!adminUser) adminUser = 'root';
+    if (!adminPass) adminPass = password || 'adminisp%';
 
     function doCreateUser(adminPassword) {
         var fd = new FormData();
@@ -258,7 +256,7 @@ document.getElementById('btn-create-user').addEventListener('click', function ()
             result.innerHTML = json.message || 'Usuario creado.';
             return;
         }
-        var accessDenied = json.message && (json.message.indexOf('Access denied') !== -1 || json.message.indexOf('1045') !== -1);
+        var accessDenied = json.message && (json.message.indexOf('Access denied') !== -1 || json.message.indexOf('1045') !== -1 || json.message.indexOf('Credenciales') !== -1);
         if (accessDenied && adminPass !== 'secret') {
             return doCreateUser('secret').then(function (r2) {
                 result.style.display = 'block';

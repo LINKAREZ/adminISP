@@ -4,15 +4,22 @@ namespace App\Modules\Installer\Controllers;
 
 use App\Modules\ControlAcceso\Models\User;
 use App\Modules\ControlAcceso\Models\Role;
+use App\Modules\Installer\Requests\SaveAdminRequest;
+use App\Modules\Installer\Requests\SaveDatabaseRequest;
+use App\Modules\Installer\Services\InstallerEnvService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Validation\Rules\Password;
 
 class InstallerController extends Controller
 {
+    public function __construct(
+        private InstallerEnvService $envService
+    ) {
+    }
+
     /**
      * Verificar si la aplicación ya está instalada.
      */
@@ -150,25 +157,9 @@ class InstallerController extends Controller
     /**
      * Guardar configuración de BD (prueba la conexión y escribe .env).
      */
-    public function saveDatabase(Request $request)
+    public function saveDatabase(SaveDatabaseRequest $request)
     {
-        $validated = $request->validate([
-            'APP_URL' => ['required', 'string', 'max:255', 'regex:#^https?://.+#'],
-            'DB_HOST' => ['required', 'string', 'max:255'],
-            'DB_PORT' => ['required', 'string', 'max:10'],
-            'DB_DATABASE' => ['required', 'string', 'max:255'],
-            'DB_USERNAME' => [
-                'required',
-                'string',
-                'max:255',
-                function ($attribute, $value, $fail) {
-                    if (str_contains($value, '@')) {
-                        $fail('El usuario de MySQL no puede ser un correo. Use el usuario de la base de datos (ej: root o adminisp), no el email del administrador del panel.');
-                    }
-                },
-            ],
-            'DB_PASSWORD' => ['nullable', 'string'],
-        ]);
+        $validated = $request->validated();
 
         try {
             $dsn = "mysql:host={$validated['DB_HOST']};port={$validated['DB_PORT']};dbname={$validated['DB_DATABASE']};charset=utf8mb4";
@@ -185,7 +176,7 @@ class InstallerController extends Controller
         }
 
         try {
-            $this->writeEnvVariables($validated);
+            $this->envService->write($validated);
         } catch (\Throwable $e) {
             $msg = $e->getMessage();
             if (str_contains($msg, 'Permission denied') || str_contains($msg, 'Failed to open stream')) {
@@ -269,13 +260,9 @@ class InstallerController extends Controller
     /**
      * Guardar usuario administrador.
      */
-    public function saveAdmin(Request $request)
+    public function saveAdmin(SaveAdminRequest $request)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email'],
-            'password' => ['required', 'confirmed', Password::min(8)],
-        ]);
+        $validated = $request->validated();
 
         try {
             $roleAdmin = Role::where('name', 'administrador')->first();
@@ -293,7 +280,7 @@ class InstallerController extends Controller
                 ]
             );
 
-            $this->writeEnvVariables([
+            $this->envService->write([
                 'DEFAULT_ADMIN_EMAIL' => $validated['email'],
                 'DEFAULT_ADMIN_NAME' => $validated['name'],
             ]);
@@ -389,9 +376,15 @@ class InstallerController extends Controller
                 'message' => "Base de datos \"{$database}\" creada o ya existía correctamente.",
             ]);
         } catch (\PDOException $e) {
-            $code = $e->getCode();
+            $code = (int) $e->getCode();
             $msg = $e->getMessage();
-            if ($code == 1044 || str_contains($msg, 'Access denied') || str_contains($msg, 'CREATE')) {
+            if ($code === 1045 || str_contains($msg, 'Access denied')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Credenciales incorrectas. Comprueba usuario y contraseña. En Docker, la contraseña de root suele ser la del campo Contraseña de arriba o la contraseña antigua del contenedor.',
+                ], 400);
+            }
+            if ($code === 1044 || str_contains($msg, 'CREATE')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'El usuario no tiene permiso para crear bases de datos. Usa un usuario con permiso (p. ej. root) en Usuario y Contraseña.',
@@ -457,30 +450,19 @@ class InstallerController extends Controller
                 'message' => "Usuario \"{$appUser}\" creado o actualizado con permisos sobre \"{$database}\".",
             ]);
         } catch (\PDOException $e) {
+            $code = (int) $e->getCode();
+            $msg = $e->getMessage();
+            if ($code === 1045 || str_contains($msg, 'Access denied')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Credenciales de root incorrectas. Escribe la contraseña de root de MySQL en «Contraseña del usuario admin» (en Más opciones) y pulsa Crear usuario de nuevo. En Docker suele ser la del campo Contraseña de arriba o la antigua del contenedor.',
+                ], 400);
+            }
             return response()->json([
                 'success' => false,
-                'message' => 'Error: ' . $e->getMessage(),
+                'message' => 'Error: ' . $msg,
             ], 400);
         }
     }
 
-    private function writeEnvVariables(array $variables): void
-    {
-        $envPath = base_path('.env');
-        $content = file_exists($envPath) ? file_get_contents($envPath) : '';
-
-        foreach ($variables as $key => $value) {
-            $value = (string) $value;
-            $value = str_replace(['\\', '"'], ['\\\\', '\\"'], $value);
-            $pattern = "/^{$key}=.*/m";
-            $replacement = "{$key}=\"{$value}\"";
-            if (preg_match($pattern, $content)) {
-                $content = preg_replace($pattern, $replacement, $content);
-            } else {
-                $content .= "\n{$replacement}\n";
-            }
-        }
-
-        File::put($envPath, trim($content) . "\n");
-    }
 }

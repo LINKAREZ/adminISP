@@ -9,7 +9,7 @@
         <span class="step">4. Administrador</span>
     </div>
 
-    <h2 style="margin-bottom: 1rem; font-size: 1.2rem;">Crear base de datos</h2>
+    <h2 style="margin-bottom: 1rem; font-size: 1.2rem;">Migraciones</h2>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>

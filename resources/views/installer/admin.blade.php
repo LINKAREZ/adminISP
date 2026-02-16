@@ -44,6 +44,7 @@
             </span>
         </div>
         <button type="submit" class="btn btn-primary btn-block">Crear y finalizar instalación</button>
+        <p class="text-muted small mt-2 mb-0">Si ves error de rol, vuelve al paso 3 y ejecuta «Ejecutar datos iniciales».</p>
     </form>
 
     <a href="{{ route('installer.migrate') }}" class="btn btn-block" style="margin-top: 1rem; background: #e9ecef; color: #333;">← Volver</a>
