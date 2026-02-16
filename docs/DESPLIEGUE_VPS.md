@@ -95,3 +95,12 @@ No se usa SCP para desplegar; la fuente de verdad es GitHub.
 - **Rate limiting:** Login `throttle:5,1`; creación de admin por ISP `throttle:10,1`; API general `throttle:120,1` y rutas concretas 30/60 según endpoint. Solicitud de cuenta (onboarding) `throttle:5,1`.
 - **Cookies:** En producción usar `SESSION_SECURE_COOKIE=true` (o dejar que Laravel use `APP_ENV !== 'local'`). El proxy debe enviar `X-Forwarded-Proto: https`; el proyecto tiene `trustProxies(at: '*')` en `bootstrap/app.php`.
 - **Validación:** Las rutas sensibles usan FormRequest o reglas en controlador; no confiar en query/body sin validar. Credenciales solo en `.env`, no en el repo.
+
+### Sesión no persiste tras login
+
+Si al iniciar sesión te redirige de vuelta a `/login`, revisa en `.env`:
+
+- `SESSION_DRIVER=database` (o `file` con directorio persistente)
+- `SESSION_DOMAIN=panel.wan.pe` (dominio exacto del sitio)
+- `SESSION_SECURE_COOKIE=true` en producción
+- Si usas `database`: ejecutar `php artisan session:table` y `php artisan migrate` para crear la tabla `sessions`
