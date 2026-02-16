@@ -47,6 +47,9 @@
         $size === 'sm' ? 'badge-sm' : '',
         $size === 'lg' ? 'badge-lg' : '',
     ];
+    if ($type === 'usuario' && in_array($status, ['activo', 'active'], true)) {
+        $badgeClasses[] = 'status-activo';
+    }
 @endphp
 
 <span {{ $attributes->merge(['class' => implode(' ', array_filter($badgeClasses))]) }}>
