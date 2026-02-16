@@ -59,11 +59,20 @@ class SuperAdminController extends Controller
         $previousIspId = session('current_isp_id');
         $ispsConBd = Isp::withoutGlobalScope(IspScope::class)->whereNotNull('database_name')->get();
         foreach ($ispsConBd as $isp) {
-            TenantConnectionService::setCurrentIspId($isp->id);
-            $totalClientes += Cliente::count();
+            try {
+                TenantConnectionService::setCurrentIspId($isp->id);
+                $totalClientes += Cliente::count();
+            } catch (\Throwable $e) {
+                // Tenant sin BD migrada o conexión fallida: no sumar y seguir
+                report($e);
+            }
         }
         if ($previousIspId !== null) {
-            TenantConnectionService::setCurrentIspId((int) $previousIspId);
+            try {
+                TenantConnectionService::setCurrentIspId((int) $previousIspId);
+            } catch (\Throwable $e) {
+                report($e);
+            }
         }
 
         $recentIsps = Isp::withoutGlobalScope(IspScope::class)
@@ -76,14 +85,23 @@ class SuperAdminController extends Controller
         $previousIspId = session('current_isp_id');
         foreach ($recentIsps as $isp) {
             if ($isp->database_name) {
-                TenantConnectionService::setCurrentIspId($isp->id);
-                $isp->clientes_count = Cliente::count();
+                try {
+                    TenantConnectionService::setCurrentIspId($isp->id);
+                    $isp->clientes_count = Cliente::count();
+                } catch (\Throwable $e) {
+                    report($e);
+                    $isp->clientes_count = 0;
+                }
             } else {
                 $isp->clientes_count = 0;
             }
         }
         if ($previousIspId !== null) {
-            TenantConnectionService::setCurrentIspId((int) $previousIspId);
+            try {
+                TenantConnectionService::setCurrentIspId((int) $previousIspId);
+            } catch (\Throwable $e) {
+                report($e);
+            }
         }
 
         $basesDeDatos = Isp::withoutGlobalScope(IspScope::class)
