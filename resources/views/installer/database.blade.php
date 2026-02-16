@@ -27,7 +27,7 @@
         <p class="installer-lead">Configuración para <strong>cPanel u otro entorno</strong>. Completa los datos de conexión; se guardarán en <code>.env</code>.</p>
     @endif
 
-    <form method="POST" action="{{ route('installer.save-database') }}">
+    <form method="POST" action="{{ route('installer.save-database') }}" data-default-db-password="{{ e($current['DB_PASSWORD'] ?? '') }}">
         @csrf
         <div class="installer-section">
             <label for="APP_URL" class="installer-section-title">URL de la aplicación</label>
@@ -128,7 +128,9 @@ document.getElementById('btn-create-db').addEventListener('click', function () {
     var port = document.getElementById('DB_PORT').value.trim() || '3306';
     var database = document.getElementById('DB_DATABASE').value.trim();
     var user = document.getElementById('DB_USERNAME').value.trim();
-    var password = document.getElementById('DB_PASSWORD').value;
+    var formEl = document.querySelector('form[data-default-db-password]');
+    var defaultPassword = formEl ? (formEl.getAttribute('data-default-db-password') || '') : '';
+    var password = (document.getElementById('DB_PASSWORD').value || defaultPassword);
 
     if (!database) {
         result.style.display = 'block';
@@ -171,7 +173,7 @@ document.getElementById('btn-create-db').addEventListener('click', function () {
         }
         var noPermission = json.message && (json.message.indexOf('permiso') !== -1 || json.message.indexOf('root') !== -1);
         if (noPermission) {
-            var rootPass = password || 'adminisp%';
+            var rootPass = password || defaultPassword || 'adminisp%';
             return doCreateDb('root', rootPass).then(function (r2) {
                 if (r2.ok) {
                     result.className = 'mt-2 result-box success';
@@ -209,7 +211,9 @@ document.getElementById('btn-create-user').addEventListener('click', function ()
     var port = document.getElementById('DB_PORT').value.trim() || '3306';
     var database = document.getElementById('DB_DATABASE').value.trim();
     var user = document.getElementById('DB_USERNAME').value.trim();
-    var password = document.getElementById('DB_PASSWORD').value;
+    var formEl = document.querySelector('form[data-default-db-password]');
+    var defaultPassword = formEl ? (formEl.getAttribute('data-default-db-password') || '') : '';
+    var password = (document.getElementById('DB_PASSWORD').value || defaultPassword);
     var adminWrap = document.getElementById('create-user-admin-wrap');
     var adminUserInput = document.getElementById('DB_ADMIN_USERNAME');
     var adminPassInput = document.getElementById('DB_ADMIN_PASSWORD');
@@ -223,7 +227,7 @@ document.getElementById('btn-create-user').addEventListener('click', function ()
         return;
     }
     if (!adminUser) adminUser = 'root';
-    if (!adminPass) adminPass = password || 'adminisp%';
+    if (!adminPass) adminPass = password || defaultPassword || 'adminisp%';
 
     function doCreateUser(adminPassword) {
         var fd = new FormData();
@@ -268,12 +272,7 @@ document.getElementById('btn-create-user').addEventListener('click', function ()
         result.style.display = 'block';
         result.className = 'mt-2 result-box danger';
         result.innerHTML = json.message || 'Error.';
-        if (adminWrap) {
-            adminWrap.style.display = 'block';
-            if (result.innerHTML.indexOf('campos') === -1) {
-                result.innerHTML = result.innerHTML + ' En Docker, prueba usuario <code>root</code> y la misma contraseña que arriba, o la antigua del contenedor.';
-            }
-        }
+        if (adminWrap) adminWrap.style.display = 'block';
     })
     .catch(function (err) {
         result.style.display = 'block';
