@@ -57,6 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const res = await fetch('{{ route("installer.run-migrations") }}', {
                 method: 'POST',
+                credentials: 'same-origin',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
@@ -112,6 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const res = await fetch('{{ route("installer.run-seeders") }}', {
                 method: 'POST',
+                credentials: 'same-origin',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
