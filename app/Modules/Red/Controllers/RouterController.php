@@ -13,6 +13,7 @@ use App\Modules\Red\Requests\AddAddressListItemRequest;
 use App\Modules\Red\Requests\CrearReglaBloqueoRequest;
 use App\Modules\Red\Requests\StoreReglaRequest;
 use App\Modules\Red\Requests\UpdateReglaRequest;
+use App\Core\Services\TenantConnectionService;
 use App\Modules\Red\Models\Router;
 use App\Modules\Red\Models\Nodo;
 use App\Modules\Red\Models\Regla;
@@ -37,8 +38,12 @@ class RouterController extends Controller
 
     public function index()
     {
-        $routers = \App\Modules\Red\Models\Router::with('nodo')->latest()->paginate(15);
-        $nodos = \App\Modules\Red\Models\Nodo::where('estado', true)
+        $conn = TenantConnectionService::currentTenantConnectionName();
+        if (!$conn) {
+            return view('tenant-sin-configurar');
+        }
+        $routers = Router::on($conn)->with('nodo')->withoutGlobalScopes()->latest()->paginate(15);
+        $nodos = Nodo::on($conn)->withoutGlobalScopes()->where('estado', true)
             ->orderBy('nombre')
             ->get(['id', 'nombre']);
 
@@ -47,7 +52,11 @@ class RouterController extends Controller
 
     public function create()
     {
-        $nodos = \App\Modules\Red\Models\Nodo::where('estado', true)
+        $conn = TenantConnectionService::currentTenantConnectionName();
+        if (!$conn) {
+            return view('tenant-sin-configurar');
+        }
+        $nodos = Nodo::on($conn)->withoutGlobalScopes()->where('estado', true)
             ->orderBy('nombre')
             ->get(['id', 'nombre']);
         return view('red.routers.create', compact('nodos'));
