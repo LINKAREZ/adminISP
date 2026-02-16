@@ -38,8 +38,9 @@ class IspController extends Controller
             abort(403, 'Solo los super administradores pueden gestionar ISPs.');
         }
 
+        // users está en BD central; clientes y nodos en BD tenant → no usar withCount para tenant (usa una sola conexión)
         $query = Isp::withoutGlobalScope(\App\Core\Scopes\IspScope::class)
-            ->withCount(['users', 'clientes', 'nodos']);
+            ->withCount('users');
 
         if ($request->filled('buscar')) {
             $buscar = $request->buscar;
@@ -74,6 +75,22 @@ class IspController extends Controller
 
         $perPage = (int) config('isp.paginacion.default', 15);
         $isps = $query->paginate($perPage)->withQueryString();
+
+        // Conteos de clientes y nodos por ISP (cada uno en su BD tenant)
+        $previousIspId = session('current_isp_id');
+        foreach ($isps->getCollection() as $isp) {
+            if (!empty($isp->database_name)) {
+                TenantConnectionService::setCurrentIspId($isp->id);
+                $isp->setAttribute('clientes_count', \App\Modules\Clientes\Models\Cliente::count());
+                $isp->setAttribute('nodos_count', \App\Modules\Red\Models\Nodo::count());
+            } else {
+                $isp->setAttribute('clientes_count', 0);
+                $isp->setAttribute('nodos_count', 0);
+            }
+        }
+        if ($previousIspId !== null) {
+            TenantConnectionService::setCurrentIspId((int) $previousIspId);
+        }
 
         if ($request->ajax()) {
             return response()->json([
@@ -163,12 +180,16 @@ class IspController extends Controller
             ->with('role')
             ->get();
 
-        // Estadísticas del ISP (desde BD tenant si tiene database_name)
+        // Estadísticas del ISP (desde BD tenant de este ISP, no la sesión)
         $stats = ['usuarios' => $defaultAdmins->count(), 'clientes' => 0, 'nodos' => 0];
+        $previousIspId = session('current_isp_id');
         if ($isp->database_name) {
             TenantConnectionService::setCurrentIspId($isp->id);
             $stats['clientes'] = \App\Modules\Clientes\Models\Cliente::count();
             $stats['nodos'] = \App\Modules\Red\Models\Nodo::count();
+            if ($previousIspId !== null) {
+                TenantConnectionService::setCurrentIspId((int) $previousIspId);
+            }
         }
 
         return view('sistema.isps.show', compact('isp', 'defaultAdmins', 'stats'));

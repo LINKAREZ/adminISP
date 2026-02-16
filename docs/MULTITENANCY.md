@@ -87,6 +87,8 @@ El middleware **SetIspContext** (y el flujo de login) registra la conexión tena
 
 Para consultar la BD central explícitamente: `User::on(TenantConnectionService::centralConnection())->...`.
 
+**Listados que cruzan varios ISPs (super admin):** Si en una misma vista se muestran datos de más de un ISP (ej. lista de ISPs con conteo de clientes/nodos), no usar `withCount('clientes')` ni `withCount('nodos')` sobre el modelo Isp: esas relaciones están en BD tenant y Eloquent usaría una sola conexión (la actual). Hay que iterar los ISPs y por cada uno llamar `TenantConnectionService::setCurrentIspId($isp->id)` y luego hacer el conteo (ej. `Cliente::count()`). Al final, restaurar el tenant anterior si se había fijado (ej. `session('current_isp_id')`) para no afectar el resto de la petición.
+
 ---
 
 ## 6. Comandos
