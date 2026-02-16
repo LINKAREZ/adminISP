@@ -30,12 +30,14 @@ class SetIspContext
                 } elseif ($user && (!isset($user->isp_id) || $user->isp_id === null)) {
                     // Super admin: si no hay ISP seleccionado, usar el primero activo con BD para evitar 500 en módulos tenant
                     if (!session()->has('current_isp_id')) {
-                        $primerIsp = \App\Modules\Sistema\Models\Isp::on(TenantConnectionService::centralConnection())
-                            ->where('activo', true)
+                        $q = \App\Modules\Sistema\Models\Isp::on(TenantConnectionService::centralConnection())
                             ->whereNotNull('database_name')
                             ->where('database_name', '!=', '')
-                            ->orderBy('id')
-                            ->first();
+                            ->orderBy('id');
+                        if (\Illuminate\Support\Facades\Schema::connection(TenantConnectionService::centralConnection())->hasColumn('isps', 'activo')) {
+                            $q->where('activo', true);
+                        }
+                        $primerIsp = $q->first();
                         if ($primerIsp) {
                             session(['current_isp_id' => $primerIsp->id]);
                             TenantConnectionService::registerConnectionForIspId((int) $primerIsp->id);

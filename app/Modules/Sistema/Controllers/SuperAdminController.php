@@ -47,9 +47,12 @@ class SuperAdminController extends Controller
      */
     public function dashboard(): View
     {
-        // Estadísticas básicas de ISPs
-        $totalIsps = Isp::withoutGlobalScope(IspScope::class)->count();
-        $ispsActivos = Isp::withoutGlobalScope(IspScope::class)->where('activo', true)->count();
+        // Estadísticas básicas de ISPs (activo puede no existir en BD antiguas; migración 2026_02_16_200000 la añade)
+        $query = Isp::withoutGlobalScope(IspScope::class);
+        $totalIsps = $query->count();
+        $ispsActivos = \Illuminate\Support\Facades\Schema::connection(\App\Core\Services\TenantConnectionService::centralConnection())->hasColumn('isps', 'activo')
+            ? (clone $query)->where('activo', true)->count()
+            : $totalIsps;
         $ispsInactivos = $totalIsps - $ispsActivos;
         $totalUsuarios = User::withoutGlobalScope(IspScope::class)->count();
         $totalAdminsDefault = User::withoutGlobalScope(IspScope::class)->where('is_default_admin', true)->count();
@@ -130,10 +133,11 @@ class SuperAdminController extends Controller
             abort(403, 'Solo los super administradores pueden acceder.');
         }
 
-        $isps = Isp::withoutGlobalScope(IspScope::class)
-            ->where('activo', true)
-            ->orderBy('nombre')
-            ->get();
+        $ispsQuery = Isp::withoutGlobalScope(IspScope::class)->orderBy('nombre');
+        if (\Illuminate\Support\Facades\Schema::connection(\App\Core\Services\TenantConnectionService::centralConnection())->hasColumn('isps', 'activo')) {
+            $ispsQuery->where('activo', true);
+        }
+        $isps = $ispsQuery->get();
 
         $roles = Role::withoutGlobalScope(IspScope::class)
             ->where('is_active', true)
