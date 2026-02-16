@@ -156,13 +156,16 @@
     max-height: calc(100vh - 8rem);
 }
 
-/* ========== Sidebar: estándar SaaS (240–300px expandido, 48–64px colapsado) ========== */
-/* Ocupar 100% de la altura de la ventana (top to bottom) */
+/* ========== Posiciones AdminLTE 3 (layout-fixed + sidebar-mini) ========== */
+/* Sidebar fijo a la izquierda, contenido y navbar con margin-left */
 .main-sidebar {
+    position: fixed !important;
     top: 0 !important;
+    left: 0 !important;
     bottom: 0 !important;
     min-height: 100vh !important;
     height: 100vh !important;
+    z-index: 1034 !important;
 }
 .main-sidebar .sidebar {
     min-height: 100% !important;
@@ -179,10 +182,17 @@
 .main-sidebar::before {
     width: 280px !important;
 }
+/* Navbar: en flujo (relative), margin-left lo controlan las reglas por debajo */
+.main-header {
+    position: relative !important;
+    transition: margin-left 0.3s ease-in-out;
+}
 body.sidebar-mini:not(.sidebar-collapse) .content-wrapper,
 body.sidebar-mini:not(.sidebar-collapse) .main-footer,
 body.sidebar-mini:not(.sidebar-collapse) .main-header {
     margin-left: 280px !important;
+    width: calc(100% - 280px) !important;
+    max-width: calc(100% - 280px) !important;
 }
 body.sidebar-mini.sidebar-collapse .main-sidebar,
 body.sidebar-mini.sidebar-collapse .main-sidebar::before {
@@ -192,6 +202,8 @@ body.sidebar-mini.sidebar-collapse .content-wrapper,
 body.sidebar-mini.sidebar-collapse .main-footer,
 body.sidebar-mini.sidebar-collapse .main-header {
     margin-left: 64px !important;
+    width: calc(100% - 64px) !important;
+    max-width: calc(100% - 64px) !important;
 }
 /* ========== Pantallas pequeñas (<992px): mostrar/ocultar sidebar correctamente ========== */
 @media (max-width: 991.98px) {
@@ -216,6 +228,8 @@ body.sidebar-mini.sidebar-collapse .main-header {
     .main-footer,
     .main-header {
         margin-left: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
     }
     /* Overlay: encima del contenido, debajo del sidebar (z-index 1037 en AdminLTE) */
     #sidebar-overlay {
@@ -223,34 +237,36 @@ body.sidebar-mini.sidebar-collapse .main-header {
     }
 }
 
-/* ========== Contenido al 100% del espacio horizontal disponible ========== */
+/* ========== Wrapper y contenido al 100% del espacio disponible ========== */
 body.layout-fixed .wrapper,
 .wrapper {
-    max-width: none !important;
+    max-width: 100% !important;
     width: 100% !important;
-    display: flex !important;
-    flex-direction: column !important;
     min-height: 100vh;
+    display: block !important;
+    overflow-x: hidden;
 }
-body.layout-fixed .main-header,
-.main-header {
+body.layout-fixed .wrapper .main-header,
+.wrapper .main-header {
     flex-shrink: 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 body.layout-fixed .content-wrapper,
 body .content-wrapper {
     max-width: none !important;
-    width: auto !important; /* con flex:1 ocupa el espacio restante */
-    flex: 1 1 auto !important;
     min-width: 0 !important;
-    display: flex !important;
-    flex-direction: column !important;
+    width: auto !important; /* con margin-left evita overflow horizontal */
+    box-sizing: border-box !important;
+    transition: margin-left 0.3s ease-in-out;
 }
+body.layout-fixed .content-wrapper .content,
 body .content-wrapper .content,
 .content-wrapper .content {
     max-width: none !important;
     width: 100% !important;
-    flex: 1 1 auto !important;
     min-width: 0 !important;
+    box-sizing: border-box !important;
 }
 body .content-wrapper .content .container-fluid,
 body .content-wrapper .content-header .container-fluid,
@@ -264,8 +280,26 @@ body .content-wrapper .content-header .container-fluid,
 body .main-footer,
 .main-footer {
     max-width: none !important;
-    width: 100% !important;
+    width: auto !important; /* con margin-left evita overflow */
     flex-shrink: 0;
+    box-sizing: border-box !important;
+    transition: margin-left 0.3s ease-in-out;
+}
+/* layout-fixed: contenido y footer que crezcan correctamente */
+body.layout-fixed .wrapper {
+    display: flex !important;
+    flex-direction: column !important;
+}
+body.layout-fixed .content-wrapper {
+    flex: 1 1 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+body.layout-fixed .content-wrapper .content {
+    flex: 1 1 auto !important;
+}
+body.layout-fixed .main-footer {
+    flex-shrink: 0 !important;
 }
 
 /* Personalizaciones adicionales si son necesarias */

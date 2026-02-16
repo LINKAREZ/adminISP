@@ -54,7 +54,7 @@ body.superadmin-panel .wrapper {
 }
 body.superadmin-panel .main-header {
   flex-shrink: 0;
-  width: 100%;
+  /* width lo define adminlte.css (calc(100% - sidebar)) */
 }
 body.superadmin-panel .main-sidebar,
 body.superadmin-panel .main-sidebar::before {
@@ -69,8 +69,7 @@ body.superadmin-panel .content-wrapper {
   display: flex !important;
   flex-direction: column !important;
   overflow: hidden;
-  width: 100% !important;
-  max-width: none !important;
+  /* width/max-width los define adminlte.css (calc(100% - sidebar)) */
 }
 body.superadmin-panel .content-wrapper .content-header {
   flex-shrink: 0;
@@ -83,8 +82,7 @@ body.superadmin-panel .content-wrapper .content {
 }
 body.superadmin-panel .main-footer {
   flex-shrink: 0;
-  width: 100% !important;
-  max-width: none !important;
+  /* width lo define adminlte.css (calc(100% - sidebar)) */
 }
 
 /* ========== FONDO Y TIPOGRAFÍA = INSTALADOR ========== */
