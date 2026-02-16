@@ -58,6 +58,36 @@
                         <p>Servicios</p>
                     </a>
                 </li>
+                <li class="nav-item nav-item-mobile">
+                    <a href="{{ route('instalaciones.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('instalaciones*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-tools"></i>
+                        <p>Instalaciones</p>
+                    </a>
+                </li>
+                <li class="nav-item nav-item-mobile">
+                    <a href="{{ route('infraestructura.mapa.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('infraestructura*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-sitemap"></i>
+                        <p>Infraestructura</p>
+                    </a>
+                </li>
+                <li class="nav-item nav-item-mobile">
+                    <a href="{{ route('almacen.almacenes.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('almacen*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-warehouse"></i>
+                        <p>Almacén</p>
+                    </a>
+                </li>
+                <li class="nav-item nav-item-mobile">
+                    <a href="{{ route('mapa-red.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('mapa-red*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-map-marked-alt"></i>
+                        <p>Mapa Red</p>
+                    </a>
+                </li>
+                <li class="nav-item nav-item-mobile">
+                    <a href="{{ route('corte-facturacion.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('corte-facturacion*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-calendar-check"></i>
+                        <p>Corte Facturación</p>
+                    </a>
+                </li>
                 @hasAnyPermission(['sistema.read', 'sistema.apis.read'])
                 <li class="nav-item nav-item-mobile">
                     <a href="{{ route('sistema.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('sistema*') || request()->is('medios-pago*') ? 'active' : '' }}">
