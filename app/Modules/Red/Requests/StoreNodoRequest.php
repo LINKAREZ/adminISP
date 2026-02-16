@@ -2,15 +2,17 @@
 
 namespace App\Modules\Red\Requests;
 
+use App\Core\Traits\AuthorizesWithPermission;
 use App\Core\Traits\MergesIspId;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreNodoRequest extends FormRequest
 {
+    use AuthorizesWithPermission;
     use MergesIspId;
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('red.create');
+        return $this->authorizePermission('red.create');
     }
 
     public function rules(): array

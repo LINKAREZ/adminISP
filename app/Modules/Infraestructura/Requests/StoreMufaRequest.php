@@ -3,16 +3,18 @@
 namespace App\Modules\Infraestructura\Requests;
 
 use App\Core\Rules\ExistsInTenant;
+use App\Core\Traits\AuthorizesWithPermission;
 use App\Core\Traits\MergesIspId;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreMufaRequest extends FormRequest
 {
+    use AuthorizesWithPermission;
     use MergesIspId;
 
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('infraestructura.create');
+        return $this->authorizePermission('infraestructura.create');
     }
 
     public function rules(): array

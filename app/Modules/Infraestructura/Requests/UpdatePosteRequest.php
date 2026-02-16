@@ -2,13 +2,15 @@
 
 namespace App\Modules\Infraestructura\Requests;
 
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdatePosteRequest extends FormRequest
 {
+    use AuthorizesWithPermission;
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('infraestructura.update');
+        return $this->authorizePermission('infraestructura.update');
     }
 
     public function rules(): array

@@ -5,18 +5,18 @@ namespace App\Modules\Clientes\Requests;
 use App\Core\Rules\DocumentoUnico;
 use App\Core\Rules\DocumentoValido;
 use App\Core\Rules\TelefonoValido;
+use App\Core\Traits\AuthorizesWithPermission;
 use App\Core\Traits\MergesIspId;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreClienteRequest extends FormRequest
 {
+    use AuthorizesWithPermission;
     use MergesIspId;
-    /**
-     * Determine if the user is authorized to make this request.
-     */
+
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('clientes.create');
+        return $this->authorizePermission('clientes.create');
     }
 
     /**

@@ -3,19 +3,18 @@
 namespace App\Modules\Comprobantes\Requests;
 
 use App\Core\Rules\ValidationRules;
+use App\Core\Traits\AuthorizesWithPermission;
 use App\Core\Traits\MergesIspId;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 
 class StorePagoRequest extends FormRequest
 {
+    use AuthorizesWithPermission;
     use MergesIspId;
+
     public function authorize(): bool
     {
-        /** @var \App\Modules\ControlAcceso\Models\User|null $user */
-        $user = Auth::user();
-
-        return $user !== null && $user->hasPermission('comprobantes.create');
+        return $this->authorizePermission('comprobantes.create');
     }
 
     protected function prepareForValidation(): void

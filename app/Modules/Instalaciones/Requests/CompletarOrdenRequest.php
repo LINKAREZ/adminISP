@@ -3,13 +3,15 @@
 namespace App\Modules\Instalaciones\Requests;
 
 use App\Modules\Servicios\Models\Onu;
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CompletarOrdenRequest extends FormRequest
 {
+    use AuthorizesWithPermission;
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('instalaciones.update');
+        return $this->authorizePermission('instalaciones.update');
     }
 
     public function rules(): array

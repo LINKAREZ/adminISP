@@ -24,9 +24,7 @@ class ArticuloController extends Controller
 
     public function index(Request $request)
     {
-        if (!auth()->user()->hasPermission('almacen.read')) {
-            abort(403);
-        }
+        $this->authorize('viewAny', Articulo::class);
         if ($redirect = $this->requireIspContext(self::ALMACEN_ISP_MESSAGE)) {
             return $redirect;
         }
@@ -48,9 +46,7 @@ class ArticuloController extends Controller
 
     public function create()
     {
-        if (!auth()->user()->hasPermission('almacen.create')) {
-            abort(403);
-        }
+        $this->authorize('create', Articulo::class);
         if ($redirect = $this->requireIspContext(self::ALMACEN_ISP_MESSAGE)) {
             return $redirect;
         }
@@ -67,9 +63,7 @@ class ArticuloController extends Controller
 
     public function show(Articulo $articulo)
     {
-        if (!auth()->user()->hasPermission('almacen.read')) {
-            abort(403);
-        }
+        $this->authorize('view', $articulo);
         if ($redirect = $this->requireIspContext(self::ALMACEN_ISP_MESSAGE)) {
             return $redirect;
         }
@@ -79,9 +73,7 @@ class ArticuloController extends Controller
 
     public function edit(Articulo $articulo)
     {
-        if (!auth()->user()->hasPermission('almacen.update')) {
-            abort(403);
-        }
+        $this->authorize('update', $articulo);
         if ($redirect = $this->requireIspContext(self::ALMACEN_ISP_MESSAGE)) {
             return $redirect;
         }
@@ -97,9 +89,7 @@ class ArticuloController extends Controller
 
     public function destroy(Articulo $articulo)
     {
-        if (!auth()->user()->hasPermission('almacen.delete')) {
-            abort(403);
-        }
+        $this->authorize('delete', $articulo);
         $articulo->delete();
         return redirect()->route('almacen.articulos.index')->with('success', 'Artículo eliminado.');
     }

@@ -2,21 +2,20 @@
 
 namespace App\Modules\Red\Requests;
 
-use App\Core\Services\TenantConnectionService;
+use App\Core\Rules\ExistsInTenant;
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\DB;
 
 class UpdateRouterRequest extends FormRequest
 {
+    use AuthorizesWithPermission;
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('red.update');
+        return $this->authorizePermission('red.update');
     }
 
     public function rules(): array
     {
-        $tenantConn = TenantConnectionService::currentTenantConnectionName();
-
         return [
             'nombre' => ['required', 'string', 'max:255'],
             'ip_url' => ['required', 'string', 'max:255'],
@@ -25,19 +24,7 @@ class UpdateRouterRequest extends FormRequest
             'comunidad' => ['nullable', 'string', 'max:255'],
             'usuario' => ['required', 'string', 'max:255'],
             'contraseña' => ['nullable', 'string', 'max:255'],
-            'nodo_id' => [
-                'nullable',
-                'integer',
-                function (string $attribute, mixed $value, \Closure $fail) use ($tenantConn): void {
-                    if ($value === '' || $value === null || ! $tenantConn) {
-                        return;
-                    }
-                    $exists = DB::connection($tenantConn)->table('nodos')->where('id', (int) $value)->exists();
-                    if (! $exists) {
-                        $fail(__('validation.exists', ['attribute' => $attribute]));
-                    }
-                },
-            ],
+            'nodo_id' => ['nullable', 'integer', new ExistsInTenant('nodos')],
             'notas' => ['nullable', 'string', 'max:1000'],
             'estado' => ['nullable', 'boolean'],
         ];

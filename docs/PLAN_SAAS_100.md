@@ -1,5 +1,7 @@
 # Plan para implementar AdminISP al 100% como SaaS
 
+> **Documento histórico:** Puede no reflejar el estado actual del proyecto. Para arquitectura y convenciones vigentes, ver MULTITENANCY.md, COHERENCIA_MODULOS_Y_REDUCCION_BD.md y .cursorrules.
+
 Este documento define el plan de implementación para que **AdminISP** funcione como un **SaaS de gran magnitud**: plataforma multi-tenant donde cada ISP (tenant) usa el panel bajo suscripción, con onboarding, facturación de plataforma, seguridad y operación propias de un SaaS.
 
 ---

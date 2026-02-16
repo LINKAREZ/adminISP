@@ -4,13 +4,15 @@ namespace App\Modules\Servicios\Requests;
 
 use App\Core\Rules\ValidationRules;
 use App\Modules\Sistema\Models\OnuMarca;
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreOnuRequest extends FormRequest
 {
+    use AuthorizesWithPermission;
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('servicios.create');
+        return $this->authorizePermission('servicios.create');
     }
 
     public function rules(): array

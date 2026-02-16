@@ -5,13 +5,15 @@ namespace App\Modules\Instalaciones\Requests;
 use App\Modules\Clientes\Models\Cliente;
 use App\Modules\Red\Models\Router;
 use App\Modules\Servicios\Models\Plan;
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreOrdenInstalacionRequest extends FormRequest
 {
+    use AuthorizesWithPermission;
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('instalaciones.create');
+        return $this->authorizePermission('instalaciones.create');
     }
 
     public function rules(): array

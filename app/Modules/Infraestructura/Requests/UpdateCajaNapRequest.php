@@ -2,36 +2,22 @@
 
 namespace App\Modules\Infraestructura\Requests;
 
-use App\Core\Services\TenantConnectionService;
+use App\Core\Rules\ExistsInTenant;
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\DB;
 
 class UpdateCajaNapRequest extends FormRequest
 {
+    use AuthorizesWithPermission;
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('infraestructura.update');
+        return $this->authorizePermission('infraestructura.update');
     }
 
     public function rules(): array
     {
-        $tenantConn = TenantConnectionService::currentTenantConnectionName();
-
         return [
-            'poste_id' => [
-                'required',
-                'integer',
-                function (string $attribute, mixed $value, \Closure $fail) use ($tenantConn): void {
-                    if (! $tenantConn) {
-                        $fail(__('validation.exists', ['attribute' => $attribute]));
-                        return;
-                    }
-                    $exists = DB::connection($tenantConn)->table('postes')->where('id', (int) $value)->exists();
-                    if (! $exists) {
-                        $fail(__('validation.exists', ['attribute' => $attribute]));
-                    }
-                },
-            ],
+            'poste_id' => ['required', 'integer', new ExistsInTenant('postes')],
             'codigo' => ['nullable', 'string', 'max:100'],
             'capacidad_puertos' => ['required', 'integer', 'min:1', 'max:128'],
             'latitud' => ['nullable', 'numeric', 'between:-90,90'],

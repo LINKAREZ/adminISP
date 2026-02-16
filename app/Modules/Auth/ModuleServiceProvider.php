@@ -24,8 +24,6 @@ class ModuleServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // NO cargar rutas aquí porque se cargan directamente desde routes/web.php
-        // para asegurar que tengan el middleware 'web' aplicado correctamente
-        // $this->loadRoutesFrom(__DIR__ . '/Routes/web.php');
+        // Rutas cargadas desde routes/web.php vía require para heredar middleware 'web'
     }
 }

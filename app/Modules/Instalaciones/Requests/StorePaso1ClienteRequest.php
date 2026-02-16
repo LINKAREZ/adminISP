@@ -5,6 +5,7 @@ namespace App\Modules\Instalaciones\Requests;
 use App\Core\Rules\DocumentoUnico;
 use App\Core\Rules\DocumentoValido;
 use App\Core\Rules\TelefonoValido;
+use App\Core\Traits\AuthorizesWithPermission;
 use App\Core\Traits\MergesIspId;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -14,11 +15,12 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class StorePaso1ClienteRequest extends FormRequest
 {
+    use AuthorizesWithPermission;
     use MergesIspId;
 
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('instalaciones.create');
+        return $this->authorizePermission('instalaciones.create');
     }
 
     public function rules(): array

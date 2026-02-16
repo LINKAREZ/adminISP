@@ -2,13 +2,15 @@
 
 namespace App\Modules\Instalaciones\Requests;
 
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePaso2Request extends FormRequest
 {
+    use AuthorizesWithPermission;
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('instalaciones.create');
+        return $this->authorizePermission('instalaciones.create');
     }
 
     public function rules(): array

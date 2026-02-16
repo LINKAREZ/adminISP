@@ -4,13 +4,15 @@ namespace App\Modules\Instalaciones\Requests;
 
 use App\Modules\Red\Models\Router;
 use App\Modules\Servicios\Models\Plan;
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateOrdenInstalacionRequest extends FormRequest
 {
+    use AuthorizesWithPermission;
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('instalaciones.update');
+        return $this->authorizePermission('instalaciones.update');
     }
 
     public function rules(): array

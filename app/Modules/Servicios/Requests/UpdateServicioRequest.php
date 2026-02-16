@@ -7,10 +7,12 @@ use App\Modules\Red\Models\Router;
 use App\Modules\Servicios\Models\Plan;
 use App\Modules\Servicios\Models\Servicio;
 use App\Modules\Servicios\Models\Onu;
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateServicioRequest extends FormRequest
 {
+    use AuthorizesWithPermission;
     /**
      * Obtiene la instancia del servicio desde la ruta (puede ser modelo o ID en rutas anidadas).
      */
@@ -28,7 +30,7 @@ class UpdateServicioRequest extends FormRequest
 
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('servicios.update');
+        return $this->authorizePermission('servicios.update');
     }
 
     protected function prepareForValidation(): void

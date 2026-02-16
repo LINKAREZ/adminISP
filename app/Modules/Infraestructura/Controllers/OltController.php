@@ -2,6 +2,7 @@
 
 namespace App\Modules\Infraestructura\Controllers;
 
+use App\Core\Traits\FillsIspIdInData;
 use App\Http\Controllers\Controller;
 use App\Modules\Infraestructura\Models\EnlaceOltOdf;
 use App\Modules\Infraestructura\Models\Odf;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Gate;
 
 class OltController extends Controller
 {
+    use FillsIspIdInData;
     public function index()
     {
         Gate::authorize('infraestructura.read');
@@ -29,11 +31,7 @@ class OltController extends Controller
 
     public function store(StoreOltRequest $request)
     {
-        $data = $request->validated();
-        if (auth()->user()->isp_id) {
-            $data['isp_id'] = auth()->user()->isp_id;
-        }
-        $olt = Olt::create($data);
+        $olt = Olt::create($this->mergeIspIdInto($request->validated()));
         return redirect()->route('infraestructura.olts.show', $olt)
             ->with('success', 'OLT creado correctamente.');
     }
@@ -80,11 +78,10 @@ class OltController extends Controller
         if ($request->numero <= $maxNumero && $olt->puertosPon()->where('numero', $request->numero)->exists()) {
             return back()->withInput()->withErrors(['numero' => 'Ya existe un puerto PON con ese número.']);
         }
-        $olt->puertosPon()->create([
+        $olt->puertosPon()->create($this->mergeIspIdInto([
             'numero' => (int) $request->numero,
             'nombre' => $request->nombre ?: null,
-            'isp_id' => auth()->user()->isp_id ?? null,
-        ]);
+        ]));
         return redirect()->route('infraestructura.olts.show', $olt)
             ->with('success', 'Puerto PON agregado.');
     }
@@ -115,11 +112,10 @@ class OltController extends Controller
         if (EnlaceOltOdf::where('odf_puerto_id', $odfPuertoId)->exists()) {
             return back()->withInput()->withErrors(['odf_puerto_id' => 'Ese puerto ODF ya está enlazado a otro PON.']);
         }
-        EnlaceOltOdf::create([
+        EnlaceOltOdf::create($this->mergeIspIdInto([
             'olt_puerto_pon_id' => $puertoPon->id,
             'odf_puerto_id' => $odfPuertoId,
-            'isp_id' => auth()->user()->isp_id ?? null,
-        ]);
+        ]));
         return redirect()->route('infraestructura.olts.show', $olt)
             ->with('success', 'Enlace OLT-ODF creado.');
     }

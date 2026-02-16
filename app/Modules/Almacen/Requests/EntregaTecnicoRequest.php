@@ -2,13 +2,16 @@
 
 namespace App\Modules\Almacen\Requests;
 
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
 
 class EntregaTecnicoRequest extends FormRequest
 {
+    use AuthorizesWithPermission;
+
     public function authorize(): bool
     {
-        return $this->user()->hasPermission('almacen.create') || $this->user()->hasPermission('almacen.update');
+        return $this->authorizeAnyPermission(['almacen.create', 'almacen.update']);
     }
 
     public function rules(): array

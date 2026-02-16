@@ -2,13 +2,15 @@
 
 namespace App\Modules\Comprobantes\Requests;
 
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdatePromesaPagoRequest extends FormRequest
 {
+    use AuthorizesWithPermission;
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('comprobantes.update');
+        return $this->authorizePermission('comprobantes.update');
     }
 
     protected function prepareForValidation(): void

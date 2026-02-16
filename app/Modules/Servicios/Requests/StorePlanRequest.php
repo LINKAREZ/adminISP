@@ -2,20 +2,20 @@
 
 namespace App\Modules\Servicios\Requests;
 
-use App\Core\Services\TenantConnectionService;
+use App\Core\Rules\ExistsInTenant;
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\DB;
 
 class StorePlanRequest extends FormRequest
 {
+    use AuthorizesWithPermission;
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('servicios.create');
+        return $this->authorizePermission('servicios.create');
     }
 
     protected function prepareForValidation(): void
     {
-        // ip_fija en BD puede ser boolean/tinyint; vacío se guarda como 0
         if ($this->has('ip_fija') && ($this->ip_fija === null || $this->ip_fija === '')) {
             $this->merge(['ip_fija' => 0]);
         }
@@ -23,24 +23,9 @@ class StorePlanRequest extends FormRequest
 
     public function rules(): array
     {
-        $tenantConn = TenantConnectionService::currentTenantConnectionName();
-
         return [
             'nombre' => ['required', 'string', 'max:255'],
-            'router_id' => [
-                'required',
-                'integer',
-                function (string $attribute, mixed $value, \Closure $fail) use ($tenantConn): void {
-                    if (! $tenantConn) {
-                        $fail(__('validation.exists', ['attribute' => $attribute]));
-                        return;
-                    }
-                    $exists = DB::connection($tenantConn)->table('routers')->where('id', (int) $value)->exists();
-                    if (! $exists) {
-                        $fail(__('validation.exists', ['attribute' => $attribute]));
-                    }
-                },
-            ],
+            'router_id' => ['required', 'integer', new ExistsInTenant('routers')],
             'estado' => ['nullable', 'boolean'],
             'velocidad_bajada_mbps' => ['required', 'integer', 'min:1'],
             'velocidad_subida_mbps' => ['required', 'integer', 'min:1'],

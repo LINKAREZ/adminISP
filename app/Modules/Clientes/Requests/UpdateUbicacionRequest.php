@@ -2,16 +2,16 @@
 
 namespace App\Modules\Clientes\Requests;
 
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateUbicacionRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
+    use AuthorizesWithPermission;
+
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('clientes.update');
+        return $this->authorizePermission('clientes.update');
     }
 
     /**

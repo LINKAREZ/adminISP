@@ -2,6 +2,7 @@
 
 namespace App\Modules\Infraestructura\Controllers;
 
+use App\Core\Traits\FillsIspIdInData;
 use App\Http\Controllers\Controller;
 use App\Modules\Infraestructura\Models\Odf;
 use App\Modules\Infraestructura\Models\OdfPuerto;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Gate;
 
 class OdfController extends Controller
 {
+    use FillsIspIdInData;
     public function index()
     {
         Gate::authorize('infraestructura.read');
@@ -27,11 +29,7 @@ class OdfController extends Controller
 
     public function store(StoreOdfRequest $request)
     {
-        $data = $request->validated();
-        if (auth()->user()->isp_id) {
-            $data['isp_id'] = auth()->user()->isp_id;
-        }
-        $odf = Odf::create($data);
+        $odf = Odf::create($this->mergeIspIdInto($request->validated()));
         return redirect()->route('infraestructura.odfs.show', $odf)
             ->with('success', 'ODF creado correctamente.');
     }
@@ -73,10 +71,9 @@ class OdfController extends Controller
         if ($odf->puertos()->where('numero_puerto', $request->numero_puerto)->exists()) {
             return back()->withInput()->withErrors(['numero_puerto' => 'Ya existe un puerto con ese número.']);
         }
-        $odf->puertos()->create([
+        $odf->puertos()->create($this->mergeIspIdInto([
             'numero_puerto' => (int) $request->numero_puerto,
-            'isp_id' => auth()->user()->isp_id ?? null,
-        ]);
+        ]));
         return redirect()->route('infraestructura.odfs.show', $odf)
             ->with('success', 'Puerto agregado.');
     }

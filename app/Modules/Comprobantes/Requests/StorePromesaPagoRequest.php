@@ -3,13 +3,15 @@
 namespace App\Modules\Comprobantes\Requests;
 
 use App\Modules\Comprobantes\Models\PromesaPago;
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePromesaPagoRequest extends FormRequest
 {
+    use AuthorizesWithPermission;
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('comprobantes.create');
+        return $this->authorizePermission('comprobantes.create');
     }
 
     protected function prepareForValidation(): void

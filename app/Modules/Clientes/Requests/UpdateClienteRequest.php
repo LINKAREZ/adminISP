@@ -5,16 +5,16 @@ namespace App\Modules\Clientes\Requests;
 use App\Core\Rules\DocumentoUnico;
 use App\Core\Rules\DocumentoValido;
 use App\Core\Rules\TelefonoValido;
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateClienteRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
+    use AuthorizesWithPermission;
+
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('clientes.update');
+        return $this->authorizePermission('clientes.update');
     }
 
     /**

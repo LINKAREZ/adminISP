@@ -15,12 +15,10 @@ Route::get('/favicon.ico', function () {
 // Instalador (módulo Installer) - solo accesible cuando no está instalado
 require __DIR__ . '/../app/Modules/Installer/Routes/web.php';
 
-// Cargar rutas del módulo Auth
-// IMPORTANTE: Las rutas cargadas con require() SÍ heredan el middleware 'web' automáticamente
-// porque están siendo ejecutadas en el contexto de routes/web.php
+// Cargar rutas del módulo Auth (heredan middleware 'web' por ejecutarse en este contexto)
 require __DIR__ . '/../app/Modules/Auth/Routes/web.php';
 
-// Rutas del Dashboard - Cargadas desde app/Modules/Dashboard/ModuleServiceProvider
+// Resto de módulos: rutas cargadas desde cada ModuleServiceProvider (loadRoutesFrom)
 
 // Rutas protegidas
 Route::middleware('auth')->group(function () {

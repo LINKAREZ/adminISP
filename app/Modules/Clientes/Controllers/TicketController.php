@@ -78,7 +78,7 @@ class TicketController extends Controller
         }
 
         $validated = $request->validate([
-            'cliente_id' => 'required|exists:clientes,id',
+            'cliente_id' => ['required', 'integer', new \App\Core\Rules\ExistsInTenant('clientes')],
             'asunto' => 'required|string|max:255',
             'mensaje' => 'required|string|max:5000',
             'asignado_a' => 'nullable|exists:users,id',

@@ -8,9 +8,16 @@ use App\Core\Traits\UsesTenantConnection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Plan de servicio del ISP (tenant). Tabla: planes.
+ *
+ * Define velocidad, precio_mensual, tipo_conexion, router, etc. por cada oferta del ISP.
+ * NO confundir con Sistema\Plan (tabla central "plans" = plan SaaS / límites de la plataforma).
+ */
 class Plan extends Model
 {
     use Auditable, BelongsToIsp, UsesTenantConnection;
+
     protected $table = 'planes';
 
     protected $fillable = [

@@ -2,13 +2,15 @@
 
 namespace App\Modules\Sistema\Requests;
 
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreOnuModeloRequest extends FormRequest
 {
+    use AuthorizesWithPermission;
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('sistema.create');
+        return $this->authorizePermission('sistema.create');
     }
 
     public function rules(): array

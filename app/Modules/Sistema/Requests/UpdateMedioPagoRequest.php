@@ -2,13 +2,15 @@
 
 namespace App\Modules\Sistema\Requests;
 
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateMedioPagoRequest extends FormRequest
 {
+    use AuthorizesWithPermission;
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('sistema.update');
+        return $this->authorizePermission('sistema.update');
     }
 
     public function rules(): array

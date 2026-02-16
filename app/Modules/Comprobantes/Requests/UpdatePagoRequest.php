@@ -3,13 +3,15 @@
 namespace App\Modules\Comprobantes\Requests;
 
 use App\Core\Rules\ValidationRules;
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdatePagoRequest extends FormRequest
 {
+    use AuthorizesWithPermission;
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('comprobantes.update');
+        return $this->authorizePermission('comprobantes.update');
     }
 
     protected function prepareForValidation(): void

@@ -6,6 +6,7 @@ Este proyecto usa el patrón **database-per-tenant** (también llamado *silo* o 
 
 ## 1. Patrón: Database-per-tenant (silo)
 
+- **Siempre una base de datos por tenant.** En AdminISP no se usa tabla compartida ni schema-per-tenant: cada ISP tiene su propia base de datos física. No hay opción de “una sola BD para todos los tenants”.
 - **Una base de datos física por tenant (ISP).** Cada ISP tiene su propio `database_name` (ej. `adminisp_isp_1`, `adminisp_isp_2`).
 - **BD central:** Una sola BD (conexión `mysql` por defecto) contiene:
   - `isps` (con `database_name` por tenant)
@@ -92,6 +93,10 @@ Para consultar la BD central explícitamente: `User::on(TenantConnectionService:
 
 - **`php artisan isp:migrate-tenant [--isp=ID]`** — Ejecuta migraciones tenant para uno o todos los ISPs con `database_name`.
 - **`php artisan isp:create-database {id}`** — Crea la BD para un ISP y ejecuta migraciones y seeders (usa `TenantDatabaseService::createDatabaseForIsp`).
+
+### Mensaje al usuario cuando falta BD o tablas tenant
+
+Cuando no exista `database_name` en el ISP o falle la conexión tenant, mostrar un mensaje unificado que indique la causa y la solución. Texto recomendado: *"Las tablas de [Módulo] no existen en este ISP. Ejecute en el servidor: php artisan isp:migrate-tenant --isp={ispId}"*. Si el usuario no tiene contexto de ISP: *"Ejecute en el servidor: php artisan isp:migrate-tenant --isp=ID"*. El trait `RequiresTenantContext::redirectIfTenantTableMissing()` y `TenantDatabaseService::runMigrationsIfTableMissing()` centralizan esta lógica.
 
 ---
 

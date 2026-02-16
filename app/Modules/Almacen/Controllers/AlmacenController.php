@@ -4,6 +4,7 @@ namespace App\Modules\Almacen\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Almacen\Models\Almacen;
+use App\Modules\Almacen\Models\Articulo;
 use App\Modules\Almacen\Models\MovimientoInventario;
 use App\Modules\Almacen\Models\Stock;
 use App\Modules\Almacen\Requests\EntregaTecnicoRequest;
@@ -20,18 +21,14 @@ class AlmacenController extends Controller
 
     public function index(Request $request)
     {
-        if (!auth()->user()->hasPermission('almacen.read')) {
-            abort(403);
-        }
+        $this->authorize('viewAny', Articulo::class);
         $almacenes = Almacen::withCount('stock')->orderByRaw("CASE tipo WHEN 'central' THEN 1 ELSE 2 END")->orderBy('nombre')->paginate(20);
         return view('almacen.almacenes.index', compact('almacenes'));
     }
 
     public function stock(Request $request, Almacen $almacen)
     {
-        if (!auth()->user()->hasPermission('almacen.read')) {
-            abort(403);
-        }
+        $this->authorize('viewAny', Articulo::class);
         $query = Stock::where('almacen_id', $almacen->id)->where('cantidad', '>', 0)->with('articulo');
         if ($request->filled('buscar')) {
             $term = $request->buscar;
@@ -45,9 +42,7 @@ class AlmacenController extends Controller
 
     public function movimientos(Request $request)
     {
-        if (!auth()->user()->hasPermission('almacen.read')) {
-            abort(403);
-        }
+        $this->authorize('viewAny', Articulo::class);
         $query = MovimientoInventario::with(['articulo', 'almacenOrigen', 'almacenDestino'])->latest();
         if ($request->filled('almacen_id')) {
             $aid = $request->almacen_id;

@@ -2,7 +2,9 @@
 
 namespace App\Modules\Infraestructura\Controllers;
 
+use App\Core\Rules\ExistsInTenant;
 use App\Core\Services\TenantConnectionService;
+use App\Core\Traits\FillsIspIdInData;
 use App\Http\Controllers\Controller;
 use App\Modules\Clientes\Models\Ubicacion;
 use App\Modules\Infraestructura\Models\Cable;
@@ -10,14 +12,16 @@ use App\Modules\Infraestructura\Models\CajaNap;
 use App\Modules\Infraestructura\Models\Mufa;
 use App\Modules\Infraestructura\Models\Poste;
 use App\Modules\Infraestructura\Models\Recorrido;
+use App\Modules\Infraestructura\Services\InfraestructuraTableEnsurer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Schema;
 
 class EditorInfraestructuraController extends Controller
 {
+    use FillsIspIdInData;
+
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
@@ -26,114 +30,11 @@ class EditorInfraestructuraController extends Controller
         });
     }
 
-    /**
-     * Crea las tablas mufas y cables en el tenant con SQL directo si no existen.
-     */
     private function ensureInfraestructuraTables(): void
     {
         $connName = TenantConnectionService::currentTenantConnectionName();
-        if (! $connName) {
-            return;
-        }
-        $conn = DB::connection($connName);
-
-        try {
-            if (Schema::connection($connName)->hasTable('postes')) {
-                $conn->unprepared("
-                    CREATE TABLE IF NOT EXISTS mufas (
-                        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                        codigo VARCHAR(255) NULL,
-                        latitud DECIMAL(10,8) NULL,
-                        longitud DECIMAL(11,8) NULL,
-                        poste_id BIGINT UNSIGNED NULL,
-                        notas TEXT NULL,
-                        estado TINYINT(1) DEFAULT 1,
-                        isp_id BIGINT UNSIGNED NULL,
-                        created_at TIMESTAMP NULL,
-                        updated_at TIMESTAMP NULL,
-                        INDEX (poste_id),
-                        FOREIGN KEY (poste_id) REFERENCES postes(id) ON DELETE SET NULL
-                    )
-                ");
-            }
-        } catch (\Throwable $e) {
-            // Ignorar si mufas ya existe o FK falla
-        }
-
-        try {
-            $conn->unprepared("
-                CREATE TABLE IF NOT EXISTS cables (
-                    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                    tipo_origen VARCHAR(20) NOT NULL,
-                    id_origen BIGINT UNSIGNED NOT NULL,
-                    tipo_destino VARCHAR(20) NOT NULL,
-                    id_destino BIGINT UNSIGNED NOT NULL,
-                    nombre VARCHAR(255) NULL,
-                    metros INT UNSIGNED NULL,
-                    isp_id BIGINT UNSIGNED NULL,
-                    created_at TIMESTAMP NULL,
-                    updated_at TIMESTAMP NULL,
-                    INDEX (tipo_origen, id_origen),
-                    INDEX (tipo_destino, id_destino)
-                )
-            ");
-        } catch (\Throwable $e) {
-            // Si falla (ej. tabla ya existe con otra estructura), continuar
-        }
-
-        try {
-            $conn->unprepared("
-                CREATE TABLE IF NOT EXISTS recorridos (
-                    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                    nombre VARCHAR(255) NULL,
-                    tipo_cable VARCHAR(100) NULL,
-                    marca_cable VARCHAR(100) NULL,
-                    anio_fabricacion SMALLINT UNSIGNED NULL,
-                    cantidad_buffer INT UNSIGNED NULL,
-                    hilos_por_buffer INT UNSIGNED NULL,
-                    cantidad_total_hilos INT UNSIGNED NULL,
-                    isp_id BIGINT UNSIGNED NULL,
-                    created_at TIMESTAMP NULL,
-                    updated_at TIMESTAMP NULL
-                )
-            ");
-        } catch (\Throwable $e) {
-        }
-
-        $recorridoExtras = [
-            'tipo_cable' => 'VARCHAR(100) NULL',
-            'marca_cable' => 'VARCHAR(100) NULL',
-            'anio_fabricacion' => 'SMALLINT UNSIGNED NULL',
-            'cantidad_buffer' => 'INT UNSIGNED NULL',
-            'hilos_por_buffer' => 'INT UNSIGNED NULL',
-            'cantidad_total_hilos' => 'INT UNSIGNED NULL',
-        ];
-        foreach ($recorridoExtras as $col => $def) {
-            try {
-                if (Schema::connection($connName)->hasTable('recorridos') && ! Schema::connection($connName)->hasColumn('recorridos', $col)) {
-                    $conn->unprepared("ALTER TABLE recorridos ADD COLUMN {$col} {$def}");
-                }
-            } catch (\Throwable $e) {
-            }
-        }
-
-        try {
-            if (Schema::connection($connName)->hasTable('recorridos')) {
-                $conn->unprepared("
-                    CREATE TABLE IF NOT EXISTS recorrido_puntos (
-                        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                        recorrido_id BIGINT UNSIGNED NOT NULL,
-                        orden SMALLINT UNSIGNED NOT NULL,
-                        tipo VARCHAR(20) NOT NULL,
-                        nodo_id BIGINT UNSIGNED NOT NULL,
-                        created_at TIMESTAMP NULL,
-                        updated_at TIMESTAMP NULL,
-                        INDEX (recorrido_id, orden),
-                        FOREIGN KEY (recorrido_id) REFERENCES recorridos(id) ON DELETE CASCADE
-                    )
-                ");
-            }
-        } catch (\Throwable $e) {
+        if ($connName) {
+            InfraestructuraTableEnsurer::ensure($connName);
         }
     }
 
@@ -361,11 +262,7 @@ class EditorInfraestructuraController extends Controller
             'zona' => 'nullable|string|max:100',
             'icon' => 'nullable|string|max:50|in:minus,grip-lines-vertical,bolt,broadcast-tower,tower-cell,plug,satellite-dish,signal,circle-nodes',
         ]);
-        $data = $request->only(['latitud', 'longitud', 'codigo', 'direccion', 'zona', 'icon']);
-        if (auth()->user()->isp_id) {
-            $data['isp_id'] = auth()->user()->isp_id;
-        }
-        $poste = Poste::create($data);
+        $poste = Poste::create($this->mergeIspIdInto($request->only(['latitud', 'longitud', 'codigo', 'direccion', 'zona', 'icon'])));
         return response()->json([
             'ok' => true,
             'poste' => [
@@ -381,32 +278,15 @@ class EditorInfraestructuraController extends Controller
     public function storeCajaNap(Request $request): JsonResponse
     {
         Gate::authorize('infraestructura.create');
-        $tenantConn = TenantConnectionService::currentTenantConnectionName();
         $request->validate([
-            'poste_id' => [
-                'required',
-                'integer',
-                function (string $attribute, mixed $value, \Closure $fail) use ($tenantConn): void {
-                    if (! $tenantConn) {
-                        $fail(__('validation.exists', ['attribute' => $attribute]));
-                        return;
-                    }
-                    $exists = DB::connection($tenantConn)->table('postes')->where('id', (int) $value)->exists();
-                    if (! $exists) {
-                        $fail(__('validation.exists', ['attribute' => $attribute]));
-                    }
-                },
-            ],
+            'poste_id' => ['required', 'integer', new ExistsInTenant('postes')],
             'latitud' => 'nullable|numeric|between:-90,90',
             'longitud' => 'nullable|numeric|between:-180,180',
             'codigo' => 'nullable|string|max:100',
         ]);
         $data = $request->only(['poste_id', 'latitud', 'longitud', 'codigo']);
         $data['capacidad_puertos'] = $request->input('capacidad_puertos', 8);
-        if (auth()->user()->isp_id) {
-            $data['isp_id'] = auth()->user()->isp_id;
-        }
-        $cajaNap = CajaNap::create($data);
+        $cajaNap = CajaNap::create($this->mergeIspIdInto($data));
         return response()->json([
             'ok' => true,
             'caja_nap' => [
@@ -423,34 +303,13 @@ class EditorInfraestructuraController extends Controller
     public function storeMufa(Request $request): JsonResponse
     {
         Gate::authorize('infraestructura.create');
-        $tenantConn = TenantConnectionService::currentTenantConnectionName();
         $request->validate([
             'latitud' => 'required|numeric|between:-90,90',
             'longitud' => 'required|numeric|between:-180,180',
             'codigo' => 'nullable|string|max:100',
-            'poste_id' => [
-                'nullable',
-                'integer',
-                function (string $attribute, mixed $value, \Closure $fail) use ($tenantConn): void {
-                    if ($value === null || $value === '') {
-                        return;
-                    }
-                    if (! $tenantConn) {
-                        $fail(__('validation.exists', ['attribute' => $attribute]));
-                        return;
-                    }
-                    $exists = DB::connection($tenantConn)->table('postes')->where('id', (int) $value)->exists();
-                    if (! $exists) {
-                        $fail(__('validation.exists', ['attribute' => $attribute]));
-                    }
-                },
-            ],
+            'poste_id' => ['nullable', 'integer', new ExistsInTenant('postes')],
         ]);
-        $data = $request->only(['latitud', 'longitud', 'codigo', 'poste_id']);
-        if (auth()->user()->isp_id) {
-            $data['isp_id'] = auth()->user()->isp_id;
-        }
-        $mufa = Mufa::create($data);
+        $mufa = Mufa::create($this->mergeIspIdInto($request->only(['latitud', 'longitud', 'codigo', 'poste_id'])));
         return response()->json([
             'ok' => true,
             'mufa' => [
@@ -487,8 +346,7 @@ class EditorInfraestructuraController extends Controller
             return response()->json(['message' => 'No hay conexión tenant configurada.'], 500);
         }
 
-        $ispId = auth()->check() && auth()->user()->isp_id ? (int) auth()->user()->isp_id : null;
-        $recorrido = Recorrido::create(['isp_id' => $ispId]);
+        $recorrido = Recorrido::create($this->mergeIspIdInto([]));
         foreach ($nodos as $orden => $nodo) {
             $recorrido->puntos()->create([
                 'orden' => $orden,

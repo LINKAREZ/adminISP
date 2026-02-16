@@ -4,14 +4,16 @@ namespace App\Modules\Instalaciones\Requests;
 
 use App\Modules\Red\Models\Nodo;
 use App\Modules\Red\Models\Router;
+use App\Core\Traits\AuthorizesWithPermission;
 use App\Modules\Servicios\Models\Plan;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePaso2PlanRequest extends FormRequest
 {
+    use AuthorizesWithPermission;
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('instalaciones.update');
+        return $this->authorizePermission('instalaciones.update');
     }
 
     public function rules(): array

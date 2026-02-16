@@ -5,6 +5,12 @@ namespace App\Modules\Sistema\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * Plan SaaS (central). Tabla: plans.
+ *
+ * Límites y precios de la plataforma por ISP (max_clientes, max_usuarios, price_monthly).
+ * NO confundir con Servicios\Plan (tabla tenant "planes" = planes de servicio del ISP: velocidad, precio_mensual, router).
+ */
 class Plan extends Model
 {
     protected $connection = 'mysql';

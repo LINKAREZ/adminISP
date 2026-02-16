@@ -17,18 +17,7 @@
 /* Premium enhancements: gradientes, profundidad, micro-interacciones */
 @import './premium-enhancements.css';
 
-/* Colores adicionales para AdminLTE */
-.bg-orange {
-    background-color: #fd7e14 !important;
-}
-
-.bg-purple {
-    background-color: #6f42c1 !important;
-}
-
-.bg-indigo {
-    background-color: #6610f2 !important;
-}
+/* Colores adicionales: definidos en global-styles.blade.php (paleta unificada) */
 
 /* Ribbons personalizados */
 .ribbon-wrapper {

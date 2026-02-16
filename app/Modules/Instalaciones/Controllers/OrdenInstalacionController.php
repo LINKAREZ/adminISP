@@ -40,10 +40,6 @@ class OrdenInstalacionController extends Controller
     public function index(Request $request)
     {
         $this->authorize('viewAny', OrdenInstalacion::class);
-        if (!auth()->user()->hasPermission('instalaciones.read')) {
-            abort(403, 'Sin permiso para ver instalaciones.');
-        }
-
         $this->asegurarTablaInstalaciones();
 
         $query = OrdenInstalacion::with(['cliente', 'plan', 'nodo', 'router', 'ubicacion', 'servicio']);
@@ -247,9 +243,7 @@ class OrdenInstalacionController extends Controller
 
     public function seguimientoAltas(Request $request)
     {
-        if (!auth()->user()->hasPermission('instalaciones.read')) {
-            abort(403);
-        }
+        $this->authorize('viewAny', OrdenInstalacion::class);
         $query = OrdenInstalacion::where('estado', OrdenInstalacion::ESTADO_COMPLETADA)
             ->whereNotNull('fecha_completada')
             ->whereNotNull('servicio_id')

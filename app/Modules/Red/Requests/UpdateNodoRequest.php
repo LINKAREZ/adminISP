@@ -2,13 +2,15 @@
 
 namespace App\Modules\Red\Requests;
 
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateNodoRequest extends FormRequest
 {
+    use AuthorizesWithPermission;
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('red.update');
+        return $this->authorizePermission('red.update');
     }
 
     public function rules(): array

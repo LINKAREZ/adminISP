@@ -4,6 +4,7 @@ namespace App\Modules\Sistema\Models;
 
 use App\Core\Traits\Auditable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Isp extends Model
@@ -12,6 +13,11 @@ class Isp extends Model
 
     protected $connection = 'mysql';
 
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_ACTIVE = 'active';
+    public const STATUS_SUSPENDED = 'suspended';
+    public const STATUS_CANCELLED = 'cancelled';
+
     protected $fillable = [
         'database_name',
         'nombre',
@@ -19,12 +25,22 @@ class Isp extends Model
         'moneda',
         'simbolo_moneda',
         'igv',
+        'status',
+        'plan_id',
     ];
 
     protected $casts = [
         'activo' => 'boolean',
         'igv' => 'decimal:2',
     ];
+
+    /**
+     * Plan SaaS (límites: max_clientes, max_usuarios). Tabla central plans.
+     */
+    public function plan(): BelongsTo
+    {
+        return $this->belongsTo(Plan::class);
+    }
 
     /**
      * Relación con usuarios

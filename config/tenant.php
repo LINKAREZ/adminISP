@@ -3,7 +3,9 @@
 /**
  * Configuración multi-tenant (Database-per-tenant / Silo).
  *
- * Patrón de la industria: cada tenant (ISP) tiene su propia base de datos física.
+ * Siempre una base de datos por tenant: cada ISP tiene su propia BD física.
+ * No se usa tabla compartida ni schema-per-tenant.
+ *
  * - Aislamiento máximo (compliance, backup por tenant, sin riesgo de fuga entre tenants).
  * - Conexiones dinámicas: se registran en tiempo de ejecución como {connection_prefix}{tenant_id}.
  * - BD central: usuarios, roles, permisos, tabla isps (con database_name por tenant).

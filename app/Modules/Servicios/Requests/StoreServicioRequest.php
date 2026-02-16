@@ -7,13 +7,15 @@ use App\Modules\Red\Models\Router;
 use App\Modules\Servicios\Models\Onu;
 use App\Modules\Servicios\Models\Plan;
 use App\Modules\Servicios\Models\Servicio;
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreServicioRequest extends FormRequest
 {
+    use AuthorizesWithPermission;
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('servicios.create');
+        return $this->authorizePermission('servicios.create');
     }
 
     public function rules(): array

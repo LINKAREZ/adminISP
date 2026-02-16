@@ -2,6 +2,7 @@
 
 namespace App\Modules\Sistema\Controllers;
 
+use App\Core\Traits\FillsIspIdInData;
 use App\Http\Controllers\Controller;
 use App\Modules\Sistema\Requests\StoreMedioPagoRequest;
 use App\Modules\Sistema\Requests\UpdateMedioPagoRequest;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\Cache;
 
 class MedioPagoController extends Controller
 {
+    use FillsIspIdInData;
     public function __construct()
     {
         $this->authorizeResource(MedioPago::class, 'mediosPago');
@@ -30,14 +32,7 @@ class MedioPagoController extends Controller
 
     public function store(StoreMedioPagoRequest $request)
     {
-        $data = $request->validated();
-
-        // Asegurar que isp_id esté asignado si no viene en los datos
-        if (empty($data['isp_id']) && auth()->check() && auth()->user()->isp_id) {
-            $data['isp_id'] = auth()->user()->isp_id;
-        }
-
-        $medioPago = \App\Modules\Sistema\Models\MedioPago::create($data);
+        $medioPago = \App\Modules\Sistema\Models\MedioPago::create($this->mergeIspIdInto($request->validated()));
 
         // Invalidar caché de medios de pago activos
         Cache::forget('medios_pago.activos');

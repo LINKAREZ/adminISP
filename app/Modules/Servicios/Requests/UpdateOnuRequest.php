@@ -4,13 +4,15 @@ namespace App\Modules\Servicios\Requests;
 
 use App\Core\Rules\ValidationRules;
 use App\Modules\Sistema\Models\OnuMarca;
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateOnuRequest extends FormRequest
 {
+    use AuthorizesWithPermission;
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasPermission('servicios.update');
+        return $this->authorizePermission('servicios.update');
     }
 
     public function rules(): array

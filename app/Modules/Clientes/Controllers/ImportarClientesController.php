@@ -28,8 +28,8 @@ class ImportarClientesController extends Controller
         Gate::authorize('clientes.create');
         $request->validate([
             'archivo' => 'required|file|mimes:csv,txt|max:5120',
-            'router_id' => 'required|exists:routers,id',
-            'plan_id' => 'required|exists:planes,id',
+            'router_id' => ['required', 'integer', new \App\Core\Rules\ExistsInTenant('routers')],
+            'plan_id' => ['required', 'integer', new \App\Core\Rules\ExistsInTenant('planes')],
         ]);
 
         $ispId = Auth::user()?->isp_id;

@@ -24,6 +24,6 @@ class ModuleServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Rutas cargadas desde routes/web.php vía require para mantener orden con prefijo /install
+        // Rutas cargadas desde routes/web.php vía require para mantener orden y middleware 'web'
     }
 }

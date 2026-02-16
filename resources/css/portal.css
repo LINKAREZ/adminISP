@@ -1,0 +1,64 @@
+/**
+ * Portal del cliente - Estilos unificados con Admin
+ * Usa las mismas variables que global-styles (incluir global-styles antes)
+ */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--gray-50, #f4f6f8);
+}
+.portal-nav {
+    background: var(--primary);
+    color: white;
+    padding: 0.75rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+.portal-nav a {
+    color: white;
+    text-decoration: none;
+    margin-left: 1rem;
+    font-weight: 500;
+}
+.portal-nav a:hover {
+    opacity: 0.9;
+}
+.portal-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+.portal-container .portal-card {
+    border-radius: var(--radius-lg, 12px);
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow, 0 1px 3px rgba(0,0,0,0.1));
+    background: white;
+}
+.portal-saldo-display {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--gray-900);
+}
+.portal-container .table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.portal-container .table th,
+.portal-container .table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--gray-200);
+}
+.portal-container .table thead th {
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--gray-600);
+}
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}

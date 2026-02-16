@@ -2,15 +2,17 @@
 
 namespace App\Modules\Almacen\Requests;
 
-use App\Core\Services\TenantConnectionService;
+use App\Core\Rules\ExistsInTenant;
+use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\DB;
 
 class UpdateArticuloRequest extends FormRequest
 {
+    use AuthorizesWithPermission;
+
     public function authorize(): bool
     {
-        return $this->user()->hasPermission('almacen.update');
+        return $this->authorizePermission('almacen.update');
     }
 
     public function rules(): array
@@ -21,23 +23,7 @@ class UpdateArticuloRequest extends FormRequest
             'tipo' => 'required|in:equipo,material,herramienta,consumible',
             'unidad' => 'required|string|max:20',
             'costo_referencia' => 'nullable|numeric|min:0',
-            'onu_modelo_id' => [
-                'nullable',
-                'integer',
-                function ($attribute, $value, $fail) {
-                    if (empty($value)) {
-                        return;
-                    }
-                    $conn = TenantConnectionService::currentTenantConnectionName();
-                    if (!$conn) {
-                        $fail('No hay contexto de ISP. Seleccione un ISP o inicie sesión con un usuario asignado a un ISP.');
-                        return;
-                    }
-                    if (!DB::connection($conn)->table('onu_modelos')->where('id', $value)->exists()) {
-                        $fail('El modelo ONU seleccionado no es válido.');
-                    }
-                },
-            ],
+            'onu_modelo_id' => ['nullable', 'integer', new ExistsInTenant('onu_modelos')],
         ];
     }
 }
