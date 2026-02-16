@@ -40,6 +40,9 @@ class OrdenInstalacionController extends Controller
 
     public function index(Request $request)
     {
+        if (!TenantConnectionService::currentTenantConnectionName()) {
+            return redirect()->route('dashboard')->with('warning', 'No hay ISP configurado. Seleccione un ISP para ver órdenes de instalación.');
+        }
         $this->authorize('viewAny', OrdenInstalacion::class);
         $this->asegurarTablaInstalaciones();
 
@@ -76,6 +79,9 @@ class OrdenInstalacionController extends Controller
 
     public function create()
     {
+        if (!TenantConnectionService::currentTenantConnectionName()) {
+            return redirect()->route('dashboard')->with('warning', 'No hay ISP configurado. Seleccione un ISP para crear órdenes.');
+        }
         $this->authorize('create', OrdenInstalacion::class);
         $this->asegurarTablaInstalaciones();
         $clientes = Cliente::orderBy('nombre')->get(['id', 'nombre', 'documento', 'telefonos']);

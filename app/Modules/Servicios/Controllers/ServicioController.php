@@ -35,6 +35,9 @@ class ServicioController extends Controller
 
     public function index(Request $request)
     {
+        if (!\App\Core\Services\TenantConnectionService::currentTenantConnectionName()) {
+            return redirect()->route('dashboard')->with('warning', 'No hay ISP configurado. Seleccione un ISP para ver servicios.');
+        }
         $this->authorize('viewAny', Servicio::class);
         $request->validate([
             'buscar' => ['sometimes', 'string', 'max:100'],
@@ -75,6 +78,9 @@ class ServicioController extends Controller
 
     public function create(Cliente $cliente)
     {
+        if (!\App\Core\Services\TenantConnectionService::currentTenantConnectionName()) {
+            return redirect()->route('dashboard')->with('warning', 'No hay ISP configurado. Seleccione un ISP para crear servicios.');
+        }
         $this->authorize('create', Servicio::class);
         $ubicaciones = $cliente->ubicaciones()->with('router')->get();
         $nodos = Cache::remember('red.nodos.activos', 600, function () {

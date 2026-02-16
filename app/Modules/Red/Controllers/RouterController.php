@@ -64,7 +64,12 @@ class RouterController extends Controller
 
     public function store(StoreRouterRequest $request)
     {
-        \App\Modules\Red\Models\Router::create($request->validated());
+        $conn = TenantConnectionService::currentTenantConnectionName();
+        if (!$conn) {
+            return redirect()->route('red.routers.index')
+                ->with('error', 'No hay ISP seleccionado. Seleccione un ISP para crear routers.');
+        }
+        Router::on($conn)->create($request->validated());
 
         return redirect()->route('red.routers.index')
             ->with('success', 'Router creado correctamente.');
@@ -376,7 +381,11 @@ class RouterController extends Controller
 
     public function edit(Router $router)
     {
-        $nodos = \App\Modules\Red\Models\Nodo::where('estado', true)
+        $conn = TenantConnectionService::currentTenantConnectionName();
+        if (!$conn) {
+            return view('tenant-sin-configurar');
+        }
+        $nodos = Nodo::on($conn)->withoutGlobalScopes()->where('estado', true)
             ->orderBy('nombre')
             ->get(['id', 'nombre']);
         return view('red.routers.edit', compact('router', 'nodos'));

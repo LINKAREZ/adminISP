@@ -17,6 +17,9 @@ class ImportarClientesController extends Controller
 {
     public function index()
     {
+        if (!\App\Core\Services\TenantConnectionService::currentTenantConnectionName()) {
+            return view('tenant-sin-configurar');
+        }
         Gate::authorize('clientes.create');
         $routers = Router::where('estado', true)->orderBy('nombre')->get();
         $planes = Plan::where('estado', true)->orderBy('nombre')->get();

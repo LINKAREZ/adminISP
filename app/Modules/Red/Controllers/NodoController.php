@@ -37,7 +37,12 @@ class NodoController extends Controller
 
     public function store(StoreNodoRequest $request)
     {
-        \App\Modules\Red\Models\Nodo::create($request->validated());
+        $conn = TenantConnectionService::currentTenantConnectionName();
+        if (!$conn) {
+            return redirect()->route('red.nodos.index')
+                ->with('error', 'No hay ISP seleccionado. Seleccione un ISP para crear nodos.');
+        }
+        Nodo::on($conn)->create($request->validated());
 
         return redirect()->route('red.nodos.index')
             ->with('success', 'Nodo creado correctamente.');

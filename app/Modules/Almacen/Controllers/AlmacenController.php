@@ -21,6 +21,9 @@ class AlmacenController extends Controller
 
     public function index(Request $request)
     {
+        if (!TenantConnectionService::currentTenantConnectionName()) {
+            return redirect()->route('dashboard')->with('warning', 'No hay ISP configurado. Seleccione un ISP para ver almacén.');
+        }
         $this->authorize('viewAny', Articulo::class);
         $almacenes = Almacen::withCount('stock')->orderByRaw("CASE tipo WHEN 'central' THEN 1 ELSE 2 END")->orderBy('nombre')->paginate(20);
         return view('almacen.almacenes.index', compact('almacenes'));

@@ -60,6 +60,9 @@ class ReciboController extends Controller
 
     public function create(Cliente $cliente)
     {
+        if (!\App\Core\Services\TenantConnectionService::currentTenantConnectionName()) {
+            return redirect()->route('dashboard')->with('warning', 'No hay ISP configurado. Seleccione un ISP para crear recibos.');
+        }
         $this->authorize('create', Recibo::class);
         // Cargar TODOS los servicios del cliente (activos e inactivos)
         $servicios = $this->obtenerTodosLosServicios($cliente);
