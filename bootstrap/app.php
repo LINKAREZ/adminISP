@@ -69,9 +69,10 @@ return Application::configure(basePath: dirname(__DIR__))
         \App\Modules\PortalCliente\ModuleServiceProvider::class,
     ])
     ->withExceptions(function (Exceptions $exceptions) {
-        // Instalador: cualquier excepción en install/* devuelve JSON para que el frontend no reciba HTML
+        // Instalador: cualquier excepción en install devuelve JSON para que el frontend no reciba HTML
         $exceptions->render(function (\Throwable $exception, \Illuminate\Http\Request $request) {
-            if ($request->is('install/*')) {
+            $path = $request->path();
+            if (str_starts_with($path, 'install')) {
                 Log::error('Excepción en instalador', [
                     'message' => $exception->getMessage(),
                     'file' => $exception->getFile(),

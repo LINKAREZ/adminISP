@@ -134,8 +134,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     linkAdmin.style.display = 'block';
                 } else {
                     const status = res.status;
-                    const msg = (text && text.length < 400) ? text.replace(/</g, '&lt;') : ('Error del servidor (HTTP ' + status + '). Ejecuta en la VPS: docker compose exec app php artisan db:seed --class=RolePermissionSeeder --force');
-                    seedResult.innerHTML = '<div class="alert alert-danger">' + msg.substring(0, 600) + '</div>';
+                    const msg = (text && text.length < 1200) ? text.replace(/</g, '&lt;').replace(/\n/g, ' ') : ('Error del servidor (HTTP ' + status + '). Ejecuta en la VPS: docker compose exec app php artisan db:seed --class=RolePermissionSeeder --force');
+                    seedResult.innerHTML = '<div class="alert alert-danger" style="white-space:pre-wrap;word-break:break-all;">' + msg.substring(0, 1200) + '</div>';
                     linkAdmin.style.display = 'block';
                 }
                 btnSeed.disabled = false;
