@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 
 // IMPORTANTE: Estas rutas deben ir ANTES del resource para evitar conflictos de route model binding
 Route::middleware(['web', 'auth'])->group(function () {
+    // DEBUG: ruta minimal para verificar que /clientes carga (eliminar tras verificar)
+    Route::get('clientes-debug', fn () => response('OK clientes-debug', 200))->name('clientes.debug');
     Route::get('clientes/consultas/dni', [ClienteController::class, 'consultarDni'])->name('clientes.consultar-dni');
     Route::get('clientes/consultas/ruc', [ClienteController::class, 'consultarRuc'])->name('clientes.consultar-ruc');
     Route::get('clientes/consultar-dni', [ClienteController::class, 'consultarDni']);
