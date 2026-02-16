@@ -16,7 +16,7 @@ class ModuleServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // Rutas cargadas en routes/web.php para que instalaciones.index esté siempre definida
+        $this->loadRoutesFrom(__DIR__ . '/Routes/web.php');
         Gate::policy(OrdenInstalacion::class, OrdenInstalacionPolicy::class);
     }
 }
