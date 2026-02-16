@@ -84,15 +84,18 @@ class InstallerController extends Controller
      */
     public function database(Request $request)
     {
+        $appUrl = config('app.url');
+        if (empty($appUrl)) {
+            $appUrl = rtrim($request->getSchemeAndHttpHost() . $request->getBasePath(), '/');
+        }
         $current = [
-            'APP_URL' => config('app.url') ?: rtrim($request->getSchemeAndHttpHost() . $request->getBasePath(), '/'),
-            'DB_HOST' => config('database.connections.mysql.host', 'localhost'),
-            'DB_PORT' => config('database.connections.mysql.port', '3306'),
-            'DB_DATABASE' => config('database.connections.mysql.database', 'adminisp'),
-            'DB_USERNAME' => config('database.connections.mysql.username', 'root'),
-            'DB_PASSWORD' => config('database.connections.mysql.password', ''),
+            'APP_URL'     => $appUrl,
+            'DB_HOST'     => env('DB_HOST', 'db'),
+            'DB_PORT'     => env('DB_PORT', '3306'),
+            'DB_DATABASE' => env('DB_DATABASE', 'adminisp'),
+            'DB_USERNAME' => env('DB_USERNAME', 'root'),
+            'DB_PASSWORD' => env('DB_PASSWORD', ''),
         ];
-
         return view('installer.database', compact('current'));
     }
 
