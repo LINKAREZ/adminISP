@@ -132,7 +132,11 @@ class ClienteController extends Controller
 
             return view('clientes.index', compact('clientes', 'routers', 'routerId'));
         } catch (\Throwable $e) {
-            return view('tenant-sin-configurar');
+            try {
+                return view('tenant-sin-configurar');
+            } catch (\Throwable $viewEx) {
+                return response('<h1>ISP no configurado</h1><p>El ISP actual no tiene base de datos.</p>', 200);
+            }
         }
     }
 
@@ -148,7 +152,11 @@ class ClienteController extends Controller
             $this->authorize('create', Cliente::class);
             return view('clientes.create');
         } catch (\Throwable $e) {
-            return view('tenant-sin-configurar');
+            try {
+                return view('tenant-sin-configurar');
+            } catch (\Throwable $viewEx) {
+                return response('<h1>ISP no configurado</h1><p>El ISP actual no tiene base de datos.</p>', 200);
+            }
         }
     }
 
