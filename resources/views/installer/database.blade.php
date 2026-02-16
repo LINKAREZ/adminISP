@@ -31,36 +31,43 @@
         @csrf
         <div class="installer-section">
             <label for="APP_URL" class="installer-section-title">URL de la aplicación</label>
+            <small class="text-muted d-block mb-1" style="font-size: 0.8rem;">Dirección pública con la que se accederá al panel (ej. https://panel.tudominio.com). Debe coincidir con el dominio o IP de tu servidor.</small>
             <input type="url" id="APP_URL" name="APP_URL" class="form-control" value="{{ old('APP_URL', $current['APP_URL']) }}" required placeholder="https://panel.tudominio.com" autocomplete="url">
         </div>
 
         <div class="installer-section installer-section-box">
             <div class="installer-section-title">Conexión MySQL</div>
+            <small class="text-muted d-block mb-2" style="font-size: 0.8rem;">Datos con los que la aplicación se conectará a la base de datos. Se guardan en <code>.env</code>.</small>
             <div class="form-row-2">
                 <div class="form-group" style="margin-bottom: 0.5rem;">
                     <label for="DB_HOST">Host</label>
+                    <small class="text-muted d-block mb-1" style="font-size: 0.75rem;">Servidor donde está MySQL. En Docker usa <code>db</code> (nombre del contenedor). En servidor propio suele ser <code>localhost</code>.</small>
                     <input type="text" id="DB_HOST" name="DB_HOST" class="form-control" value="{{ old('DB_HOST', $current['DB_HOST']) }}" required placeholder="db" autocomplete="off">
                 </div>
                 <div class="form-group" style="margin-bottom: 0.5rem;">
                     <label for="DB_PORT">Puerto</label>
+                    <small class="text-muted d-block mb-1" style="font-size: 0.75rem;">Puerto de MySQL. El valor por defecto es <code>3306</code>.</small>
                     <input type="text" id="DB_PORT" name="DB_PORT" class="form-control" value="{{ old('DB_PORT', $current['DB_PORT']) }}" placeholder="3306" autocomplete="off">
                 </div>
             </div>
             <div class="form-group" style="margin-bottom: 0.5rem;">
                 <label for="DB_DATABASE">Base de datos</label>
+                <small class="text-muted d-block mb-1" style="font-size: 0.75rem;">Nombre de la base de datos que usará el panel. Si no existe, puedes crearla con el botón «Crear BD» en Más opciones.</small>
                 <input type="text" id="DB_DATABASE" name="DB_DATABASE" class="form-control" value="{{ old('DB_DATABASE', $current['DB_DATABASE']) }}" required placeholder="adminisp" autocomplete="off">
             </div>
             <div class="form-group" style="margin-bottom: 0.5rem;">
                 <label for="DB_USERNAME">Usuario</label>
+                <small class="text-muted d-block mb-1" style="font-size: 0.75rem;">Usuario de MySQL (no es el correo del administrador del panel). En Docker suele ser <code>adminisp</code>. Debe tener permisos sobre la base de datos anterior.</small>
                 <input type="text" id="DB_USERNAME" name="DB_USERNAME" class="form-control" value="{{ old('DB_USERNAME', $current['DB_USERNAME']) }}" required placeholder="adminisp" autocomplete="username">
             </div>
             <div class="form-group" style="margin-bottom: 0;">
                 <label for="DB_PASSWORD">Contraseña</label>
+                <small class="text-muted d-block mb-1" style="font-size: 0.75rem;">Contraseña del usuario de MySQL anterior. En Docker suele ser la de <code>DB_PASSWORD</code> o <code>MYSQL_PASSWORD</code> en tu <code>.env</code> o docker-compose.</small>
                 <div class="password-wrap">
                     <input type="password" id="DB_PASSWORD" name="DB_PASSWORD" class="form-control" value="{{ old('DB_PASSWORD', $current['DB_PASSWORD']) }}" placeholder="adminisp%" autocomplete="off">
                     <button type="button" class="btn-password-toggle btn btn-outline-secondary" data-target="DB_PASSWORD" aria-label="Mostrar contraseña">Ver</button>
                 </div>
-                <small class="text-muted" style="display: block; margin-top: 0.25rem;">Si aparece «Access denied», verifica usuario <code>adminisp</code> y la contraseña de <code>DB_PASSWORD</code> en tu entorno (Docker: la del compose).</small>
+                <small class="text-muted" style="display: block; margin-top: 0.25rem;">Si aparece «Access denied», verifica que usuario y contraseña coincidan con los de tu MySQL (en Docker, con los del compose).</small>
             </div>
         </div>
 
@@ -69,11 +76,13 @@
             <div class="installer-section-box" style="margin-top: 0.75rem;">
                 <div class="form-group">
                     <label class="small text-muted">Crear base de datos en el servidor</label>
+                    <small class="text-muted d-block mb-1" style="font-size: 0.75rem;">Crea la base de datos indicada arriba en MySQL si no existe. Necesita conectarse con un usuario con permiso (p. ej. root).</small>
                     <button type="button" id="btn-create-db" class="btn btn-outline-primary btn-sm">Crear BD</button>
                     <div id="create-db-result" class="mt-2" style="display: none;"></div>
                 </div>
                 <div class="form-group">
                     <label class="small text-muted">Crear usuario MySQL</label>
+                    <small class="text-muted d-block mb-1" style="font-size: 0.75rem;">Crea el usuario de la aplicación (el de arriba) en MySQL y le da permisos sobre la base de datos. Usa root o un admin; si falla, escribe en los campos de abajo usuario <code>root</code> y la contraseña de root de MySQL.</small>
                     <button type="button" id="btn-create-user" class="btn btn-outline-secondary btn-sm">Crear usuario</button>
                     <div id="create-user-admin-wrap" style="display: none; margin-top: 0.5rem;">
                         <div class="row-of-fields">
@@ -83,7 +92,7 @@
                                 <button type="button" class="btn-password-toggle btn btn-outline-secondary form-control-sm" data-target="DB_ADMIN_PASSWORD">Ver</button>
                             </span>
                         </div>
-                        <small class="text-muted d-block mt-1">En Docker, la contraseña de root suele ser la misma que la de arriba (Contraseña).</small>
+                        <small class="text-muted d-block mt-1">Usuario y contraseña con los que el instalador se conecta a MySQL para crear el usuario de la app. En Docker, la contraseña de root suele ser la misma que la de arriba (Contraseña).</small>
                     </div>
                     <div id="create-user-result" class="mt-2" style="display: none;"></div>
                 </div>

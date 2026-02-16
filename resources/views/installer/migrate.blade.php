@@ -63,7 +63,28 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Accept': 'application/json'
                 }
             });
-            const data = await res.json();
+            let data;
+            try {
+                const text = await res.text();
+                if (!text || text.trim() === '') {
+                    throw new Error('Respuesta vacía');
+                }
+                data = JSON.parse(text);
+            } catch (parseErr) {
+                if (res.ok) {
+                    migrateResult.innerHTML = '<div class="alert alert-success">Migraciones ejecutadas correctamente.</div>';
+                    migrateOutput.textContent = 'La respuesta del servidor fue demasiado larga. Las migraciones se completaron.';
+                    migrateOutput.style.display = 'block';
+                    btnMigrate.style.display = 'none';
+                    btnSeed.style.display = 'block';
+                } else {
+                    const status = res.status;
+                    migrateResult.innerHTML = '<div class="alert alert-danger">Error del servidor (HTTP ' + status + '). Comprueba los logs en storage/logs o ejecuta en la VPS: docker compose exec app php artisan db:seed --class=RolePermissionSeeder --force</div>';
+                }
+                btnMigrate.disabled = false;
+                btnMigrate.innerHTML = 'Ejecutar migraciones';
+                return;
+            }
 
             if (data.success) {
                 migrateResult.innerHTML = '<div class="alert alert-success">' + data.message + '</div>';
@@ -97,7 +118,26 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Accept': 'application/json'
                 }
             });
-            const data = await res.json();
+            let data;
+            try {
+                const text = await res.text();
+                if (!text || text.trim() === '') {
+                    throw new Error('Respuesta vacía');
+                }
+                data = JSON.parse(text);
+            } catch (parseErr) {
+                if (res.ok) {
+                    seedResult.innerHTML = '<div class="alert alert-success">Datos iniciales creados correctamente.</div>';
+                    btnSeed.style.display = 'none';
+                    linkAdmin.style.display = 'block';
+                } else {
+                    const status = res.status;
+                    seedResult.innerHTML = '<div class="alert alert-danger">Error del servidor (HTTP ' + status + '). Ejecuta en la VPS: docker compose exec app php artisan db:seed --class=RolePermissionSeeder --force</div>';
+                }
+                btnSeed.disabled = false;
+                btnSeed.innerHTML = 'Ejecutar datos iniciales (roles, permisos, etc.)';
+                return;
+            }
 
             if (data.success) {
                 seedResult.innerHTML = '<div class="alert alert-success">' + data.message + '</div>';

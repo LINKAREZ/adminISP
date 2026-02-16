@@ -204,9 +204,16 @@ class InstallerController extends Controller
      */
     public function runMigrations(Request $request)
     {
+        ob_start();
         try {
             Artisan::call('migrate:fresh', ['--force' => true]);
             $output = Artisan::output();
+            ob_end_clean();
+            // Limitar tamaño del output para evitar respuestas JSON truncadas (nginx/PHP)
+            $maxOutputLen = 8000;
+            if (mb_strlen($output) > $maxOutputLen) {
+                $output = "... (salida recortada) ...\n" . mb_substr($output, -$maxOutputLen);
+            }
 
             return response()->json([
                 'success' => true,
@@ -214,6 +221,7 @@ class InstallerController extends Controller
                 'output' => $output,
             ]);
         } catch (\Throwable $e) {
+            ob_end_clean();
             return response()->json([
                 'success' => false,
                 'message' => 'Error al ejecutar migraciones: ' . $e->getMessage(),
@@ -227,17 +235,20 @@ class InstallerController extends Controller
      */
     public function runSeeders(Request $request)
     {
+        ob_start();
         try {
             Artisan::call('db:seed', [
                 '--class' => 'RolePermissionSeeder',
                 '--force' => true,
             ]);
+            ob_end_clean();
 
             return response()->json([
                 'success' => true,
                 'message' => 'Datos iniciales de la BD central creados correctamente.',
             ]);
         } catch (\Throwable $e) {
+            ob_end_clean();
             return response()->json([
                 'success' => false,
                 'message' => 'Error al ejecutar seeders: ' . $e->getMessage(),
