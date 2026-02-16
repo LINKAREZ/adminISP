@@ -12,6 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
         \App\Console\Commands\IspCreateDatabase::class,
         \App\Console\Commands\IspMigrateTenant::class,
         \App\Console\Commands\IspMigrateToMultiTenant::class,
+        \App\Console\Commands\IspResetAllDatabases::class,
         \App\Console\Commands\InstallReset::class,
     ])
     ->withRouting(
