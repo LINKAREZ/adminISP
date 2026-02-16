@@ -43,14 +43,10 @@ class SuperAdminController extends Controller
     /**
      * Dashboard - Gestión de ISPs (estadísticas y accesos rápidos).
      *
-     * @return View
+     * @return View|\Illuminate\Http\Response
      */
     public function dashboard()
     {
-        // Por defecto: vista mínima (estable). Dashboard completo en ?full=1
-        if (request()->query('full') !== '1') {
-            return response()->view('superadmin.dashboard-minimal');
-        }
         try {
             return $this->renderDashboard();
         } catch (\Throwable $e) {

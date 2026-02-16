@@ -33,7 +33,7 @@
 
 @if($home)
     <li class="breadcrumb-item">
-        <a href="{{ route('dashboard') }}">
+        <a href="{{ request()->is('superadmin*') ? url('/superadmin') : (Route::has('dashboard') ? route('dashboard') : url('/')) }}">
             <i class="fas fa-home"></i>
         </a>
     </li>
@@ -51,8 +51,10 @@
         <li class="breadcrumb-item">
             @if(isset($item['url']))
                 <a href="{{ $item['url'] }}">{{ $item['label'] }}</a>
-            @else
+            @elseif(isset($item['route']) && Route::has($item['route']))
                 <a href="{{ route($item['route'], $item['params'] ?? []) }}">{{ $item['label'] }}</a>
+            @else
+                <span>{{ $item['label'] }}</span>
             @endif
         </li>
     @endif
