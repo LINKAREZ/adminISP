@@ -232,34 +232,54 @@ class InstallerController extends Controller
 
     /**
      * Ejecutar seeders de la BD central.
-     * Todo envuelto en try-catch para devolver siempre JSON (evitar 500 con HTML).
+     * Se ejecutan en subproceso (exec) para contexto CLI puro y respuesta siempre JSON.
      */
     public function runSeeders(Request $request)
     {
-        try {
-            Artisan::call('db:seed', [
-                '--class' => 'RolePermissionSeeder',
-                '--force' => true,
-            ]);
+        $output = [];
+        $returnCode = -1;
+        $base = base_path();
+        $php = defined('PHP_BINARY') && PHP_BINARY ? PHP_BINARY : 'php';
+        $cmd = sprintf(
+            'cd %s && %s artisan db:seed --class=RolePermissionSeeder --force 2>&1',
+            escapeshellarg($base),
+            escapeshellarg($php)
+        );
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Datos iniciales de la BD central creados correctamente.',
-            ]);
+        try {
+            if (!function_exists('exec')) {
+                throw new \RuntimeException('exec() está deshabilitado en este servidor.');
+            }
+            @exec($cmd, $output, $returnCode);
+            $outStr = trim(implode("\n", $output));
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error('Installer runSeeders failed', [
                 'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
                 'trace' => $e->getTraceAsString(),
             ]);
-
             return response()->json([
                 'success' => false,
                 'message' => 'Error al ejecutar seeders: ' . $e->getMessage(),
                 'trace' => config('app.debug') ? $e->getTraceAsString() : null,
             ], 500);
         }
+
+        if ($returnCode === 0) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Datos iniciales de la BD central creados correctamente.',
+            ]);
+        }
+
+        \Illuminate\Support\Facades\Log::error('Installer runSeeders failed (subprocess)', [
+            'exit_code' => $returnCode,
+            'output' => $outStr,
+        ]);
+        return response()->json([
+            'success' => false,
+            'message' => 'Error al ejecutar seeders. Código: ' . $returnCode . ($outStr ? '. ' . $outStr : ''),
+            'output' => config('app.debug') ? $outStr : null,
+        ], 500);
     }
 
     /**
