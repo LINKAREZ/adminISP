@@ -60,11 +60,12 @@
         </div>
 
         <div class="installer-section">
-            <div class="installer-section-title">Credenciales de la aplicación</div>
+            <div class="installer-section-title">Credenciales MySQL (usuario de la base de datos)</div>
             <div class="installer-section-box">
                 <div class="form-group" style="margin-bottom: 0.75rem;">
-                    <label for="DB_USERNAME">Usuario</label>
-                    <input type="text" id="DB_USERNAME" name="DB_USERNAME" class="form-control" value="{{ old('DB_USERNAME', $current['DB_USERNAME']) }}" required placeholder="adminisp">
+                    <label for="DB_USERNAME">Usuario MySQL</label>
+                    <input type="text" id="DB_USERNAME" name="DB_USERNAME" class="form-control" value="{{ old('DB_USERNAME', $current['DB_USERNAME']) }}" required placeholder="root o adminisp" autocomplete="username">
+                    <small class="text-muted">Usuario de MySQL, no el correo del administrador del panel (ej: <code>root</code>, <code>adminisp</code>).</small>
                 </div>
                 <div class="form-group" style="margin-bottom: 0;">
                     <label for="DB_PASSWORD">Contraseña</label>

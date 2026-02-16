@@ -108,7 +108,16 @@ class InstallerController extends Controller
             'DB_HOST' => ['required', 'string', 'max:255'],
             'DB_PORT' => ['required', 'string', 'max:10'],
             'DB_DATABASE' => ['required', 'string', 'max:255'],
-            'DB_USERNAME' => ['required', 'string', 'max:255'],
+            'DB_USERNAME' => [
+                'required',
+                'string',
+                'max:255',
+                function ($attribute, $value, $fail) {
+                    if (str_contains($value, '@')) {
+                        $fail('Use el usuario de MySQL (ej: root o adminisp), no un correo electrónico.');
+                    }
+                },
+            ],
             'DB_PASSWORD' => ['nullable', 'string'],
         ]);
 
@@ -139,7 +148,16 @@ class InstallerController extends Controller
             'DB_HOST' => ['required', 'string', 'max:255'],
             'DB_PORT' => ['required', 'string', 'max:10'],
             'DB_DATABASE' => ['required', 'string', 'max:255'],
-            'DB_USERNAME' => ['required', 'string', 'max:255'],
+            'DB_USERNAME' => [
+                'required',
+                'string',
+                'max:255',
+                function ($attribute, $value, $fail) {
+                    if (str_contains($value, '@')) {
+                        $fail('El usuario de MySQL no puede ser un correo. Use el usuario de la base de datos (ej: root o adminisp), no el email del administrador del panel.');
+                    }
+                },
+            ],
             'DB_PASSWORD' => ['nullable', 'string'],
         ]);
 
