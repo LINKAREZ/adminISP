@@ -2,6 +2,7 @@
 
 namespace App\Modules\Instalaciones\Controllers;
 
+use App\Core\Rules\ExistsInTenant;
 use App\Http\Controllers\Controller;
 use App\Modules\Instalaciones\Models\ComisionVendedor;
 use App\Modules\Instalaciones\Models\OrdenInstalacion;
@@ -44,7 +45,7 @@ class ComisionController extends Controller
             abort(403);
         }
         $request->validate([
-            'orden_instalacion_id' => 'required|exists:ordenes_instalacion,id',
+            'orden_instalacion_id' => ['required', 'integer', new ExistsInTenant('ordenes_instalacion')],
             'monto' => 'required|numeric|min:0',
         ]);
         $orden = OrdenInstalacion::findOrFail($request->orden_instalacion_id);

@@ -237,8 +237,9 @@ class IspController extends Controller
         $isp = Isp::withoutGlobalScope(\App\Core\Scopes\IspScope::class)
             ->findOrFail($isp->id);
 
-        // Verificar que no tenga usuarios asociados
-        $tieneUsuarios = DB::table('users')
+        // Verificar que no tenga usuarios asociados (users está en BD central)
+        $tieneUsuarios = DB::connection(TenantConnectionService::centralConnection())
+            ->table('users')
             ->where('isp_id', $isp->id)
             ->exists();
 

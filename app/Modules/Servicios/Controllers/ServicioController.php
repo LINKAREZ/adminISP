@@ -1441,7 +1441,7 @@ class ServicioController extends Controller
     public function migrarRouterStore(Request $request, Servicio $servicio, RouterOSExportService $exportService)
     {
         $this->authorize('update', $servicio);
-        $request->validate(['router_id' => 'required|exists:routers,id', 'exportar' => 'nullable|boolean']);
+        $request->validate(['router_id' => ['required', 'integer', new \App\Core\Rules\ExistsInTenant('routers')], 'exportar' => 'nullable|boolean']);
         $nuevoRouter = Router::findOrFail($request->router_id);
         if ($nuevoRouter->id == $servicio->router_id) {
             return back()->with('error', 'El servicio ya está en ese router.');

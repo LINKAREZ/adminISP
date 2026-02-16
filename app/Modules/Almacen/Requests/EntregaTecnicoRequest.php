@@ -2,6 +2,7 @@
 
 namespace App\Modules\Almacen\Requests;
 
+use App\Core\Rules\ExistsInTenant;
 use App\Core\Traits\AuthorizesWithPermission;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -19,7 +20,7 @@ class EntregaTecnicoRequest extends FormRequest
         return [
             'tecnico_id' => 'required|integer',
             'items' => 'required|array|min:1',
-            'items.*.articulo_id' => 'required|exists:articulos,id',
+            'items.*.articulo_id' => ['required', 'integer', new ExistsInTenant('articulos')],
             'items.*.cantidad' => 'required|numeric|min:0',
             'observacion' => 'nullable|string|max:500',
         ];

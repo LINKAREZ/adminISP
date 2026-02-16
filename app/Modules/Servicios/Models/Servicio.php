@@ -2,12 +2,14 @@
 
 namespace App\Modules\Servicios\Models;
 
-use App\Modules\Servicios\Events\ServicioActualizado;
-use App\Core\Enums\EstadoServicio;
+use App\Core\Rules\ExistsInTenant;
+use App\Core\Services\TenantConnectionService;
 use App\Core\Traits\Searchable;
 use App\Core\Traits\Auditable;
 use App\Core\Traits\BelongsToIsp;
 use App\Core\Traits\UsesTenantConnection;
+use App\Modules\Servicios\Events\ServicioActualizado;
+use App\Core\Enums\EstadoServicio;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Validation\Rule;
@@ -130,22 +132,25 @@ class Servicio extends Model
         $macRequerido = !$tieneOnu && !$sinEquipo;
 
         $rules = [
-            // ❌ ELIMINADO: 'cliente_id' => 'required|exists:clientes,id',
-            'ubicacion_id' => $tieneDatosUbicacion ? 'nullable|exists:ubicaciones,id' : 'required|exists:ubicaciones,id',
+            'ubicacion_id' => $tieneDatosUbicacion
+                ? ['nullable', 'integer', new ExistsInTenant('ubicaciones')]
+                : ['required', 'integer', new ExistsInTenant('ubicaciones')],
             'ubicacion_direccion' => $tieneDatosUbicacion ? 'required|string|max:255' : 'nullable|string|max:255',
             'ubicacion_referencia' => 'nullable|string|max:255',
             'ubicacion_distrito' => 'nullable|string|max:255',
             'ubicacion_provincia' => 'nullable|string|max:255',
             'ubicacion_departamento' => 'nullable|string|max:255',
-            'router_id' => 'required|exists:routers,id',
-            'plan_id' => 'required|exists:planes,id',
+            'router_id' => ['required', 'integer', new ExistsInTenant('routers')],
+            'plan_id' => ['required', 'integer', new ExistsInTenant('planes')],
             'tipo_pppoe' => 'required|in:usuario_compartido,usuario_unico',
             'mac_address' => [
                 $macRequerido ? 'required' : 'nullable',
                 'regex:/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/',
-                Rule::unique('servicios', 'mac_address')->ignore($servicioId),
+                Rule::unique('servicios', 'mac_address')
+                    ->ignore($servicioId)
+                    ->connection(TenantConnectionService::currentTenantConnectionName() ?? TenantConnectionService::centralConnection()),
             ],
-            'onu_id' => 'nullable|exists:onus,id',
+            'onu_id' => ['nullable', 'integer', new ExistsInTenant('onus')],
             'sin_equipo' => 'nullable|in:0,1',
             'estado' => 'required|in:activo,cortado',
             'fecha_instalacion' => 'nullable|date',

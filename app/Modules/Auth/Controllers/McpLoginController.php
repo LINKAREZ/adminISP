@@ -42,7 +42,21 @@ class McpLoginController extends Controller
 
         $user = Auth::user();
         if ($user && $user->isp_id) {
-            TenantConnectionService::registerConnectionForIspId((int) $user->isp_id);
+            $ispId = (int) $user->isp_id;
+            session(['current_isp_id' => $ispId]);
+            TenantConnectionService::registerConnectionForIspId($ispId);
+        } elseif ($user && !$user->isp_id) {
+            // Super admin: usar primer ISP activo con BD
+            $primerIsp = \App\Modules\Sistema\Models\Isp::on(TenantConnectionService::centralConnection())
+                ->where('activo', true)
+                ->whereNotNull('database_name')
+                ->where('database_name', '!=', '')
+                ->orderBy('id')
+                ->first();
+            if ($primerIsp) {
+                session(['current_isp_id' => $primerIsp->id]);
+                TenantConnectionService::registerConnectionForIspId((int) $primerIsp->id);
+            }
         }
 
         $connName = TenantConnectionService::currentTenantConnectionName();

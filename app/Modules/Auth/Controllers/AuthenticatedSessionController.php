@@ -49,10 +49,24 @@ class AuthenticatedSessionController extends Controller
             ]);
         }
 
-        // Registrar conexión tenant del usuario para que AuditLog pueda escribir (isp_7, etc.)
+        // Registrar conexión tenant y session current_isp_id para que el primer request no dependa solo de SetIspContext
         $user = Auth::user();
         if ($user && isset($user->isp_id) && $user->isp_id) {
-            TenantConnectionService::registerConnectionForIspId((int) $user->isp_id);
+            $ispId = (int) $user->isp_id;
+            session(['current_isp_id' => $ispId]);
+            TenantConnectionService::registerConnectionForIspId($ispId);
+        } elseif ($user && (!isset($user->isp_id) || $user->isp_id === null)) {
+            // Super admin: usar primer ISP activo con BD para evitar 500 en módulos tenant
+            $primerIsp = \App\Modules\Sistema\Models\Isp::on(TenantConnectionService::centralConnection())
+                ->where('activo', true)
+                ->whereNotNull('database_name')
+                ->where('database_name', '!=', '')
+                ->orderBy('id')
+                ->first();
+            if ($primerIsp) {
+                session(['current_isp_id' => $primerIsp->id]);
+                TenantConnectionService::registerConnectionForIspId((int) $primerIsp->id);
+            }
         }
 
         // Registrar en audit log solo si la conexión tenant está configurada (tabla audit_logs está en tenant)

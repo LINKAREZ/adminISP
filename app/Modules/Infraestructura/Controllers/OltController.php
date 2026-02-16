@@ -2,6 +2,7 @@
 
 namespace App\Modules\Infraestructura\Controllers;
 
+use App\Core\Rules\ExistsInTenant;
 use App\Core\Traits\FillsIspIdInData;
 use App\Http\Controllers\Controller;
 use App\Modules\Infraestructura\Models\EnlaceOltOdf;
@@ -107,7 +108,7 @@ class OltController extends Controller
             return redirect()->route('infraestructura.olts.show', $olt)
                 ->with('error', 'Este PON ya tiene un enlace. Edítelo o quítelo primero.');
         }
-        $request->validate(['odf_puerto_id' => ['required', 'integer', 'exists:odf_puertos,id']]);
+        $request->validate(['odf_puerto_id' => ['required', 'integer', new ExistsInTenant('odf_puertos')]]);
         $odfPuertoId = (int) $request->odf_puerto_id;
         if (EnlaceOltOdf::where('odf_puerto_id', $odfPuertoId)->exists()) {
             return back()->withInput()->withErrors(['odf_puerto_id' => 'Ese puerto ODF ya está enlazado a otro PON.']);
@@ -131,7 +132,7 @@ class OltController extends Controller
             return redirect()->route('infraestructura.olts.show', $olt)
                 ->with('error', 'Este PON no tiene enlace. Cree uno primero.');
         }
-        $request->validate(['odf_puerto_id' => ['required', 'integer', 'exists:odf_puertos,id']]);
+        $request->validate(['odf_puerto_id' => ['required', 'integer', new ExistsInTenant('odf_puertos')]]);
         $odfPuertoId = (int) $request->odf_puerto_id;
         $otro = EnlaceOltOdf::where('odf_puerto_id', $odfPuertoId)->where('id', '!=', $enlace->id)->first();
         if ($otro) {

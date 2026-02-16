@@ -2,6 +2,7 @@
 
 namespace App\Modules\Comprobantes\Controllers;
 
+use App\Core\Rules\ExistsInTenant;
 use App\Http\Controllers\Controller;
 use App\Modules\Comprobantes\Models\Gasto;
 use App\Modules\Comprobantes\Models\CategoriaGasto;
@@ -47,7 +48,7 @@ class GastoController extends Controller
             'fecha' => 'required|date',
             'monto' => 'required|numeric|min:0',
             'descripcion' => 'nullable|string|max:500',
-            'categoria_gasto_id' => 'required|exists:categoria_gastos,id',
+            'categoria_gasto_id' => ['required', 'integer', new ExistsInTenant('categoria_gastos')],
         ]);
         $validated['registrado_por'] = Auth::id();
         Gasto::create($validated);
@@ -68,7 +69,7 @@ class GastoController extends Controller
             'fecha' => 'required|date',
             'monto' => 'required|numeric|min:0',
             'descripcion' => 'nullable|string|max:500',
-            'categoria_gasto_id' => 'required|exists:categoria_gastos,id',
+            'categoria_gasto_id' => ['required', 'integer', new ExistsInTenant('categoria_gastos')],
         ]);
         $gasto->update($validated);
         return redirect()->route('comprobantes.gastos.index')->with('success', 'Gasto actualizado correctamente.');
