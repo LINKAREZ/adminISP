@@ -191,8 +191,8 @@ body.sidebar-mini:not(.sidebar-collapse) .content-wrapper,
 body.sidebar-mini:not(.sidebar-collapse) .main-footer,
 body.sidebar-mini:not(.sidebar-collapse) .main-header {
     margin-left: 280px !important;
-    width: calc(100% - 280px) !important;
-    max-width: calc(100% - 280px) !important;
+    width: calc(100vw - 280px) !important;
+    max-width: calc(100vw - 280px) !important;
 }
 body.sidebar-mini.sidebar-collapse .main-sidebar,
 body.sidebar-mini.sidebar-collapse .main-sidebar::before {
@@ -202,8 +202,8 @@ body.sidebar-mini.sidebar-collapse .content-wrapper,
 body.sidebar-mini.sidebar-collapse .main-footer,
 body.sidebar-mini.sidebar-collapse .main-header {
     margin-left: 64px !important;
-    width: calc(100% - 64px) !important;
-    max-width: calc(100% - 64px) !important;
+    width: calc(100vw - 64px) !important;
+    max-width: calc(100vw - 64px) !important;
 }
 /* ========== Pantallas pequeñas (<992px): mostrar/ocultar sidebar correctamente ========== */
 @media (max-width: 991.98px) {
@@ -239,6 +239,11 @@ body.sidebar-mini.sidebar-collapse .main-header {
 
 /* ========== Wrapper y contenido al 100% del espacio disponible ========== */
 /* AdminLTE por defecto aplica .wrapper { max-width: 1250px; margin: 0 auto } — anularlo */
+html {
+    overflow-x: hidden;
+}
+html body.layout-fixed .wrapper,
+html body .wrapper,
 body.layout-fixed .wrapper,
 .wrapper {
     max-width: none !important;
