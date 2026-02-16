@@ -79,11 +79,14 @@ class AuthenticatedSessionController extends Controller
             }
         }
 
-        // Redirigir: super admin → /superadmin, resto → /dashboard
+        // Guardar sesión antes del redirect (evita race: cliente sigue redirect antes de que se persista)
+        $request->session()->save();
+
+        // 303 See Other: el cliente debe hacer GET (evita 405 con 302)
         if (method_exists($user, 'isSuperAdmin') && $user->isSuperAdmin()) {
-            return redirect()->route('superadmin.dashboard');
+            return redirect()->route('superadmin.dashboard', [], 303);
         }
-        return redirect('/dashboard');
+        return redirect('/dashboard', 303);
     }
 
     public function destroy(Request $request)
