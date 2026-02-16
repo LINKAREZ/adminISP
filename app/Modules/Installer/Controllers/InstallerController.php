@@ -231,33 +231,24 @@ class InstallerController extends Controller
     }
 
     /**
-     * Ejecutar seeders de la BD central.
-     * Subproceso con exec() para contexto CLI. Buffer de salida limpiado para respuesta JSON pura.
+     * Ejecutar seeders de la BD central (en proceso; Auditable omite install/*).
      */
     public function runSeeders(Request $request)
     {
-        \Illuminate\Support\Facades\Log::info('Installer runSeeders: inicio');
         if (ob_get_level()) {
             ob_end_clean();
         }
         ob_start();
-
         try {
-            $output = [];
-            $returnCode = -1;
-            $base = base_path();
-            $php = defined('PHP_BINARY') && PHP_BINARY ? PHP_BINARY : (file_exists('/usr/local/bin/php') ? '/usr/local/bin/php' : 'php');
-            $cmd = sprintf(
-                'cd %s && %s artisan db:seed --class=RolePermissionSeeder --force 2>&1',
-                escapeshellarg($base),
-                escapeshellarg($php)
-            );
-
-            if (!function_exists('exec')) {
-                throw new \RuntimeException('exec() está deshabilitado en este servidor.');
-            }
-            @exec($cmd, $output, $returnCode);
-            $outStr = trim(implode("\n", $output));
+            Artisan::call('db:seed', [
+                '--class' => 'RolePermissionSeeder',
+                '--force' => true,
+            ]);
+            ob_end_clean();
+            return response()->json([
+                'success' => true,
+                'message' => 'Datos iniciales de la BD central creados correctamente.',
+            ]);
         } catch (\Throwable $e) {
             ob_end_clean();
             \Illuminate\Support\Facades\Log::error('Installer runSeeders failed', [
@@ -270,25 +261,6 @@ class InstallerController extends Controller
                 'trace' => config('app.debug') ? $e->getTraceAsString() : null,
             ], 500);
         }
-
-        ob_end_clean();
-
-        if ($returnCode === 0) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Datos iniciales de la BD central creados correctamente.',
-            ]);
-        }
-
-        \Illuminate\Support\Facades\Log::error('Installer runSeeders failed (subprocess)', [
-            'exit_code' => $returnCode,
-            'output' => $outStr,
-        ]);
-        return response()->json([
-            'success' => false,
-            'message' => 'Error al ejecutar seeders. Código: ' . $returnCode . ($outStr ? '. ' . $outStr : ''),
-            'output' => config('app.debug') ? $outStr : null,
-        ], 500);
     }
 
     /**
