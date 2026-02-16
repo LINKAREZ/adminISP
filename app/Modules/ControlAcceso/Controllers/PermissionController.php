@@ -23,16 +23,26 @@ class PermissionController extends Controller
     {
         $this->authorize('viewAny', Permission::class);
 
-        $filters = [
-            'module' => $request->get('module'),
-            'search' => $request->get('search') ?? $request->get('buscar'),
-        ];
+        try {
+            $filters = [
+                'module' => $request->get('module'),
+                'search' => $request->get('search') ?? $request->get('buscar'),
+            ];
 
-        // Obtener todos los permisos como colección (no paginado) para poder agruparlos por módulo
-        $permissions = $this->permissionService->getAllPermissions($filters);
-        $modules = $this->permissionService->getModules();
+            // Obtener todos los permisos como colección (no paginado) para poder agruparlos por módulo
+            $permissions = $this->permissionService->getAllPermissions($filters);
+            $modules = $this->permissionService->getModules();
 
-        return view('permissions.index', compact('permissions', 'modules'));
+            return view('permissions.index', compact('permissions', 'modules'));
+        } catch (\Throwable $e) {
+            \Log::error('PermissionController::index', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            throw $e;
+        }
     }
 
     /**
