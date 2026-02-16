@@ -126,5 +126,40 @@
             </x-card>
         </div>
     </div>
+
+    {{-- Base de datos (solo para usuarios con sistema.read) --}}
+    @if(!empty($databaseInfo) && !empty($databaseInfo['connection']))
+    <div class="row mt-3">
+        <div class="col-12">
+            <x-card title="Base de datos" icon="fa-database" variant="secondary">
+                @if(!empty($databaseInfo['error']))
+                    <p class="text-danger mb-0 small">{{ $databaseInfo['error'] }}</p>
+                @else
+                    <dl class="row mb-0 small">
+                        <dt class="col-sm-2 text-muted">Conexión</dt>
+                        <dd class="col-sm-10"><code>{{ $databaseInfo['connection'] }}</code></dd>
+                        <dt class="col-sm-2 text-muted">Base de datos</dt>
+                        <dd class="col-sm-10"><code>{{ $databaseInfo['database'] ?? '-' }}</code></dd>
+                        <dt class="col-sm-2 text-muted">Tablas</dt>
+                        <dd class="col-sm-10">{{ $databaseInfo['tables_count'] ?? 0 }}</dd>
+                    </dl>
+                    @if(!empty($databaseInfo['tables']))
+                    <div class="mt-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="collapse" data-target="#dashboard-db-tables" aria-expanded="false">
+                            <i class="fas fa-list mr-1"></i> Ver listado de tablas
+                        </button>
+                        <div class="collapse mt-2" id="dashboard-db-tables">
+                            <div class="d-flex flex-wrap" style="gap: 0.25rem;">
+                                @foreach($databaseInfo['tables'] as $table)
+                                    <span class="badge badge-light border font-monospace" style="font-size: 0.75rem;">{{ $table }}</span>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+                @endif
+            </x-card>
+        </div>
+    </div>
+    @endif
 </div>
 @endsection
