@@ -146,8 +146,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 linkAdmin.style.display = 'block';
             } else {
                 seedResult.innerHTML = '<div class="alert alert-danger">' + data.message + '</div>';
-                if (data.trace) seedOutput.textContent = data.trace;
-                seedOutput.style.display = data.trace ? 'block' : 'none';
+                const detail = [data.trace, data.output, data.error_output].filter(Boolean).join('\n\n');
+                if (detail) {
+                    seedOutput.textContent = detail;
+                    seedOutput.style.display = 'block';
+                } else {
+                    seedOutput.style.display = 'none';
+                }
             }
         } catch (e) {
             seedResult.innerHTML = '<div class="alert alert-danger">Error: ' + e.message + '</div>';

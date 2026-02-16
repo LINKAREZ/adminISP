@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Schema;
 
 class InstallerController extends Controller
@@ -232,31 +233,41 @@ class InstallerController extends Controller
 
     /**
      * Ejecutar seeders de la BD central.
+     * Se ejecutan en un subproceso (mismo proceso que `php artisan db:seed`) para evitar
+     * contexto web (request/session/tenant) que provoca fallos con AuditLog y otros.
      */
     public function runSeeders(Request $request)
     {
-        try {
-            Artisan::call('db:seed', [
-                '--class' => 'RolePermissionSeeder',
-                '--force' => true,
-            ]);
+        $php = defined('PHP_BINARY') && PHP_BINARY ? PHP_BINARY : 'php';
+        $artisan = base_path('artisan');
 
+        $result = Process::path(base_path())
+            ->timeout(120)
+            ->run([$php, $artisan, 'db:seed', '--class=RolePermissionSeeder', '--force']);
+
+        if ($result->successful()) {
             return response()->json([
                 'success' => true,
                 'message' => 'Datos iniciales de la BD central creados correctamente.',
             ]);
-        } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error('Installer runSeeders failed', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al ejecutar seeders: ' . $e->getMessage(),
-                'trace' => config('app.debug') ? $e->getTraceAsString() : null,
-            ], 500);
         }
+
+        $output = trim($result->output());
+        $errorOutput = trim($result->errorOutput());
+        $message = $errorOutput ?: $output ?: 'El comando terminó con código ' . $result->exitCode();
+
+        \Illuminate\Support\Facades\Log::error('Installer runSeeders failed (subprocess)', [
+            'exit_code' => $result->exitCode(),
+            'output' => $output,
+            'error_output' => $errorOutput,
+        ]);
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Error al ejecutar seeders: ' . $message,
+            'output' => config('app.debug') ? $output : null,
+            'error_output' => config('app.debug') ? $errorOutput : null,
+        ], 500);
     }
 
     /**
