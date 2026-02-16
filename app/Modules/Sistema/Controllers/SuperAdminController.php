@@ -47,8 +47,8 @@ class SuperAdminController extends Controller
      */
     public function dashboard()
     {
-        // ?minimal=1: vista mínima sin consultas (fallback si el completo falla)
-        if (request()->query('minimal') === '1') {
+        // Por defecto: vista mínima (estable). Dashboard completo en ?full=1
+        if (request()->query('full') !== '1') {
             return response()->view('superadmin.dashboard-minimal');
         }
         try {

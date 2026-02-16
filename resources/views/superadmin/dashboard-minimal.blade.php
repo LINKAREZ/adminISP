@@ -14,11 +14,12 @@
     <h1>Panel Super Admin</h1>
     <p>Funcionando correctamente.</p>
     <div class="links">
-        <a href="{{ url('/superadmin') }}">Dashboard completo</a>
         <a href="{{ url('/superadmin/isps') }}">Gestionar ISPs</a>
         <a href="{{ url('/superadmin/create-admin-user') }}">Crear admin</a>
         <a href="{{ url('/superadmin/audit') }}">Auditoría</a>
         <a href="{{ url('/superadmin/export') }}">Exportar datos</a>
+        <a href="{{ url('/superadmin?full=1') }}">Dashboard completo</a>
     </div>
+    <p class="small text-muted mt-2">Si «Dashboard completo» falla, esta vista seguirá disponible en <code>/superadmin</code>.</p>
 </body>
 </html>
