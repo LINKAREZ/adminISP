@@ -46,6 +46,23 @@
     right: -10px;
 }
 
+/* Badge de rol en usuarios: colores sólidos (anular gradiente pálido de premium) */
+.badge.role-badge {
+    font-weight: 600;
+    padding: 0.35em 0.65em;
+    border: none;
+}
+.badge.role-badge i {
+    margin-right: 0.35em;
+    vertical-align: middle;
+}
+.badge.role-badge.badge-danger  { background: #dc2626 !important; color: #fff !important; }
+.badge.role-badge.badge-success { background: #15803d !important; color: #fff !important; }
+.badge.role-badge.badge-info    { background: #2563eb !important; color: #fff !important; }
+.badge.role-badge.badge-primary { background: #1d4ed8 !important; color: #fff !important; }
+.badge.role-badge.badge-warning { background: #b45309 !important; color: #fff !important; }
+.badge.role-badge.badge-secondary { background: #475569 !important; color: #fff !important; }
+
 /* Botón Icono - Estilo AdminLTE3 */
 .btn-icon {
     padding: 0.25rem 0.5rem;

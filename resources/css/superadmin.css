@@ -500,6 +500,19 @@ body.superadmin-panel .badge.badge-dark {
   color: #fff;
 }
 
+/* Badge de rol en lista de usuarios: sólido y legible */
+body.superadmin-panel .badge.role-badge {
+  font-weight: 600;
+  padding: 0.35em 0.65em;
+  border: none;
+}
+body.superadmin-panel .badge.role-badge i {
+  color: inherit;
+  opacity: 0.95;
+  margin-right: 0.35em;
+  vertical-align: middle;
+}
+
 /* ========== TABLAS = INSTALADOR ========== */
 body.superadmin-panel .content-wrapper .table thead th {
   background: #f8fafc !important;
