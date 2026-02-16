@@ -38,6 +38,7 @@
                     </a>
                 </li>
 
+                @if(Route::has('superadmin.audit'))
                 <!-- Auditoría -->
                 <li class="nav-item">
                     <a href="{{ route('superadmin.audit') }}" class="nav-link {{ request()->is('superadmin/audit*') ? 'active' : '' }}" title="Auditoría">
@@ -45,6 +46,7 @@
                         <p>Auditoría</p>
                     </a>
                 </li>
+                @endif
 
                 <!-- Exportar Datos -->
                 <li class="nav-item">

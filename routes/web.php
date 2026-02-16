@@ -91,6 +91,7 @@ Route::middleware('auth')->group(function () {
             ->middleware('throttle:10,1')
             ->name('store-admin-user');
         Route::get('/export', [\App\Modules\Sistema\Controllers\SuperAdminController::class, 'export'])->name('export');
+        Route::get('/audit', [\App\Modules\Sistema\Controllers\SuperAdminAuditController::class, 'index'])->name('audit');
 
         // ISPs (solo super admin)
         Route::resource('isps', \App\Modules\Sistema\Controllers\IspController::class)->parameters(['isps' => 'isp']);
