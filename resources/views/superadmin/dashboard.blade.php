@@ -118,12 +118,14 @@
         </div>
     </div>
 
-    {{-- Bases de datos tenant: x-card estándar --}}
+    {{-- Bases de datos tenant: x-card estándar con iconos para ver cada BD --}}
     <div class="row mb-3 mb-md-4">
         <div class="col-12">
             <x-card title="Bases de datos tenant" icon="fa-database" variant="primary" :noPadding="true">
                 <x-slot name="actions">
-                    <a href="{{ route('superadmin.isps.index') }}" class="btn btn-sm btn-outline-secondary">Ver ISPs</a>
+                    <a href="{{ route('superadmin.isps.index') }}" class="btn btn-sm btn-outline-secondary" title="Ver listado de ISPs y sus bases de datos">
+                        <i class="fas fa-list mr-1" aria-hidden="true"></i> Ver ISPs
+                    </a>
                 </x-slot>
                 @if($basesDeDatos->count() > 0)
                     <div class="table-responsive">
@@ -133,7 +135,7 @@
                                     <th>ID</th>
                                     <th>ISP</th>
                                     <th>Base de datos</th>
-                                    <th class="text-right">Acción</th>
+                                    <th class="text-right"><span class="d-none d-md-inline">Ver </span>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -141,9 +143,16 @@
                                     <tr>
                                         <td>{{ $isp->id }}</td>
                                         <td><strong>{{ $isp->nombre }}</strong></td>
-                                        <td><code>{{ $isp->database_name }}</code></td>
+                                        <td><code>{{ $isp->database_name ?? '—' }}</code></td>
                                         <td class="text-right">
-                                            <a href="{{ route('superadmin.isps.show', $isp) }}" class="btn btn-sm btn-outline-secondary">Ver ISP</a>
+                                            <a href="{{ route('superadmin.isps.show', $isp) }}" class="btn btn-sm btn-outline-primary mr-1" title="Ver detalle del ISP y base de datos">
+                                                <i class="fas fa-eye" aria-hidden="true"></i>
+                                                <span class="d-none d-lg-inline ml-1">Ver</span>
+                                            </a>
+                                            <a href="{{ route('superadmin.isps.show', $isp) }}#database" class="btn btn-sm btn-outline-secondary" title="Ver información de la base de datos">
+                                                <i class="fas fa-database" aria-hidden="true"></i>
+                                                <span class="d-none d-lg-inline ml-1">BD</span>
+                                            </a>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -151,10 +160,13 @@
                         </table>
                     </div>
                 @else
-                    <div class="text-center text-muted py-4">
-                        <i class="fas fa-database fa-2x mb-2"></i>
-                        <p class="mb-0">Ningún ISP tiene base de datos tenant asignada.</p>
-                        <p class="small mb-0">Al crear un ISP se crea su BD; si no, ejecuta <code>php artisan isp:create-database {id}</code>.</p>
+                    <div class="text-center text-muted py-4 px-3">
+                        <i class="fas fa-database fa-3x mb-3 d-block" aria-hidden="true" style="opacity: 0.5;"></i>
+                        <p class="mb-2 font-weight-bold">Ningún ISP tiene base de datos tenant asignada.</p>
+                        <p class="small mb-3">Al crear un ISP se crea su BD; si no, ejecuta <code>php artisan isp:create-database {id}</code>.</p>
+                        <a href="{{ route('superadmin.isps.index') }}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-list mr-1"></i> Ir a ISPs
+                        </a>
                     </div>
                 @endif
             </x-card>

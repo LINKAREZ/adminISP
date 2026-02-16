@@ -18,7 +18,7 @@
         <!-- Información Principal (mobile first: contenido arriba) -->
         <div class="col-12 col-md-8 order-1 order-md-1">
             <!-- Información del ISP -->
-            <x-card title="Información del ISP" icon="fa-info-circle" variant="primary">
+            <x-card title="Información del ISP" icon="fa-info-circle" variant="primary" id="database">
                 <x-slot name="actions">
                     <x-btn :route="route('superadmin.isps.edit', $isp)" variant="outline-secondary" size="sm" icon="fa-edit">
                         <span class="d-none d-sm-inline">Editar</span>
