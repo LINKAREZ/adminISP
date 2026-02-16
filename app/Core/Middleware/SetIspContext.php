@@ -28,8 +28,23 @@ class SetIspContext
                     session(['current_isp_id' => $user->isp_id]);
                     TenantConnectionService::registerConnectionForIspId((int) $user->isp_id);
                 } elseif ($user && (!isset($user->isp_id) || $user->isp_id === null)) {
-                    // Super admin sin ISP - limpiar sesión
-                    session()->forget('current_isp_id');
+                    // Super admin: si no hay ISP seleccionado, usar el primero activo con BD para evitar 500 en módulos tenant
+                    if (!session()->has('current_isp_id')) {
+                        $primerIsp = \App\Modules\Sistema\Models\Isp::on(TenantConnectionService::centralConnection())
+                            ->where('activo', true)
+                            ->whereNotNull('database_name')
+                            ->where('database_name', '!=', '')
+                            ->orderBy('id')
+                            ->first();
+                        if ($primerIsp) {
+                            session(['current_isp_id' => $primerIsp->id]);
+                            TenantConnectionService::registerConnectionForIspId((int) $primerIsp->id);
+                        } else {
+                            session()->forget('current_isp_id');
+                        }
+                    } else {
+                        TenantConnectionService::registerConnectionForIspId((int) session('current_isp_id'));
+                    }
                 }
             } catch (\Exception $e) {
                 if (config('app.debug')) {
