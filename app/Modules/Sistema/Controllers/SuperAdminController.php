@@ -47,6 +47,10 @@ class SuperAdminController extends Controller
      */
     public function dashboard()
     {
+        // Por defecto: vista mínima sin consultas para evitar 500 (dashboard completo en ?full=1)
+        if (request()->query('full') !== '1') {
+            return response()->view('superadmin.dashboard-minimal');
+        }
         try {
             return $this->renderDashboard();
         } catch (\Throwable $e) {
@@ -60,7 +64,7 @@ class SuperAdminController extends Controller
     }
 
     /**
-     * Renderizado del dashboard (extraído para try-catch).
+     * Renderizado del dashboard completo (solo cuando ?full=1).
      */
     private function renderDashboard(): View
     {
@@ -138,20 +142,16 @@ class SuperAdminController extends Controller
             ->orderBy('id')
             ->get(['id', 'nombre', 'database_name']);
 
-        // Temporal: vista mínima para recuperar acceso a /superadmin (evitar 500 por layout/vista)
-        if (request()->query('full') === '1') {
-            return view('superadmin.dashboard', compact(
-                'totalIsps',
-                'ispsActivos',
-                'ispsInactivos',
-                'totalUsuarios',
-                'totalAdminsDefault',
-                'recentIsps',
-                'totalClientes',
-                'basesDeDatos'
-            ));
-        }
-        return response()->view('superadmin.dashboard-minimal');
+        return view('superadmin.dashboard', compact(
+            'totalIsps',
+            'ispsActivos',
+            'ispsInactivos',
+            'totalUsuarios',
+            'totalAdminsDefault',
+            'recentIsps',
+            'totalClientes',
+            'basesDeDatos'
+        ));
     }
 
     /**
