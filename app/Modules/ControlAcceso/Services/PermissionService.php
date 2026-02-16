@@ -131,12 +131,12 @@ class PermissionService
      */
     public function getModules(): \Illuminate\Support\Collection
     {
-        return Cache::remember('permissions.modules', 3600, function () {
-            // Verificar si la columna is_hidden existe antes de usar el scope
-            $hasIsHiddenColumn = \Schema::hasColumn('permissions', 'is_hidden');
+        $conn = \App\Core\Services\TenantConnectionService::centralConnection();
+        return Cache::remember('permissions.modules', 3600, function () use ($conn) {
+            $hasIsHiddenColumn = \Schema::connection($conn)->hasColumn('permissions', 'is_hidden');
             $query = $hasIsHiddenColumn
-                ? \App\Modules\ControlAcceso\Models\Permission::visible() // Solo módulos con permisos visibles
-                : \App\Modules\ControlAcceso\Models\Permission::query();
+                ? \App\Modules\ControlAcceso\Models\Permission::on($conn)->visible()
+                : \App\Modules\ControlAcceso\Models\Permission::on($conn)->query();
 
             return $query
                 ->distinct()

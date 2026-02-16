@@ -14,8 +14,8 @@
     @include('control-acceso.tabs')
 
     @php
-        // Agrupar primero por módulo
-        $groupedByModule = $permissions->groupBy('module');
+        $permissions = $permissions ?? collect();
+        $groupedByModule = $permissions instanceof \Illuminate\Support\Collection ? $permissions->groupBy('module') : collect();
 
         // Acciones CRUD estándar que se mostrarán siempre
         $standardActions = [
@@ -245,11 +245,11 @@
                                                         @foreach($standardActions as $actionKey => $actionConfig)
                                                             @php
                                                                 $hasPermission = isset($existingActions[$actionKey]);
-                                                                $permissions = $hasPermission ? $existingActions[$actionKey] : [];
+                                                                $resourcePerms = $hasPermission ? $existingActions[$actionKey] : [];
                                                             @endphp
                                                             @if($hasPermission)
                                                                 @php
-                                                                    $perm = $permissions[0]; // Usar el primer permiso si hay múltiples
+                                                                    $perm = $resourcePerms[0];
                                                                 @endphp
                                                                 <span class="badge badge-light border"
                                                                       style="padding: 0.25rem 0.5rem; font-size: 0.75rem; color: #333; cursor: default;"
