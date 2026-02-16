@@ -30,6 +30,11 @@ if (file_exists($maintenance = __DIR__ . '/../storage/framework/maintenance.php'
 // Register the Composer autoloader...
 require __DIR__ . '/../vendor/autoload.php';
 
+// Evitar IpUtils::checkIp4(null) en TrustProxies cuando REMOTE_ADDR no está definido (CLI, algunos proxies)
+if (empty($_SERVER['REMOTE_ADDR']) || !is_string($_SERVER['REMOTE_ADDR'])) {
+    $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+}
+
 // Bootstrap Laravel and handle the request...
 (require_once __DIR__ . '/../bootstrap/app.php')
     ->handleRequest(Request::capture());
