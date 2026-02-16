@@ -5,9 +5,9 @@
             'name' => 'listado',
             'label' => 'Listado',
             'icon' => 'fas fa-list',
-            'route' => route('clientes.index'),
+            'route' => url('clientes'),
             'permission' => null,
-            'active' => request()->is('clientes*') && !request()->is('clientes/importar-clientes*') && !request()->routeIs('clientes.pppoe*'),
+            'active' => request()->is('clientes*') && !request()->is('clientes/importar-clientes*') && !request()->is('clientes/pppoe*'),
         ],
     ];
     if (Route::has('clientes.importar-clientes.index')) {
@@ -15,7 +15,7 @@
             'name' => 'importar-clientes',
             'label' => 'Importar clientes CSV',
             'icon' => 'fas fa-file-csv',
-            'route' => route('clientes.importar-clientes.index'),
+            'route' => url('clientes/importar-clientes'),
             'permission' => 'clientes.create',
             'active' => request()->is('clientes/importar-clientes*'),
         ];
@@ -25,9 +25,9 @@
             'name' => 'importar-pppoe',
             'label' => 'Importar PPPoE',
             'icon' => 'fas fa-download',
-            'route' => route('clientes.pppoe.importar'),
+            'route' => url('clientes/pppoe/importar'),
             'permission' => null,
-            'active' => request()->routeIs('clientes.pppoe*'),
+            'active' => request()->is('clientes/pppoe*'),
         ];
     }
 @endphp
