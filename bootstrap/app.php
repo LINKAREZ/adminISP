@@ -39,6 +39,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'installer' => \App\Http\Middleware\EnsureNotInstalled::class,
             'portal.cliente' => \App\Http\Middleware\EnsurePortalCliente::class,
             'portal.guest' => \App\Http\Middleware\RedirectIfPortalCliente::class,
+            'portal.isp' => \App\Http\Middleware\SetPortalIspContext::class,
             'tenant.aviso' => \App\Http\Middleware\SetTenantFromQueryForAviso::class,
         ]);
     })
@@ -46,6 +47,7 @@ return Application::configure(basePath: dirname(__DIR__))
         \App\Providers\AppServiceProvider::class,
         \App\Providers\AuthServiceProvider::class,
         \App\Core\Providers\ViewServiceProvider::class,
+        \App\Modules\Installer\ModuleServiceProvider::class,
         \App\Modules\ControlAcceso\ModuleServiceProvider::class,
         \App\Modules\Clientes\ModuleServiceProvider::class,
         \App\Modules\Servicios\ModuleServiceProvider::class,
@@ -62,6 +64,8 @@ return Application::configure(basePath: dirname(__DIR__))
         \App\Modules\MapaRed\ModuleServiceProvider::class,
         \App\Modules\CorteFacturacion\ModuleServiceProvider::class,
         \App\Modules\Onboarding\ModuleServiceProvider::class,
+        \App\Modules\Tenant\ModuleServiceProvider::class,
+        \App\Modules\PortalCliente\ModuleServiceProvider::class,
     ])
     ->withExceptions(function (Exceptions $exceptions) {
         // Redirigir cuando falten tablas FTTH (OLT/ODF/splitters) en el tenant

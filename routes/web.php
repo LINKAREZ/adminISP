@@ -12,30 +12,15 @@ Route::get('/favicon.ico', function () {
     return abort(404);
 })->name('favicon');
 
-// Instalador (solo accesible cuando no está instalado)
-Route::prefix('install')->name('installer.')->middleware('installer')->group(function () {
-    Route::get('/', [\App\Http\Controllers\InstallerController::class, 'index'])->name('index');
-    Route::post('/create-env', [\App\Http\Controllers\InstallerController::class, 'createEnv'])->name('create-env');
-    Route::get('/database', [\App\Http\Controllers\InstallerController::class, 'database'])->name('database');
-    Route::post('/database', [\App\Http\Controllers\InstallerController::class, 'saveDatabase'])->name('save-database');
-    Route::get('/migrate', [\App\Http\Controllers\InstallerController::class, 'migrate'])->name('migrate');
-    Route::post('/migrate/run', [\App\Http\Controllers\InstallerController::class, 'runMigrations'])->name('run-migrations');
-    Route::post('/migrate/seed', [\App\Http\Controllers\InstallerController::class, 'runSeeders'])->name('run-seeders');
-    Route::get('/admin', [\App\Http\Controllers\InstallerController::class, 'admin'])->name('admin');
-    Route::post('/admin', [\App\Http\Controllers\InstallerController::class, 'saveAdmin'])->name('save-admin');
-    Route::get('/finish', [\App\Http\Controllers\InstallerController::class, 'finish'])->name('finish');
-});
+// Instalador (módulo Installer) - solo accesible cuando no está instalado
+require __DIR__ . '/../app/Modules/Installer/Routes/web.php';
 
 // Cargar rutas del módulo Auth
 // IMPORTANTE: Las rutas cargadas con require() SÍ heredan el middleware 'web' automáticamente
 // porque están siendo ejecutadas en el contexto de routes/web.php
 require __DIR__ . '/../app/Modules/Auth/Routes/web.php';
 
-// Rutas del Dashboard - Cargadas directamente aquí para evitar problemas de orden
-Route::middleware('auth')->group(function () {
-    Route::get('/', [\App\Modules\Dashboard\Controllers\DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard', [\App\Modules\Dashboard\Controllers\DashboardController::class, 'index']);
-});
+// Rutas del Dashboard - Cargadas desde app/Modules/Dashboard/ModuleServiceProvider
 
 // Rutas protegidas
 Route::middleware('auth')->group(function () {

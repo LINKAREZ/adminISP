@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Core\Services\TenantConnectionService;
-use App\Mail\RecordatorioPagoMail;
+use App\Modules\Notificaciones\Mail\RecordatorioPagoMail;
 use App\Modules\Comprobantes\Models\Recibo;
 use App\Modules\Sistema\Models\Isp;
 use Illuminate\Console\Command;

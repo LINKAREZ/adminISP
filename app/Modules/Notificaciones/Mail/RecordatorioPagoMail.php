@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Mail;
+namespace App\Modules\Notificaciones\Mail;
 
 use App\Modules\Comprobantes\Models\Recibo;
 use Illuminate\Bus\Queueable;

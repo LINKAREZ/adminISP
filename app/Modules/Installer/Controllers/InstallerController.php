@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Modules\Installer\Controllers;
 
 use App\Modules\ControlAcceso\Models\User;
 use App\Modules\ControlAcceso\Models\Role;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
@@ -139,7 +140,6 @@ class InstallerController extends Controller
             'DB_PASSWORD' => ['nullable', 'string'],
         ]);
 
-        // Probar conexión a la base de datos existente (no se crea automáticamente)
         try {
             $dsn = "mysql:host={$validated['DB_HOST']};port={$validated['DB_PORT']};dbname={$validated['DB_DATABASE']};charset=utf8mb4";
             $pdo = new \PDO(
@@ -174,8 +174,7 @@ class InstallerController extends Controller
     }
 
     /**
-     * Paso 2: Ejecutar migraciones de la BD central (isps, users, roles, permissions).
-     * Las migraciones tenant se ejecutan al crear cada ISP.
+     * Paso 2: Ejecutar migraciones de la BD central.
      */
     public function migrate(Request $request)
     {
@@ -206,8 +205,7 @@ class InstallerController extends Controller
     }
 
     /**
-     * Ejecutar seeders de la BD central (roles y permisos).
-     * Los seeders de datos tenant se ejecutan al crear cada ISP (BD tenant).
+     * Ejecutar seeders de la BD central.
      */
     public function runSeeders(Request $request)
     {
@@ -261,7 +259,7 @@ class InstallerController extends Controller
                     'name' => $validated['name'],
                     'password' => $validated['password'],
                     'role_id' => $roleAdmin->id,
-                    'isp_id' => null, // Super administrador
+                    'isp_id' => null,
                 ]
             );
 
@@ -327,9 +325,7 @@ class InstallerController extends Controller
     }
 
     /**
-     * Intentar crear la base de datos.
-     * Usa credenciales de administrador (DB_ADMIN_*) si se envían; si no, usa las del formulario (DB_USERNAME/DB_PASSWORD).
-     * Las credenciales admin solo se usan para esta acción y no se guardan en .env.
+     * Crear la base de datos (AJAX).
      */
     public function createDatabase(Request $request)
     {
@@ -346,7 +342,6 @@ class InstallerController extends Controller
         $host = $validated['DB_HOST'];
         $port = $validated['DB_PORT'];
         $database = $validated['DB_DATABASE'];
-        // Usar usuario admin si se proporcionó; si no, el usuario normal
         $user = !empty($validated['DB_ADMIN_USERNAME'])
             ? $validated['DB_ADMIN_USERNAME']
             : $validated['DB_USERNAME'];
@@ -380,8 +375,7 @@ class InstallerController extends Controller
     }
 
     /**
-     * Crear usuario MySQL y darle permisos sobre la BD creada.
-     * Conecta con DB_ADMIN_* (ej. root) y crea el usuario DB_USERNAME con DB_PASSWORD.
+     * Crear usuario MySQL (AJAX).
      */
     public function createDatabaseUser(Request $request)
     {

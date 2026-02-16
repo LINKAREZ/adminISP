@@ -30,6 +30,6 @@ class ModuleServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // NO cargar rutas aquí - se cargan directamente desde routes/web.php
+        $this->loadRoutesFrom(__DIR__ . '/Routes/web.php');
     }
 }
