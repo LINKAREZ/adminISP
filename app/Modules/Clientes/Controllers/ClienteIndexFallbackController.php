@@ -16,11 +16,11 @@ class ClienteIndexFallbackController extends Controller
     {
         try {
             if (!TenantConnectionService::currentTenantConnectionName()) {
-                return response('<html><body><h1>ISP no configurado</h1><p>El ISP actual no tiene base de datos.</p></body></html>', 200, ['Content-Type' => 'text/html']);
+                return view('tenant-sin-configurar');
             }
             return app(ClienteController::class)->index($request);
         } catch (\Throwable $e) {
-            return response('<html><body><h1>ISP no configurado</h1><p>Configure la base de datos del ISP.</p></body></html>', 200, ['Content-Type' => 'text/html']);
+            return view('tenant-sin-configurar');
         }
     }
 
@@ -28,11 +28,11 @@ class ClienteIndexFallbackController extends Controller
     {
         try {
             if (!TenantConnectionService::currentTenantConnectionName()) {
-                return response('<html><body><h1>ISP no configurado</h1></body></html>', 200, ['Content-Type' => 'text/html']);
+                return view('tenant-sin-configurar');
             }
             return app(ClienteController::class)->create();
         } catch (\Throwable $e) {
-            return response('<html><body><h1>ISP no configurado</h1></body></html>', 200, ['Content-Type' => 'text/html']);
+            return view('tenant-sin-configurar');
         }
     }
 }

@@ -47,9 +47,7 @@ class ClienteController extends Controller
     public function index(Request $request)
     {
         try {
-            if (! TenantConnectionService::currentTenantConnectionName()) {
-                return response('<html><body><h1>ISP no configurado</h1></body></html>', 200, ['Content-Type' => 'text/html']);
-            }
+            if (!TenantConnectionService::currentTenantConnectionName()) {
                 return view('tenant-sin-configurar');
             }
             $this->authorize('viewAny', Cliente::class);
@@ -134,7 +132,8 @@ class ClienteController extends Controller
 
             return view('clientes.index', compact('clientes', 'routers', 'routerId'));
         } catch (\Throwable $e) {
-            return response('<html><body><h1>ISP no configurado</h1><p>El ISP actual no tiene base de datos.</p></body></html>', 200, ['Content-Type' => 'text/html']);
+            Log::warning('ClienteController::index error', ['error' => $e->getMessage()]);
+            return view('tenant-sin-configurar');
         }
     }
 
@@ -144,15 +143,14 @@ class ClienteController extends Controller
     public function create()
     {
         try {
-            if (! TenantConnectionService::currentTenantConnectionName()) {
-                return response('<html><body><h1>ISP no configurado</h1></body></html>', 200, ['Content-Type' => 'text/html']);
-            }
+            if (!TenantConnectionService::currentTenantConnectionName()) {
                 return view('tenant-sin-configurar');
             }
             $this->authorize('create', Cliente::class);
             return view('clientes.create');
         } catch (\Throwable $e) {
-            return response('<html><body><h1>ISP no configurado</h1><p>El ISP actual no tiene base de datos.</p></body></html>', 200, ['Content-Type' => 'text/html']);
+            Log::warning('ClienteController::create error', ['error' => $e->getMessage()]);
+            return view('tenant-sin-configurar');
         }
     }
 
