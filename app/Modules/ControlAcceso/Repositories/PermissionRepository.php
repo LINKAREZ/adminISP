@@ -55,9 +55,9 @@ class PermissionRepository
      */
     public function getPaginatedWithFilters(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
-        // Verificar si la columna is_hidden existe antes de usar el scope
-        $hasIsHiddenColumn = \Schema::hasColumn('permissions', 'is_hidden');
-        $query = $hasIsHiddenColumn ? Permission::visible() : Permission::query();
+        $conn = TenantConnectionService::centralConnection();
+        $hasIsHiddenColumn = Schema::connection($conn)->hasColumn('permissions', 'is_hidden');
+        $query = $hasIsHiddenColumn ? Permission::on($conn)->visible() : Permission::on($conn);
 
         // Filtro por módulo (exacto)
         if (isset($filters['module']) && !empty($filters['module'])) {

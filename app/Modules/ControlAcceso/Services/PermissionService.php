@@ -133,12 +133,8 @@ class PermissionService
     {
         $conn = \App\Core\Services\TenantConnectionService::centralConnection();
         return Cache::remember('permissions.modules', 3600, function () use ($conn) {
-            $hasIsHiddenColumn = \Schema::connection($conn)->hasColumn('permissions', 'is_hidden');
-            $query = $hasIsHiddenColumn
-                ? \App\Modules\ControlAcceso\Models\Permission::on($conn)->visible()
-                : \App\Modules\ControlAcceso\Models\Permission::on($conn);
-
-            return $query
+            // Listar todos los módulos con permisos (sin filtrar por visible) para el filtro de la vista admin
+            return \App\Modules\ControlAcceso\Models\Permission::on($conn)
                 ->distinct()
                 ->pluck('module')
                 ->sort()

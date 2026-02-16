@@ -130,6 +130,10 @@ class User extends Authenticatable
      */
     public function hasAnyRole(array $roles): bool
     {
+        if ($this->isRootUser()) {
+            return true;
+        }
+
         if (!$this->relationLoaded('role')) {
             $this->load('role');
         }

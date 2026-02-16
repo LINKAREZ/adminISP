@@ -227,6 +227,7 @@ class RolePermissionSeeder extends Seeder
     private function clearCaches(): void
     {
         Cache::forget('permissions.grouped.by.module');
+        Cache::forget('permissions.modules');
         Cache::forget('roles.active');
     }
 }
