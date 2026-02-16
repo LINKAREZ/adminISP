@@ -69,6 +69,24 @@ return Application::configure(basePath: dirname(__DIR__))
         \App\Modules\PortalCliente\ModuleServiceProvider::class,
     ])
     ->withExceptions(function (Exceptions $exceptions) {
+        // Instalador: cualquier excepción en install/* devuelve JSON para que el frontend no reciba HTML
+        $exceptions->render(function (\Throwable $exception, \Illuminate\Http\Request $request) {
+            if ($request->is('install/*')) {
+                Log::error('Excepción en instalador', [
+                    'message' => $exception->getMessage(),
+                    'file' => $exception->getFile(),
+                    'line' => $exception->getLine(),
+                    'trace' => $exception->getTraceAsString(),
+                ]);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error: ' . $exception->getMessage(),
+                    'trace' => config('app.debug') ? $exception->getTraceAsString() : null,
+                ], 500);
+            }
+            return null;
+        });
+
         // Redirigir cuando falten tablas FTTH (OLT/ODF/splitters) en el tenant
         $exceptions->render(function (QueryException $exception, \Illuminate\Http\Request $request) {
             if ($request->expectsJson() || $request->ajax()) {

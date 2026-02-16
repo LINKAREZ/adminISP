@@ -232,27 +232,33 @@ class InstallerController extends Controller
 
     /**
      * Ejecutar seeders de la BD central.
-     * Se ejecutan en subproceso (exec) para contexto CLI puro y respuesta siempre JSON.
+     * Subproceso con exec() para contexto CLI. Buffer de salida limpiado para respuesta JSON pura.
      */
     public function runSeeders(Request $request)
     {
-        $output = [];
-        $returnCode = -1;
-        $base = base_path();
-        $php = defined('PHP_BINARY') && PHP_BINARY ? PHP_BINARY : 'php';
-        $cmd = sprintf(
-            'cd %s && %s artisan db:seed --class=RolePermissionSeeder --force 2>&1',
-            escapeshellarg($base),
-            escapeshellarg($php)
-        );
+        if (ob_get_level()) {
+            ob_end_clean();
+        }
+        ob_start();
 
         try {
+            $output = [];
+            $returnCode = -1;
+            $base = base_path();
+            $php = defined('PHP_BINARY') && PHP_BINARY ? PHP_BINARY : 'php';
+            $cmd = sprintf(
+                'cd %s && %s artisan db:seed --class=RolePermissionSeeder --force 2>&1',
+                escapeshellarg($base),
+                escapeshellarg($php)
+            );
+
             if (!function_exists('exec')) {
                 throw new \RuntimeException('exec() está deshabilitado en este servidor.');
             }
             @exec($cmd, $output, $returnCode);
             $outStr = trim(implode("\n", $output));
         } catch (\Throwable $e) {
+            ob_end_clean();
             \Illuminate\Support\Facades\Log::error('Installer runSeeders failed', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
@@ -263,6 +269,8 @@ class InstallerController extends Controller
                 'trace' => config('app.debug') ? $e->getTraceAsString() : null,
             ], 500);
         }
+
+        ob_end_clean();
 
         if ($returnCode === 0) {
             return response()->json([
