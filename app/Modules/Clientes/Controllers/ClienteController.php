@@ -48,6 +48,8 @@ class ClienteController extends Controller
     {
         try {
             if (! TenantConnectionService::currentTenantConnectionName()) {
+                return response('<html><body><h1>ISP no configurado</h1></body></html>', 200, ['Content-Type' => 'text/html']);
+            }
                 return view('tenant-sin-configurar');
             }
             $this->authorize('viewAny', Cliente::class);
@@ -143,6 +145,8 @@ class ClienteController extends Controller
     {
         try {
             if (! TenantConnectionService::currentTenantConnectionName()) {
+                return response('<html><body><h1>ISP no configurado</h1></body></html>', 200, ['Content-Type' => 'text/html']);
+            }
                 return view('tenant-sin-configurar');
             }
             $this->authorize('create', Cliente::class);

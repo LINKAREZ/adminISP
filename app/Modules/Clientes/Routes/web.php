@@ -1,13 +1,12 @@
 <?php
 
 use App\Modules\Clientes\Controllers\ClienteController;
+use App\Modules\Clientes\Controllers\ClienteIndexFallbackController;
 use App\Modules\Clientes\Controllers\UbicacionController;
 use Illuminate\Support\Facades\Route;
 
 // IMPORTANTE: Estas rutas deben ir ANTES del resource para evitar conflictos de route model binding
 Route::middleware(['web', 'auth'])->group(function () {
-    // DEBUG: ruta minimal para verificar que /clientes carga (eliminar tras verificar)
-    Route::get('clientes-debug', fn () => response('OK clientes-debug', 200))->name('clientes.debug');
     Route::get('clientes/consultas/dni', [ClienteController::class, 'consultarDni'])->name('clientes.consultar-dni');
     Route::get('clientes/consultas/ruc', [ClienteController::class, 'consultarRuc'])->name('clientes.consultar-ruc');
     Route::get('clientes/consultar-dni', [ClienteController::class, 'consultarDni']);
@@ -19,7 +18,13 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('clientes/cortar-servicios-vencidos', [ClienteController::class, 'cortarServiciosVencidos']);
     Route::get('clientes/{cliente}/crear-usuario-pppoe', [ClienteController::class, 'crearUsuarioPppoeForm'])->name('clientes.crear-usuario-pppoe');
     Route::post('clientes/{cliente}/crear-usuario-pppoe', [ClienteController::class, 'storeCrearUsuarioPppoe'])->name('clientes.crear-usuario-pppoe.store');
-    Route::resource('clientes', ClienteController::class);
+    Route::get('clientes', [ClienteIndexFallbackController::class, 'index'])->name('clientes.index');
+    Route::get('clientes/create', [ClienteIndexFallbackController::class, 'create'])->name('clientes.create');
+    Route::post('clientes', [ClienteController::class, 'store'])->name('clientes.store');
+    Route::get('clientes/{cliente}', [ClienteController::class, 'show'])->name('clientes.show');
+    Route::get('clientes/{cliente}/edit', [ClienteController::class, 'edit'])->name('clientes.edit');
+    Route::put('clientes/{cliente}', [ClienteController::class, 'update'])->name('clientes.update');
+    Route::delete('clientes/{cliente}', [ClienteController::class, 'destroy'])->name('clientes.destroy');
 });
 
 // Rutas anidadas de clientes - SOLO ubicaciones
