@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Core\Services\TenantConnectionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class CorteFacturacionController extends Controller
@@ -17,6 +18,7 @@ class CorteFacturacionController extends Controller
 
     public function index(): View
     {
+        Gate::authorize('corte-facturacion.read');
         $ispId = auth()->user()->isp_id;
         if (! $ispId) {
             abort(403, 'Debe estar asignado a un ISP.');
@@ -26,6 +28,7 @@ class CorteFacturacionController extends Controller
 
     public function ejecutarFacturacion(): RedirectResponse
     {
+        Gate::authorize('corte-facturacion.execute');
         $ispId = auth()->user()->isp_id;
         if (! $ispId) {
             return redirect()->route('dashboard')->with('error', 'Debe estar asignado a un ISP.');
@@ -38,6 +41,7 @@ class CorteFacturacionController extends Controller
 
     public function ejecutarCorte(): RedirectResponse
     {
+        Gate::authorize('corte-facturacion.execute');
         $ispId = auth()->user()->isp_id;
         if (! $ispId) {
             return redirect()->route('dashboard')->with('error', 'Debe estar asignado a un ISP.');

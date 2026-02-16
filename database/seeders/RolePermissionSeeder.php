@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use App\Modules\ControlAcceso\Models\Role;
 use App\Modules\ControlAcceso\Models\Permission;
@@ -39,6 +38,7 @@ class RolePermissionSeeder extends Seeder
         'almacen' => ['create', 'read', 'update', 'delete'],
         'infraestructura' => ['create', 'read', 'update', 'delete'],
         'mapa-red' => ['read', 'edit', 'admin'],
+        'corte-facturacion' => ['read', 'execute'],
         'sistema' => ['create', 'read', 'update', 'delete'],
         'auditoria' => ['read'],
         'tickets' => ['read', 'create'],
@@ -55,6 +55,7 @@ class RolePermissionSeeder extends Seeder
         'almacen' => 'Almacén',
         'infraestructura' => 'Infraestructura',
         'mapa-red' => 'Mapa de Red',
+        'corte-facturacion' => 'Corte Facturación',
         'sistema' => 'Sistema',
         'auditoria' => 'Auditoría',
         'tickets' => 'Tickets',
@@ -66,6 +67,38 @@ class RolePermissionSeeder extends Seeder
         'delete' => 'Eliminar',
         'edit' => 'Editar',
         'admin' => 'Administrar',
+        'export' => 'Exportar',
+        'anular' => 'Anular',
+        'approve' => 'Aprobar',
+        'execute' => 'Ejecutar',
+    ];
+
+    /**
+     * Subrecursos por módulo (formato modulo.subrecurso => [acciones]).
+     * Genera permisos modulo.subrecurso.accion (ej. comprobantes.recibos.read).
+     */
+    private const SUBMODULES = [
+        'comprobantes' => [
+            'recibos' => ['create', 'read', 'update', 'delete'],
+            'pagos' => ['create', 'read', 'update', 'delete'],
+            'gastos' => ['create', 'read', 'update', 'delete'],
+            'comprobantes' => ['create', 'read', 'update', 'delete', 'anular'],
+            'reportes' => ['read', 'export'],
+            'importar-pagos' => ['read', 'create'],
+            'dashboard-finanzas' => ['read'],
+        ],
+    ];
+
+    private const SUBMODULE_LABELS = [
+        'comprobantes' => [
+            'recibos' => 'Recibos',
+            'pagos' => 'Pagos',
+            'gastos' => 'Gastos',
+            'comprobantes' => 'Comprobantes fiscales',
+            'reportes' => 'Reportes',
+            'importar-pagos' => 'Importar pagos',
+            'dashboard-finanzas' => 'Dashboard finanzas',
+        ],
     ];
 
     public function run(): void
@@ -73,8 +106,6 @@ class RolePermissionSeeder extends Seeder
         $this->createPermissions();
         $this->createRolesAndSyncPermissions();
         $this->assignRootToAdministrador();
-        $this->pruneObsoletePermissions();
-        $this->pruneObsoleteRoles();
         $this->clearCaches();
     }
 
@@ -87,10 +118,28 @@ class RolePermissionSeeder extends Seeder
                 $label = self::MODULE_LABELS[$module];
                 $permissions[] = [
                     'name' => $name,
-                    'display_name' => self::ACTION_LABELS[$action] . ' ' . $label,
+                    'display_name' => (self::ACTION_LABELS[$action] ?? $action) . ' ' . $label,
                     'module' => $label,
                     'description' => '',
                 ];
+            }
+        }
+
+        foreach (self::SUBMODULES as $module => $subresources) {
+            $moduleLabel = self::MODULE_LABELS[$module];
+            $subLabels = self::SUBMODULE_LABELS[$module] ?? [];
+            foreach ($subresources as $sub => $actions) {
+                $subLabel = $subLabels[$sub] ?? ucfirst(str_replace(['-', '_'], ' ', $sub));
+                $displayModule = $moduleLabel . ' – ' . $subLabel;
+                foreach ($actions as $action) {
+                    $name = "{$module}.{$sub}.{$action}";
+                    $permissions[] = [
+                        'name' => $name,
+                        'display_name' => (self::ACTION_LABELS[$action] ?? $action) . ' ' . $subLabel,
+                        'module' => $displayModule,
+                        'description' => '',
+                    ];
+                }
             }
         }
 
@@ -101,7 +150,22 @@ class RolePermissionSeeder extends Seeder
             );
         }
 
-        $this->permissionNames = array_column($permissions, 'name');
+        // Permisos especiales (record-level y field-level)
+        $extra = [
+            ['name' => 'clientes.own_only', 'display_name' => 'Solo clientes asignados a mí', 'module' => 'Clientes', 'description' => 'Restringe listado y acciones a clientes cuyo asignado_a coincide con el usuario.'],
+            ['name' => 'clientes.ver_costo', 'display_name' => 'Ver costo en clientes/servicios', 'module' => 'Clientes', 'description' => 'Permite ver campos de costo o montos sensibles. Sin este permiso se ocultan o son solo lectura.'],
+        ];
+        foreach ($extra as $p) {
+            Permission::updateOrCreate(
+                ['name' => $p['name']],
+                array_merge($p, ['is_hidden' => true])
+            );
+        }
+
+        $this->permissionNames = array_merge(
+            array_column($permissions, 'name'),
+            array_column($extra, 'name')
+        );
     }
 
     /** @var array */
@@ -139,6 +203,7 @@ class RolePermissionSeeder extends Seeder
                 'almacen.read', 'almacen.create', 'almacen.update', 'almacen.delete',
                 'infraestructura.read', 'infraestructura.create', 'infraestructura.update',
                 'mapa-red.read', 'mapa-red.edit',
+                'corte-facturacion.read', 'corte-facturacion.execute',
                 'sistema.read',
                 'auditoria.read',
                 'tickets.read', 'tickets.create',
@@ -146,36 +211,58 @@ class RolePermissionSeeder extends Seeder
             'gerente-finanzas' => [
                 'dashboard.read',
                 'clientes.read',
-                'comprobantes.read', 'comprobantes.create', 'comprobantes.update', 'comprobantes.delete',
+                'comprobantes.recibos.read', 'comprobantes.recibos.create', 'comprobantes.recibos.update', 'comprobantes.recibos.delete',
+                'comprobantes.pagos.read', 'comprobantes.pagos.create', 'comprobantes.pagos.update', 'comprobantes.pagos.delete',
+                'comprobantes.gastos.read', 'comprobantes.gastos.create', 'comprobantes.gastos.update', 'comprobantes.gastos.delete',
+                'comprobantes.comprobantes.read', 'comprobantes.comprobantes.create', 'comprobantes.comprobantes.update', 'comprobantes.comprobantes.delete', 'comprobantes.comprobantes.anular',
+                'comprobantes.reportes.read', 'comprobantes.reportes.export',
+                'comprobantes.importar-pagos.read', 'comprobantes.importar-pagos.create',
+                'comprobantes.dashboard-finanzas.read',
+                'corte-facturacion.read', 'corte-facturacion.execute',
                 'instalaciones.read',
                 'auditoria.read',
             ],
             'cobrador' => [
                 'dashboard.read',
                 'clientes.read',
-                'comprobantes.read', 'comprobantes.create', 'comprobantes.update',
+                'comprobantes.recibos.read', 'comprobantes.recibos.create', 'comprobantes.recibos.update',
+                'comprobantes.pagos.read', 'comprobantes.pagos.create', 'comprobantes.pagos.update',
+                'comprobantes.comprobantes.read',
+                'comprobantes.importar-pagos.read', 'comprobantes.importar-pagos.create',
+                'comprobantes.dashboard-finanzas.read',
             ],
             'tecnico' => [
                 'dashboard.read',
                 'red.read',
                 'servicios.read', 'servicios.create', 'servicios.update',
                 'clientes.read', 'clientes.create', 'clientes.update',
-                'comprobantes.read', 'comprobantes.create', 'comprobantes.update',
+                'comprobantes.recibos.read', 'comprobantes.recibos.create', 'comprobantes.recibos.update',
+                'comprobantes.pagos.read', 'comprobantes.pagos.create', 'comprobantes.pagos.update',
+                'comprobantes.gastos.read',
+                'comprobantes.comprobantes.read',
+                'comprobantes.reportes.read',
+                'comprobantes.importar-pagos.read', 'comprobantes.importar-pagos.create',
+                'comprobantes.dashboard-finanzas.read',
                 'instalaciones.read', 'instalaciones.create', 'instalaciones.update',
                 'infraestructura.read', 'infraestructura.create', 'infraestructura.update',
                 'mapa-red.read', 'mapa-red.edit',
+                'corte-facturacion.read', 'corte-facturacion.execute',
                 'tickets.read', 'tickets.create',
             ],
             'soporte' => [
                 'dashboard.read',
                 'clientes.read',
-                'comprobantes.read',
+                'comprobantes.recibos.read',
+                'comprobantes.pagos.read',
+                'comprobantes.comprobantes.read',
                 'tickets.read', 'tickets.create',
             ],
             'ayudante' => [
                 'dashboard.read',
                 'clientes.read',
-                'comprobantes.read', 'comprobantes.create',
+                'comprobantes.recibos.read', 'comprobantes.recibos.create',
+                'comprobantes.pagos.read', 'comprobantes.pagos.create',
+                'comprobantes.comprobantes.read',
                 'instalaciones.read',
                 'infraestructura.read',
             ],
@@ -195,32 +282,6 @@ class RolePermissionSeeder extends Seeder
         if ($root && $administrador) {
             $root->role_id = $administrador->id;
             $root->save();
-        }
-    }
-
-    private function pruneObsoletePermissions(): void
-    {
-        $obsolete = Permission::whereNotIn('name', $this->permissionNames)->pluck('id')->toArray();
-        if ($obsolete === []) {
-            return;
-        }
-        DB::table('permission_role')->whereIn('permission_id', $obsolete)->delete();
-        Permission::whereIn('id', $obsolete)->delete();
-    }
-
-    private function pruneObsoleteRoles(): void
-    {
-        $validNames = array_keys(self::ROLES);
-        $administrador = Role::where('name', 'administrador')->first();
-        if (!$administrador) {
-            return;
-        }
-
-        $obsolete = Role::whereNotIn('name', $validNames)->get();
-        foreach ($obsolete as $role) {
-            User::where('role_id', $role->id)->update(['role_id' => $administrador->id]);
-            $role->permissions()->detach();
-            $role->delete();
         }
     }
 

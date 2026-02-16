@@ -82,12 +82,14 @@
                         <p>Mapa Red</p>
                     </a>
                 </li>
+                @hasPermission('corte-facturacion.read')
                 <li class="nav-item nav-item-mobile">
                     <a href="{{ route('corte-facturacion.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('corte-facturacion*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-calendar-check"></i>
                         <p>Corte Facturación</p>
                     </a>
                 </li>
+                @endhasPermission
                 @hasAnyPermission(['sistema.read', 'sistema.apis.read'])
                 <li class="nav-item nav-item-mobile">
                     <a href="{{ route('sistema.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('sistema*') || request()->is('medios-pago*') ? 'active' : '' }}">
@@ -114,7 +116,7 @@
                             if (!$user->relationLoaded('role')) {
                                 $user->load('role');
                             }
-                            $isAdmin = $user->role && $user->role->nombre === 'administrador';
+                            $isAdmin = $user->role && $user->role->name === 'administrador';
                         }
                     }
                     $hasComprobantesPermission = $isAdmin || ($user && $user->hasPermission('comprobantes.read'));
