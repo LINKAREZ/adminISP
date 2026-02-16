@@ -46,11 +46,14 @@ class ClienteController extends Controller
      */
     public function index(Request $request)
     {
-        $this->authorize('viewAny', Cliente::class);
-
-        if (! TenantConnectionService::currentTenantConnectionName()) {
+        try {
+            if (! TenantConnectionService::currentTenantConnectionName()) {
+                return view('tenant-sin-configurar');
+            }
+        } catch (\Throwable $e) {
             return view('tenant-sin-configurar');
         }
+        $this->authorize('viewAny', Cliente::class);
 
         $routers = \App\Modules\Red\Models\Router::where('estado', true)->orderBy('nombre')->get();
         $routerId = $request->input('router_id');
@@ -135,11 +138,14 @@ class ClienteController extends Controller
      */
     public function create()
     {
-        $this->authorize('create', Cliente::class);
-
-        if (! TenantConnectionService::currentTenantConnectionName()) {
+        try {
+            if (! TenantConnectionService::currentTenantConnectionName()) {
+                return view('tenant-sin-configurar');
+            }
+        } catch (\Throwable $e) {
             return view('tenant-sin-configurar');
         }
+        $this->authorize('create', Cliente::class);
 
         return view('clientes.create');
     }

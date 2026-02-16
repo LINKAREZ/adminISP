@@ -99,11 +99,14 @@ class ComprobanteController extends Controller
      */
     public function create(Request $request)
     {
-        $this->authorize('create', Comprobante::class);
-
-        if (! TenantConnectionService::currentTenantConnectionName()) {
+        try {
+            if (! TenantConnectionService::currentTenantConnectionName()) {
+                return view('tenant-sin-configurar');
+            }
+        } catch (\Throwable $e) {
             return view('tenant-sin-configurar');
         }
+        $this->authorize('create', Comprobante::class);
 
         $clientes = $this->obtenerClientesParaSelect();
         $series = $this->obtenerSeriesActivas();
