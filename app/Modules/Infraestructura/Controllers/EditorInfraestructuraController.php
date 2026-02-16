@@ -49,9 +49,21 @@ class EditorInfraestructuraController extends Controller
      */
     public function data(): JsonResponse
     {
+        $connName = TenantConnectionService::currentTenantConnectionName();
+        if (!$connName) {
+            return response()->json([
+                'error' => 'No hay ISP configurado. Use una cuenta asignada a un ISP.',
+                'postes' => [],
+                'cajas_nap' => [],
+                'mufas' => [],
+                'recorridos' => [],
+                'ubicaciones' => [],
+                'cables' => [],
+            ], 200);
+        }
+
         $this->ensureInfraestructuraTables();
 
-        $connName = TenantConnectionService::currentTenantConnectionName();
         $centerLat = -12.046374;
         $centerLng = -77.042793;
 

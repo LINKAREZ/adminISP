@@ -3,6 +3,7 @@
 namespace App\Modules\Dashboard\Controllers;
 
 use App\Core\Contracts\Repositories\DashboardRepositoryInterface;
+use App\Core\Services\TenantConnectionService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -22,6 +23,10 @@ class DashboardController extends Controller
         $user = $request->user();
         if ($user && method_exists($user, 'isSuperAdmin') && $user->isSuperAdmin()) {
             return redirect()->route('superadmin.dashboard');
+        }
+
+        if (!TenantConnectionService::currentTenantConnectionName()) {
+            return view('tenant-sin-configurar');
         }
 
         $estadisticas = $this->dashboardRepository->getEstadisticas();

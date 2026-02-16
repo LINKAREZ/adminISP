@@ -64,6 +64,10 @@ class PlanController extends Controller
 
     public function index(Request $request)
     {
+        $tenantConn = TenantConnectionService::currentTenantConnectionName();
+        if (!$tenantConn) {
+            return redirect()->route('dashboard')->with('warning', 'No hay ISP configurado. Debe usar una cuenta asignada a un ISP con base de datos.');
+        }
         $this->asegurarTablasPlanDhcp();
         $this->authorize('viewAny', Plan::class);
         $routerSeleccionado = $request->input('router_id');
@@ -87,6 +91,9 @@ class PlanController extends Controller
 
     public function create(Request $request)
     {
+        if (!TenantConnectionService::currentTenantConnectionName()) {
+            return redirect()->route('dashboard')->with('warning', 'No hay ISP configurado. Debe usar una cuenta asignada a un ISP con base de datos.');
+        }
         $this->authorize('create', Plan::class);
         $routerId = $request->input('router_id');
         $tipoConexion = $request->input('tipo_conexion', 'pppoe');

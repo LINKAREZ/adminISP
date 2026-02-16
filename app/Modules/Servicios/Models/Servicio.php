@@ -148,7 +148,7 @@ class Servicio extends Model
                 'regex:/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/',
                 Rule::unique('servicios', 'mac_address')
                     ->ignore($servicioId)
-                    ->connection(TenantConnectionService::currentTenantConnectionName() ?? TenantConnectionService::centralConnection()),
+                    ->connection(TenantConnectionService::currentTenantConnectionName()),
             ],
             'onu_id' => ['nullable', 'integer', new ExistsInTenant('onus')],
             'sin_equipo' => 'nullable|in:0,1',

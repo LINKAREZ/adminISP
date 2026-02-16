@@ -2,10 +2,11 @@
 
 namespace App\Modules\Red\Controllers;
 
+use App\Core\Services\TenantConnectionService;
 use App\Http\Controllers\Controller;
+use App\Modules\Red\Models\Nodo;
 use App\Modules\Red\Requests\StoreNodoRequest;
 use App\Modules\Red\Requests\UpdateNodoRequest;
-use App\Modules\Red\Models\Nodo;
 use Illuminate\Http\Request;
 
 class NodoController extends Controller
@@ -17,12 +18,20 @@ class NodoController extends Controller
 
     public function index()
     {
-        $nodos = \App\Modules\Red\Models\Nodo::latest()->paginate(15);
+        $conn = TenantConnectionService::currentTenantConnectionName();
+        if (!$conn) {
+            return view('tenant-sin-configurar');
+        }
+        $nodos = Nodo::on($conn)->withoutGlobalScopes()->latest()->paginate(15);
         return view('red.nodos.index', compact('nodos'));
     }
 
     public function create()
     {
+        $conn = TenantConnectionService::currentTenantConnectionName();
+        if (!$conn) {
+            return view('tenant-sin-configurar');
+        }
         return view('red.nodos.create');
     }
 
