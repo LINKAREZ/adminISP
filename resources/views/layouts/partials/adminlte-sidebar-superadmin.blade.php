@@ -1,8 +1,8 @@
 <!-- Main Sidebar Container para Super Admin -->
 <aside class="main-sidebar sidebar-dark-superadmin elevation-4">
-    <!-- Brand Logo -->
+    <!-- Brand Logo (mismo que instalador) -->
     <a href="{{ route('superadmin.dashboard') }}" class="brand-link">
-        <img src="https://adminlte.io/themes/v3/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+        <img src="{{ asset('favicon.svg') }}" alt="Admin ISP" class="brand-image img-circle elevation-3" style="opacity: .95">
         <span class="brand-text font-weight-light">Admin ISP</span>
     </a>
 

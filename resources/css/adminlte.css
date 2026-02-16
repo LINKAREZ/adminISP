@@ -17,6 +17,9 @@
 /* Premium enhancements: gradientes, profundidad, micro-interacciones */
 @import './premium-enhancements.css';
 
+/* Panel Super Admin: mismo estilo visual que instalador + layout full height */
+@import './superadmin.css';
+
 /* Colores adicionales: definidos en global-styles.blade.php (paleta unificada) */
 
 /* Ribbons personalizados */

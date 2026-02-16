@@ -43,7 +43,6 @@ export default defineConfig({
     laravel({
       input: [
         'resources/css/adminlte.css',
-        'resources/css/superadmin.css',
         'resources/css/portal.css',
         'resources/css/mapa-infraestructura.css',
         'resources/js/app.js',
