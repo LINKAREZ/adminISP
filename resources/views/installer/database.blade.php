@@ -79,10 +79,11 @@
                         <div class="row-of-fields">
                             <input type="text" id="DB_ADMIN_USERNAME" class="form-control form-control-sm" placeholder="Usuario admin (ej. root)" style="flex: 1; min-width: 0;">
                             <span class="password-wrap">
-                                <input type="password" id="DB_ADMIN_PASSWORD" class="form-control form-control-sm" placeholder="Contraseña admin">
+                                <input type="password" id="DB_ADMIN_PASSWORD" class="form-control form-control-sm" placeholder="Contraseña del usuario admin">
                                 <button type="button" class="btn-password-toggle btn btn-outline-secondary form-control-sm" data-target="DB_ADMIN_PASSWORD">Ver</button>
                             </span>
                         </div>
+                        <small class="text-muted d-block mt-1">En Docker, la contraseña de root suele ser la misma que la de arriba (Contraseña).</small>
                     </div>
                     <div id="create-user-result" class="mt-2" style="display: none;"></div>
                 </div>
@@ -170,7 +171,8 @@ document.getElementById('btn-create-db').addEventListener('click', function () {
         }
         var noPermission = json.message && (json.message.indexOf('permiso') !== -1 || json.message.indexOf('root') !== -1);
         if (noPermission) {
-            return doCreateDb('root', 'adminisp%').then(function (r2) {
+            var rootPass = password || 'adminisp%';
+            return doCreateDb('root', rootPass).then(function (r2) {
                 result.style.display = 'block';
                 result.className = 'mt-2 result-box ' + (r2.ok ? 'success' : 'danger');
                 result.innerHTML = r2.ok ? ('Base de datos "' + database + '" creada o ya existía correctamente.') : (r2.json.message || 'Error.');
@@ -209,7 +211,7 @@ document.getElementById('btn-create-user').addEventListener('click', function ()
     }
     if (!adminUser) {
         adminUser = 'root';
-        adminPass = 'adminisp%';
+        adminPass = password || 'adminisp%';
     }
 
     btn.disabled = true;
@@ -241,7 +243,7 @@ document.getElementById('btn-create-user').addEventListener('click', function ()
         if (!ok && adminWrap) {
             adminWrap.style.display = 'block';
             if (result.innerHTML.indexOf('campos') === -1) {
-                result.innerHTML = result.innerHTML + ' Si usas otro usuario con permiso, complétalos y pulsa «Crear usuario» de nuevo.';
+                result.innerHTML = result.innerHTML + ' En Docker, prueba usuario <code>root</code> y la misma contraseña que arriba (Contraseña).';
             }
         }
     })
