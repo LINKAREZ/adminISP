@@ -91,14 +91,19 @@ class InstallerController extends Controller
         }
         $dbHost = env('DB_HOST', 'db');
         $isVpsDefaults = ($dbHost === 'db' || $dbHost === '');
-        // Recomendación: usuario dedicado (adminisp) en lugar de root para la aplicación
+        // Recomendación: usuario dedicado (adminisp) en lugar de root para la aplicación.
+        // No mostrar "secret" como valor: si está en .env se sustituye por adminisp%.
+        $dbPassword = env('DB_PASSWORD', $isVpsDefaults ? 'adminisp%' : '');
+        if ($dbPassword === 'secret') {
+            $dbPassword = 'adminisp%';
+        }
         $current = [
             'APP_URL'     => $appUrl,
             'DB_HOST'     => $dbHost ?: 'db',
             'DB_PORT'     => env('DB_PORT', '3306'),
             'DB_DATABASE' => env('DB_DATABASE', 'adminisp'),
             'DB_USERNAME' => env('DB_USERNAME', $isVpsDefaults ? 'adminisp' : 'root'),
-            'DB_PASSWORD' => env('DB_PASSWORD', $isVpsDefaults ? 'adminisp%' : ''),
+            'DB_PASSWORD' => $dbPassword,
         ];
         return view('installer.database', compact('current', 'isVpsDefaults'));
     }

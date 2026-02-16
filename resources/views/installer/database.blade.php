@@ -60,7 +60,7 @@
                     <input type="password" id="DB_PASSWORD" name="DB_PASSWORD" class="form-control" value="{{ old('DB_PASSWORD', $current['DB_PASSWORD']) }}" placeholder="adminisp%" autocomplete="off">
                     <button type="button" class="btn-password-toggle btn btn-outline-secondary" data-target="DB_PASSWORD" aria-label="Mostrar contraseña">Ver</button>
                 </div>
-                <small class="text-muted" style="display: block; margin-top: 0.25rem;">Si aparece «Access denied», prueba <code>secret</code> o usuario <code>adminisp</code>.</small>
+                <small class="text-muted" style="display: block; margin-top: 0.25rem;">Si aparece «Access denied», verifica usuario <code>adminisp</code> y la contraseña de <code>DB_PASSWORD</code> en tu entorno (Docker: la del compose).</small>
             </div>
         </div>
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Restablece la contraseña de root de MySQL en el contenedor Docker.
 # Uso: bash scripts/mysql-reset-root-password-docker.sh [contraseña_actual] [contraseña_nueva]
-# Ejemplo: bash scripts/mysql-reset-root-password-docker.sh secret adminisp%
+# Ejemplo: bash scripts/mysql-reset-root-password-docker.sh contraseña_actual adminisp%
 # Si no recuerdas la actual, entra al contenedor: docker exec -it adminisp-db mysql -u root -p
 
 CONTAINER="${MYSQL_CONTAINER:-adminisp-db}"

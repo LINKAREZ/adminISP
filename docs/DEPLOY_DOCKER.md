@@ -30,7 +30,7 @@ Ajusta al menos (**en Docker `DB_HOST` debe ser `db`, no `localhost`**):
 - **`DB_HOST=db`** ← obligatorio en Docker (nombre del servicio)
 - `DB_DATABASE=adminisp`
 - `DB_USERNAME=adminisp`
-- `DB_PASSWORD=**contraseña_segura**` (usa una contraseña propia; si dejas `secret`, MySQL puede mostrar un aviso en el log la primera vez, pero suele quedar "ready for connections")
+- `DB_PASSWORD=**contraseña_segura**` (usa una contraseña propia; por defecto en Docker se usa `adminisp%` si no la defines)
 
 Si ya tenías `DB_HOST=localhost`, cámbialo a `db` y reinicia la app: `docker compose restart app`
 
@@ -88,7 +88,7 @@ docker compose exec app php artisan view:cache
 
 ### 8. Permiso para crear y usar BDs tenant (multi-tenant)
 
-Para que al crear un ISP desde Super Admin se cree su base de datos tenant y se ejecuten las migraciones, el usuario MySQL de la app debe poder **crear** bases de datos y **usarlas** (SELECT, INSERT, etc.). En Docker, ejecuta en la VPS (usa la contraseña de root de MySQL; por defecto la de `DB_PASSWORD` en tu `.env`, ej. `secret`):
+Para que al crear un ISP desde Super Admin se cree su base de datos tenant y se ejecuten las migraciones, el usuario MySQL de la app debe poder **crear** bases de datos y **usarlas** (SELECT, INSERT, etc.). En Docker, ejecuta en la VPS (usa la contraseña de root de MySQL; la de `DB_PASSWORD` en tu `.env`, por defecto `adminisp%`):
 
 ```bash
 cd ~/adminisp

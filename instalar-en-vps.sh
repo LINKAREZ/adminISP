@@ -19,7 +19,7 @@ fi
 # 3. Crear BD si no existe (usa mysql client si está)
 DB_NAME="${DB_DATABASE:-adminisp}"
 DB_USER="${DB_USERNAME:-root}"
-DB_PASS="${DB_PASSWORD:-secret}"
+DB_PASS="${DB_PASSWORD:-adminisp%}"
 if command -v mysql &>/dev/null; then
   echo "Creando base de datos $DB_NAME si no existe..."
   mysql -u"$DB_USER" -p"$DB_PASS" -e "CREATE DATABASE IF NOT EXISTS \`$DB_NAME\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" 2>/dev/null || true
