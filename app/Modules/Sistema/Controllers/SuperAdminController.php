@@ -78,11 +78,20 @@ class SuperAdminController extends Controller
             }
         }
 
+        $centralConn = TenantConnectionService::centralConnection();
+        $columnsRecent = ['id', 'nombre', 'database_name', 'created_at'];
+        if (\Illuminate\Support\Facades\Schema::connection($centralConn)->hasColumn('isps', 'activo')) {
+            $columnsRecent[] = 'activo';
+        }
         $recentIsps = Isp::withoutGlobalScope(IspScope::class)
+            ->select($columnsRecent)
             ->withCount('users')
             ->orderByDesc('id')
             ->limit(5)
             ->get();
+        if (!\Illuminate\Support\Facades\Schema::connection($centralConn)->hasColumn('isps', 'activo')) {
+            $recentIsps->each(fn ($isp) => $isp->setAttribute('activo', true));
+        }
 
         // Conteo de clientes por ISP (cada uno en su BD tenant)
         $previousIspId = session('current_isp_id');

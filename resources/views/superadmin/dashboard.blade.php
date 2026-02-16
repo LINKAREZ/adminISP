@@ -213,7 +213,7 @@
                                             <td class="text-center">{{ $isp->users_count }}</td>
                                             <td class="text-center">{{ $isp->clientes_count }}</td>
                                             <td class="text-center">
-                                                @if($isp->activo)
+                                                @if(isset($isp->activo) && $isp->activo)
                                                     <span class="badge badge-secondary">Activo</span>
                                                 @else
                                                     <span class="badge badge-dark">Inactivo</span>
@@ -230,7 +230,7 @@
                                 <a href="{{ route('superadmin.isps.show', $isp) }}" class="list-group-item list-group-item-action py-3 px-3" style="min-height: 48px;">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <span class="font-weight-bold">{{ $isp->nombre }}</span>
-                                        @if($isp->activo)
+                                        @if(isset($isp->activo) && $isp->activo)
                                             <span class="badge badge-secondary">Activo</span>
                                         @else
                                             <span class="badge badge-dark">Inactivo</span>
