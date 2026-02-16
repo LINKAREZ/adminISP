@@ -235,20 +235,22 @@ class InstallerController extends Controller
      */
     public function runSeeders(Request $request)
     {
-        ob_start();
         try {
             Artisan::call('db:seed', [
                 '--class' => 'RolePermissionSeeder',
                 '--force' => true,
             ]);
-            ob_end_clean();
 
             return response()->json([
                 'success' => true,
                 'message' => 'Datos iniciales de la BD central creados correctamente.',
             ]);
         } catch (\Throwable $e) {
-            ob_end_clean();
+            \Illuminate\Support\Facades\Log::error('Installer runSeeders failed', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return response()->json([
                 'success' => false,
                 'message' => 'Error al ejecutar seeders: ' . $e->getMessage(),

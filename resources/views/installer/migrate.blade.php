@@ -132,7 +132,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     linkAdmin.style.display = 'block';
                 } else {
                     const status = res.status;
-                    seedResult.innerHTML = '<div class="alert alert-danger">Error del servidor (HTTP ' + status + '). Ejecuta en la VPS: docker compose exec app php artisan db:seed --class=RolePermissionSeeder --force</div>';
+                    seedResult.innerHTML = '<div class="alert alert-danger">Error del servidor (HTTP ' + status + '). Ejecuta en la VPS: <code>docker compose exec app php artisan db:seed --class=RolePermissionSeeder --force</code> y luego haz clic en «Continuar → Crear administrador».</div>';
+                    linkAdmin.style.display = 'block';
                 }
                 btnSeed.disabled = false;
                 btnSeed.innerHTML = 'Ejecutar datos iniciales (roles, permisos, etc.)';
