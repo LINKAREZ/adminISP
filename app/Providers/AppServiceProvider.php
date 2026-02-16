@@ -35,8 +35,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Forzar HTTPS en producción cuando APP_URL use https (evita "No es seguro" por contenido mixto)
-        if ($this->app->environment('production') && str_starts_with(config('app.url', ''), 'https://')) {
+        // Forzar HTTPS en producción (evita ERR_TOO_MANY_REDIRECTS si APP_URL es http://)
+        if ($this->app->environment('production')) {
             URL::forceScheme('https');
         }
 
