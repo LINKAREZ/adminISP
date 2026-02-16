@@ -98,8 +98,8 @@
                         @endforelse
                     </div>
 
-                    <!-- Vista desktop: Tabla (sin DataTables para evitar que oculte filas) -->
-                    <div class="table-responsive d-none d-md-block">
+                    <!-- Tabla de roles: visible siempre (sin d-none) -->
+                    <div class="table-responsive">
                         <table id="tablaRoles" class="table table-hover table-striped">
                             <thead>
                                 <tr>
@@ -111,7 +111,8 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($roles as $role)
+                                @if($roles->count() > 0)
+                                    @foreach($roles->items() as $role)
                                     <tr data-users-count="{{ $role->users_count ?? 0 }}">
                                         <td class="align-middle">
                                             <strong>{{ $role->name }}</strong>
@@ -139,7 +140,8 @@
                                             />
                                         </td>
                                     </tr>
-                                @empty
+                                    @endforeach
+                                @else
                                     <x-empty-state
                                         icon="fa-user-shield"
                                         title="No hay roles registrados"
@@ -148,7 +150,7 @@
                                         action-route="roles.create"
                                         colspan="5"
                                     />
-                                @endforelse
+                                @endif
                             </tbody>
                         </table>
                     </div>
