@@ -1,16 +1,35 @@
 ---
-description: Credenciales para iniciar sesión en el panel (MCP / pruebas en navegador)
+description: Credenciales y flujo para iniciar sesión en el panel (MCP / pruebas en navegador)
 alwaysApply: false
 ---
 
 # Login panel Admin ISP (para MCP / pruebas)
 
-Cuando el usuario pida que te loguees, que revises el panel con MCP o que compruebes algo entrando al panel, usar:
+## Opción recomendada: Login por token (MCP)
+
+Para evitar problemas de formularios en MCP browser, usar el endpoint de login por token:
+
+1. **Configurar en .env del servidor** (VPS):
+   ```
+   MCP_LOGIN_TOKEN=un-token-largo-y-secreto-aqui
+   MCP_LOGIN_EMAIL=christiang.cm@gmail.com
+   MCP_LOGIN_PASSWORD=L1N24R3Z
+   ```
+
+2. **Navegar con MCP browser** a:
+   ```
+   https://panel.wan.pe/mcp-login?token=un-token-largo-y-secreto-aqui
+   ```
+   (usar el mismo valor de MCP_LOGIN_TOKEN)
+
+3. El servidor validará el token, iniciará sesión y redirigirá al dashboard.
+
+**Seguridad:** Solo activo cuando MCP_LOGIN_TOKEN está definido. No exponer el token.
+
+## Opción alternativa: Login por formulario
 
 - **URL:** https://panel.wan.pe/login
 - **Email:** christiang.cm@gmail.com
 - **Contraseña:** L1N24R3Z
 
-Pasos con MCP browser: navegar a la URL de login, rellenar email y contraseña en los campos, enviar el formulario (botón "Iniciar Sesión" o submit del form).
-
-**Seguridad:** Si este archivo está en el repositorio, valora añadir `.cursor/rules/mcp-login.mdc` a `.gitignore` para no versionar la contraseña.
+Pasos con MCP browser: navegar a la URL de login, rellenar email y contraseña, hacer clic en "Iniciar Sesión". (Puede fallar por limitaciones de cookies/form en el contexto de automatización.)

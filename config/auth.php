@@ -108,4 +108,16 @@ return [
 
     'password_timeout' => 10800,
 
+    /*
+    |--------------------------------------------------------------------------
+    | MCP Login (automatización / pruebas)
+    |--------------------------------------------------------------------------
+    | Solo activo cuando MCP_LOGIN_TOKEN está definido. Navegar a:
+    | /mcp-login?token=VALOR_DE_MCP_LOGIN_TOKEN para iniciar sesión.
+    */
+
+    'mcp_login_token' => env('MCP_LOGIN_TOKEN'),
+    'mcp_login_email' => env('MCP_LOGIN_EMAIL', 'christiang.cm@gmail.com'),
+    'mcp_login_password' => env('MCP_LOGIN_PASSWORD'),
+
 ];
