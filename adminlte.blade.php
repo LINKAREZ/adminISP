@@ -50,7 +50,8 @@
     @endif
 
     <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper">
+    <div class="content-wrapper @if(View::hasSection('hide-content-header')) content-no-header @endif">
+        @if(!View::hasSection('hide-content-header'))
         <!-- Content Header (Page header) -->
         <div class="content-header content-header-mobile">
             <div class="container-fluid">
@@ -67,7 +68,7 @@
             </div><!-- /.container-fluid -->
         </div>
         <!-- /.content-header -->
-        
+        @endif
         <!-- Main content -->
         <section class="content content-mobile">
             <div class="container-fluid container-fluid-mobile">

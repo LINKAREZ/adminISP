@@ -5,117 +5,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-    /* ============================================
-       SISTEMA DE DISEÑO MODERNO 2024-2025
-       Admin ISP - Tendencias UI/UX
-       ============================================ */
+    /* Variables y base: resources/css/global.css (cargado vía adminlte.css) */
 
-    :root {
-        /* ===== PALETA CORPORATIVA UNIFICADA (Admin + Super Admin) =====
-           Inspirada en IBM Carbon / estándares WCAG AA. Misma base para ambos panels. */
-
-        --color-primary: #0f62fe;
-        --color-surface: #ffffff;
-        --color-background: #f4f6f8;
-        --color-muted: #525f7f;
-        --color-border: #d1d9e6;
-
-        /* Mobile-first: breakpoints */
-        --bp-sm: 576px;
-        --bp-md: 768px;
-        --bp-lg: 992px;
-        --bp-xl: 1200px;
-
-        --touch-min: 44px;
-
-        --safe-top: env(safe-area-inset-top, 0);
-        --safe-right: env(safe-area-inset-right, 0);
-        --safe-bottom: env(safe-area-inset-bottom, 0);
-        --safe-left: env(safe-area-inset-left, 0);
-
-        /* Primario: azul corporativo (Carbon Blue 60), contraste ≥4.5:1 con blanco */
-        --primary: #0f62fe;
-        --primary-light: #4589ff;
-        --primary-dark: #0043ce;
-        --primary-50: #edf5ff;
-        --primary-100: #d0e2ff;
-
-        /* Secundario: gris neutro alineado con escala */
-        --secondary: #525f7f;
-        --secondary-light: #6b7a9e;
-        --secondary-dark: #3d475c;
-
-        /* Estados semánticos (contraste WCAG AA) */
-        --success: #0d9488;
-        --success-light: #ccfbf1;
-        --danger: #dc2626;
-        --danger-light: #fee2e2;
-        --warning: #d97706;
-        --warning-light: #fef3c7;
-        --info: #0284c7;
-        --info-light: #e0f2fe;
-
-        /* Neutros: escala única slate para armonía */
-        --gray-50: #f4f6f8;
-        --gray-100: #e8ecf1;
-        --gray-200: #d1d9e6;
-        --gray-300: #a8b4c4;
-        --gray-400: #7b8a9e;
-        --gray-500: #525f7f;
-        --gray-600: #3d475c;
-        --gray-700: #2d3548;
-        --gray-800: #1e2433;
-        --gray-900: #12161f;
-
-        /* Sombras modernas */
-        --shadow-xs: 0 1px 1px 0 rgb(0 0 0 / 0.04);
-        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-        --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-        --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-
-        /* Radios estandarizados (8px, 12px, 16px) */
-        --radius-sm: 8px;
-        --radius: 12px;
-        --radius-md: 12px;
-        --radius-lg: 16px;
-        --radius-xl: 1.5rem;
-
-        /* Transiciones */
-        --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-        --transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
-        --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    /* === MOBILE-FIRST: BASE === */
-    html {
-        /* Evitar overflow horizontal en móvil */
-        overflow-x: hidden;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        font-size: 0.9375rem;
-        font-weight: 400;
-        color: var(--gray-700);
-        background: var(--gray-50);
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        -webkit-text-size-adjust: 100%;
-        /* Safe area: padding inferior para home indicator (iOS/Android) */
-        padding-left: var(--safe-left);
-        padding-right: var(--safe-right);
-    }
-
-    /* Mobile-first: base = móvil (1rem); desde 768px reducir si se desea */
-    @media (min-width: 768px) {
-        body {
-            font-size: 0.9375rem;
-        }
-    }
-
+    /* === COMPONENTES Y OVERRIDES GLOBALES (mobile, utilidades) === */
     /* Jerarquía tipográfica definitiva */
     .content-header h1, .page-title-mobile {
         font-size: 1.5rem;
@@ -1099,22 +991,7 @@
         max-width: 100vw;
         overflow-x: hidden;
     }
-    /* Forzar contenido al 100% del espacio horizontal (gana sobre cualquier otra regla) */
-    .wrapper {
-        max-width: none !important;
-        width: 100% !important;
-    }
-    .content-wrapper,
-    .content-wrapper .content,
-    .content-wrapper .content .container-fluid,
-    .content-wrapper .content-header .container-fluid {
-        max-width: none !important;
-        width: 100% !important;
-    }
-    .main-footer {
-        max-width: none !important;
-        width: 100% !important;
-    }
+    /* Layout (wrapper/footer): resources/css/adminlte.css */
     .sidebar-nav-mobile {
         padding: 0.5rem 0;
     }
