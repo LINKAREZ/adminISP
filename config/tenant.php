@@ -54,8 +54,9 @@ return [
     |--------------------------------------------------------------------------
     | Resolución del tenant actual
     |--------------------------------------------------------------------------
-    | Orden de prioridad: app('current_isp_id') > session('current_isp_id') > auth()->user()->isp_id.
+    | Orden de prioridad: app('current_isp_id') > auth()->user()->isp_id (si tiene) > session('current_isp_id').
+    | Así un usuario con isp_id siempre ve los datos de su ISP. La sesión solo aplica para super admin.
     | SetIspContext (middleware) establece session y registro de conexión al inicio de la petición.
     */
-    'resolution_order' => ['container', 'session', 'user'],
+    'resolution_order' => ['container', 'user', 'session'],
 ];

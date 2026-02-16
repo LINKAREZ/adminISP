@@ -65,19 +65,20 @@ class TenantConnectionService
     }
 
     /**
-     * Devuelve el nombre de la conexión tenant actual (app container, sesión o usuario) o null.
-     * Registra la conexión de forma perezosa si aún no está configurada, para que funcione
-     * aunque SetIspContext se ejecute después de SubstituteBindings (route model binding).
+     * Devuelve el nombre de la conexión tenant actual (app, usuario autenticado, sesión) o null.
+     * Si el usuario tiene isp_id, siempre se usa ese ISP (no la sesión) para que vea los datos de su ISP.
+     * La sesión solo aplica para super admin (sin isp_id). Registra la conexión de forma perezosa si falta.
      */
     public static function currentTenantConnectionName(): ?string
     {
         $ispId = null;
         if (app()->has('current_isp_id')) {
             $ispId = (int) app('current_isp_id');
+        } elseif (auth()->check() && auth()->user()->isp_id) {
+            // Usuario con ISP: siempre su BD, no la sesión (evita ver datos de otro ISP)
+            $ispId = (int) auth()->user()->isp_id;
         } elseif (session()->has('current_isp_id')) {
             $ispId = (int) session('current_isp_id');
-        } elseif (auth()->check() && auth()->user()->isp_id) {
-            $ispId = (int) auth()->user()->isp_id;
         }
 
         if ($ispId === null) {

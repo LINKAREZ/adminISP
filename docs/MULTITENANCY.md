@@ -72,8 +72,8 @@ En código que deba usar explícitamente la BD central (ej. usuarios globales), 
 ## 4. Resolución del tenant actual
 
 1. **Container:** `app('current_isp_id')` — Fijado por `TenantConnectionService::setCurrentIspId()` (comandos, jobs).
-2. **Session:** `session('current_isp_id')` — Fijado por el middleware `SetIspContext` en peticiones web.
-3. **User:** `auth()->user()->isp_id` — Usuario autenticado.
+2. **User:** `auth()->user()->isp_id` — Si el usuario tiene ISP asignado, siempre se usa este (así ve los datos de su ISP).
+3. **Session:** `session('current_isp_id')` — Para super admin (sin isp_id); fijado por el middleware `SetIspContext`.
 
 El middleware **SetIspContext** (y el flujo de login) registra la conexión tenant para el ISP del usuario y deja lista `currentTenantConnectionName()` para el resto de la petición.
 
