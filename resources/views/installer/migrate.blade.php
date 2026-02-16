@@ -119,20 +119,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             let data;
+            let text = '';
             try {
-                const text = await res.text();
+                text = await res.text();
                 if (!text || text.trim() === '') {
                     throw new Error('Respuesta vacía');
                 }
                 data = JSON.parse(text);
             } catch (parseErr) {
+                console.error('Seed response status:', res.status, 'body:', (text || '').substring(0, 800));
                 if (res.ok) {
                     seedResult.innerHTML = '<div class="alert alert-success">Datos iniciales creados correctamente.</div>';
                     btnSeed.style.display = 'none';
                     linkAdmin.style.display = 'block';
                 } else {
                     const status = res.status;
-                    seedResult.innerHTML = '<div class="alert alert-danger">Error del servidor (HTTP ' + status + '). Ejecuta en la VPS: <code>docker compose exec app php artisan db:seed --class=RolePermissionSeeder --force</code> y luego haz clic en «Continuar → Crear administrador».</div>';
+                    const msg = (text && text.length < 400) ? text.replace(/</g, '&lt;') : ('Error del servidor (HTTP ' + status + '). Ejecuta en la VPS: docker compose exec app php artisan db:seed --class=RolePermissionSeeder --force');
+                    seedResult.innerHTML = '<div class="alert alert-danger">' + msg.substring(0, 600) + '</div>';
                     linkAdmin.style.display = 'block';
                 }
                 btnSeed.disabled = false;
