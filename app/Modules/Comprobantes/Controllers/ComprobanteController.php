@@ -12,6 +12,7 @@ use App\Modules\Comprobantes\Requests\UpdateComprobanteRequest;
 use App\Modules\Comprobantes\Requests\AnularComprobanteRequest;
 use App\Modules\Comprobantes\Requests\GenerarMasivosRequest;
 use App\Modules\Comprobantes\Requests\EliminarMasivosRequest;
+use App\Core\Services\TenantConnectionService;
 use App\Modules\Clientes\Models\Cliente;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -19,8 +20,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Gate;
-
 class ComprobanteController extends Controller
 {
     public function __construct(
@@ -32,7 +31,7 @@ class ComprobanteController extends Controller
      */
     public function index(Request $request)
     {
-        Gate::authorize('comprobantes.read');
+        $this->authorize('viewAny', Comprobante::class);
         $request->validate([
             'tipo' => ['sometimes', 'string', 'max:20'],
             'serie' => ['sometimes', 'string', 'max:10'],
@@ -100,7 +99,12 @@ class ComprobanteController extends Controller
      */
     public function create(Request $request)
     {
-        Gate::authorize('comprobantes.create');
+        $this->authorize('create', Comprobante::class);
+
+        if (! TenantConnectionService::currentTenantConnectionName()) {
+            return view('tenant-sin-configurar');
+        }
+
         $clientes = $this->obtenerClientesParaSelect();
         $series = $this->obtenerSeriesActivas();
         $clienteId = $request->query('cliente_id');
@@ -113,7 +117,7 @@ class ComprobanteController extends Controller
      */
     public function store(StoreComprobanteRequest $request)
     {
-        Gate::authorize('comprobantes.create');
+        $this->authorize('create', Comprobante::class);
         try {
             // Preparar datos
             $datos = $request->validated();
@@ -153,7 +157,7 @@ class ComprobanteController extends Controller
      */
     public function show(Comprobante $comprobante)
     {
-        Gate::authorize('comprobantes.read');
+        $this->authorize('view', $comprobante);
         $comprobante->load(['cliente', 'pago', 'items', 'generadoPor', 'comprobanteReferencia']);
 
         return view('comprobantes.comprobantes.show', compact('comprobante'));
@@ -164,7 +168,7 @@ class ComprobanteController extends Controller
      */
     public function edit(Comprobante $comprobante)
     {
-        Gate::authorize('comprobantes.update');
+        $this->authorize('update', $comprobante);
         if ($comprobante->anulado) {
             return back()->with('error', 'No se puede editar un comprobante anulado.');
         }
@@ -180,7 +184,7 @@ class ComprobanteController extends Controller
      */
     public function update(UpdateComprobanteRequest $request, Comprobante $comprobante)
     {
-        Gate::authorize('comprobantes.update');
+        $this->authorize('update', $comprobante);
         if ($comprobante->anulado) {
             return back()->with('error', 'No se puede editar un comprobante anulado.');
         }
@@ -206,6 +210,7 @@ class ComprobanteController extends Controller
      */
     public function anular(AnularComprobanteRequest $request, Comprobante $comprobante)
     {
+        $this->authorize('anular', $comprobante);
         try {
             $this->comprobanteService->anular($comprobante, $request->validated()['motivo']);
 
@@ -221,7 +226,7 @@ class ComprobanteController extends Controller
      */
     public function destroy(Comprobante $comprobante)
     {
-        Gate::authorize('comprobantes.delete');
+        $this->authorize('delete', $comprobante);
         if ($comprobante->enviado_sunat) {
             return back()->with('error', 'No se puede eliminar un comprobante enviado a SUNAT.');
         }
@@ -242,7 +247,7 @@ class ComprobanteController extends Controller
      */
     public function series()
     {
-        Gate::authorize('comprobantes.read');
+        $this->authorize('viewAny', Comprobante::class);
         $series = Cache::remember('series_comprobantes.todas', 600, function () {
             return SerieComprobante::orderBy('tipo')->orderBy('serie')->get();
         });
@@ -255,7 +260,7 @@ class ComprobanteController extends Controller
      */
     public function ver(Comprobante $comprobante)
     {
-        Gate::authorize('comprobantes.read');
+        $this->authorize('view', $comprobante);
         try {
             // Cargar relaciones necesarias
             $comprobante->load(['cliente', 'generadoPor']);
@@ -304,7 +309,7 @@ class ComprobanteController extends Controller
      */
     public function descargarRecibo(Comprobante $comprobante)
     {
-        Gate::authorize('comprobantes.read');
+        $this->authorize('view', $comprobante);
         try {
             // Cargar relaciones necesarias
             $comprobante->load(['cliente', 'generadoPor']);
@@ -385,7 +390,7 @@ class ComprobanteController extends Controller
      */
     public function generar(Pago $pago)
     {
-        Gate::authorize('comprobantes.read');
+        $this->authorize('viewAny', Comprobante::class);
         try {
             // Cargar relaciones necesarias (incluyendo código de recibo y ubicación)
             $pago->load([
@@ -430,7 +435,7 @@ class ComprobanteController extends Controller
      */
     public function descargar(Pago $pago)
     {
-        Gate::authorize('comprobantes.read');
+        $this->authorize('viewAny', Comprobante::class);
         try {
             // Cargar relaciones necesarias (incluyendo código de recibo)
             $pago->load(['cliente', 'recibo.servicio.plan', 'medioPago', 'registradoPor']);
@@ -896,7 +901,9 @@ class ComprobanteController extends Controller
      */
     public function eliminarMasivos(EliminarMasivosRequest $request)
     {
-        Gate::authorize('comprobantes.delete');
+        if (!auth()->user()->hasAnyPermission(['comprobantes.comprobantes.delete', 'comprobantes.delete'])) {
+            abort(403, 'No tienes permiso para realizar esta acción.');
+        }
         // Log completo del request para diagnóstico
         Log::info('=== INICIO ELIMINACIÓN MASIVA ===', [
             'method' => $request->method(),

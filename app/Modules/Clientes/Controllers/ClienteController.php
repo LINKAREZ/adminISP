@@ -48,6 +48,10 @@ class ClienteController extends Controller
     {
         $this->authorize('viewAny', Cliente::class);
 
+        if (! TenantConnectionService::currentTenantConnectionName()) {
+            return view('tenant-sin-configurar');
+        }
+
         $routers = \App\Modules\Red\Models\Router::where('estado', true)->orderBy('nombre')->get();
         $routerId = $request->input('router_id');
 
@@ -132,6 +136,10 @@ class ClienteController extends Controller
     public function create()
     {
         $this->authorize('create', Cliente::class);
+
+        if (! TenantConnectionService::currentTenantConnectionName()) {
+            return view('tenant-sin-configurar');
+        }
 
         return view('clientes.create');
     }

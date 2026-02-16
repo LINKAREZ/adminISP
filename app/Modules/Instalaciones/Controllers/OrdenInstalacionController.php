@@ -19,6 +19,7 @@ use App\Modules\Red\Models\Nodo;
 use App\Modules\Red\Models\Router;
 use App\Modules\Servicios\Models\Plan;
 use App\Modules\ControlAcceso\Models\User;
+use App\Core\Services\TenantConnectionService;
 use App\Core\Services\TenantDatabaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -244,6 +245,11 @@ class OrdenInstalacionController extends Controller
     public function seguimientoAltas(Request $request)
     {
         $this->authorize('viewAny', OrdenInstalacion::class);
+
+        if (! TenantConnectionService::currentTenantConnectionName()) {
+            return view('tenant-sin-configurar');
+        }
+
         $query = OrdenInstalacion::where('estado', OrdenInstalacion::ESTADO_COMPLETADA)
             ->whereNotNull('fecha_completada')
             ->whereNotNull('servicio_id')

@@ -88,6 +88,10 @@ class TenantConnectionService
         if (! Config::has("database.connections.{$name}")) {
             static::registerConnectionForIspId($ispId);
         }
+        // Si el ISP no tiene database_name, la conexión no se registra; no devolver nombre para evitar 500
+        if (! Config::has("database.connections.{$name}")) {
+            return null;
+        }
 
         return $name;
     }
