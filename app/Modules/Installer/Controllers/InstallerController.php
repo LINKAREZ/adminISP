@@ -81,6 +81,7 @@ class InstallerController extends Controller
 
     /**
      * Paso 1: Formulario de configuración de base de datos.
+     * Si DB_HOST=db o no está definido, se asume VPS/Docker y se prellenan valores por defecto.
      */
     public function database(Request $request)
     {
@@ -88,15 +89,17 @@ class InstallerController extends Controller
         if (empty($appUrl)) {
             $appUrl = rtrim($request->getSchemeAndHttpHost() . $request->getBasePath(), '/');
         }
+        $dbHost = env('DB_HOST', 'db');
+        $isVpsDefaults = ($dbHost === 'db' || $dbHost === '');
         $current = [
             'APP_URL'     => $appUrl,
-            'DB_HOST'     => env('DB_HOST', 'db'),
+            'DB_HOST'     => $dbHost ?: 'db',
             'DB_PORT'     => env('DB_PORT', '3306'),
             'DB_DATABASE' => env('DB_DATABASE', 'adminisp'),
             'DB_USERNAME' => env('DB_USERNAME', 'root'),
-            'DB_PASSWORD' => env('DB_PASSWORD', ''),
+            'DB_PASSWORD' => env('DB_PASSWORD', $isVpsDefaults ? 'adminisp%' : ''),
         ];
-        return view('installer.database', compact('current'));
+        return view('installer.database', compact('current', 'isVpsDefaults'));
     }
 
     /**

@@ -9,12 +9,9 @@
         <span class="step">4. Administrador</span>
     </div>
 
-    <h2 class="installer-section-title" style="margin-bottom: 0.5rem; border: none; font-size: 1.1rem; color: #333;">Configuración de entorno y base de datos</h2>
-
     @if(session('success'))
         <div class="result-box success" style="margin-bottom: 1rem;">{{ session('success') }}</div>
     @endif
-
     @if($errors->any())
         <div class="result-box danger" style="margin-bottom: 1rem;">
             @foreach($errors->all() as $err) {{ $err }} @endforeach
@@ -24,78 +21,84 @@
         </div>
     @endif
 
+    @if(isset($isVpsDefaults) && $isVpsDefaults)
+        <div class="result-box success" style="margin-bottom: 1rem;">
+            <strong>VPS / Docker.</strong> Los valores por defecto ya están listos. Revisa la URL si hace falta y pulsa <strong>Guardar y continuar</strong>.
+        </div>
+    @else
+        <div class="result-box info" style="margin-bottom: 1rem;">
+            <strong>cPanel u otro.</strong> Edita host, base de datos y credenciales según tu proveedor.
+        </div>
+    @endif
+
     <form method="POST" action="{{ route('installer.save-database') }}">
         @csrf
         <div class="installer-section">
-            <div class="installer-section-title">URL de la aplicación</div>
+            <label for="APP_URL" class="installer-section-title">URL de la aplicación</label>
+            <input type="text" id="APP_URL" name="APP_URL" class="form-control" value="{{ old('APP_URL', $current['APP_URL']) }}" required placeholder="https://panel.tudominio.com">
+        </div>
+
+        <div class="installer-section installer-section-box">
+            <div class="installer-section-title">MySQL</div>
+            <div class="form-row-2">
+                <div class="form-group" style="margin-bottom: 0.5rem;">
+                    <label for="DB_HOST">Host</label>
+                    <input type="text" id="DB_HOST" name="DB_HOST" class="form-control" value="{{ old('DB_HOST', $current['DB_HOST']) }}" required placeholder="db">
+                </div>
+                <div class="form-group" style="margin-bottom: 0.5rem;">
+                    <label for="DB_PORT">Puerto</label>
+                    <input type="text" id="DB_PORT" name="DB_PORT" class="form-control" value="{{ old('DB_PORT', $current['DB_PORT']) }}" placeholder="3306">
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 0.5rem;">
+                <label for="DB_DATABASE">Base de datos</label>
+                <input type="text" id="DB_DATABASE" name="DB_DATABASE" class="form-control" value="{{ old('DB_DATABASE', $current['DB_DATABASE']) }}" required placeholder="adminisp">
+            </div>
+            <div class="form-group" style="margin-bottom: 0.5rem;">
+                <label for="DB_USERNAME">Usuario</label>
+                <input type="text" id="DB_USERNAME" name="DB_USERNAME" class="form-control" value="{{ old('DB_USERNAME', $current['DB_USERNAME']) }}" required placeholder="root">
+            </div>
             <div class="form-group" style="margin-bottom: 0;">
-                <label for="APP_URL">URL pública</label>
-                <input type="text" id="APP_URL" name="APP_URL" class="form-control" value="{{ old('APP_URL', $current['APP_URL']) }}" required placeholder="https://tu-dominio.com">
-                <small class="text-muted">Sin barra final (ej: https://admin.tudominio.com).</small>
+                <label for="DB_PASSWORD">Contraseña</label>
+                <div class="password-wrap">
+                    <input type="password" id="DB_PASSWORD" name="DB_PASSWORD" class="form-control" value="{{ old('DB_PASSWORD', $current['DB_PASSWORD']) }}" placeholder="adminisp%" autocomplete="off">
+                    <button type="button" class="btn-password-toggle btn btn-outline-secondary" data-target="DB_PASSWORD">Ver</button>
+                </div>
             </div>
         </div>
 
-        <div class="installer-section">
-            <div class="installer-section-title">Conexión MySQL</div>
-            <div class="installer-section-box">
-                <div class="form-row-2">
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="DB_HOST">Host</label>
-                        <input type="text" id="DB_HOST" name="DB_HOST" class="form-control" value="{{ old('DB_HOST', $current['DB_HOST']) }}" required placeholder="localhost o db">
-                    </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="DB_PORT">Puerto</label>
-                        <input type="text" id="DB_PORT" name="DB_PORT" class="form-control" value="{{ old('DB_PORT', $current['DB_PORT']) }}" placeholder="3306">
-                    </div>
-                </div>
+        <details class="installer-section" style="margin-top: 1rem;">
+            <summary class="installer-section-title" style="cursor: pointer; list-style: none;">Opciones avanzadas (crear BD o usuario en MySQL)</summary>
+            <div class="installer-section-box" style="margin-top: 0.5rem;">
                 <div class="form-group">
-                    <label for="DB_DATABASE">Base de datos</label>
+                    <label>Crear base de datos</label>
                     <div class="row-of-fields">
-                        <input type="text" id="DB_DATABASE" name="DB_DATABASE" class="form-control" value="{{ old('DB_DATABASE', $current['DB_DATABASE']) }}" required placeholder="adminisp">
-                        <button type="button" id="btn-create-db" class="btn btn-outline-primary" title="Crear la base de datos">Crear BD</button>
+                        <span style="flex:1; min-width:0;"></span>
+                        <button type="button" id="btn-create-db" class="btn btn-outline-primary">Crear BD</button>
                     </div>
                     <div id="create-db-result" class="mt-2" style="display: none;"></div>
                 </div>
-            </div>
-        </div>
-
-        <div class="installer-section">
-            <div class="installer-section-title">Credenciales MySQL (usuario de la base de datos)</div>
-            <div class="installer-section-box">
-                <div class="form-group" style="margin-bottom: 0.75rem;">
-                    <label for="DB_USERNAME">Usuario MySQL</label>
-                    <input type="text" id="DB_USERNAME" name="DB_USERNAME" class="form-control" value="{{ old('DB_USERNAME', $current['DB_USERNAME']) }}" required placeholder="root o adminisp" autocomplete="username">
-                    <small class="text-muted">Usuario de MySQL, no el correo del administrador del panel (ej: <code>root</code>, <code>adminisp</code>).</small>
-                </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label for="DB_PASSWORD">Contraseña MySQL</label>
+                <div class="form-group">
+                    <label>Crear usuario MySQL</label>
                     <div class="row-of-fields">
-                        <span class="password-wrap">
-                            <input type="password" id="DB_PASSWORD" name="DB_PASSWORD" class="form-control" value="{{ old('DB_PASSWORD', $current['DB_PASSWORD']) }}" placeholder="Ej. adminisp% (Docker)" autocomplete="off">
-                            <button type="button" class="btn-password-toggle btn btn-outline-secondary" title="Ver contraseña" data-target="DB_PASSWORD">Ver</button>
-                        </span>
-                        <button type="button" id="btn-create-user" class="btn btn-outline-secondary" title="Crear este usuario en MySQL">Crear usuario</button>
+                        <span style="flex:1; min-width:0;"></span>
+                        <button type="button" id="btn-create-user" class="btn btn-outline-secondary">Crear usuario</button>
                     </div>
-                    <small class="text-muted">Por defecto en Docker: usuario <code>root</code>, contraseña <code>adminisp%</code> (la del compose).</small>
-                </div>
                     <div id="create-user-admin-wrap" style="display: none; margin-top: 0.5rem;">
                         <div class="row-of-fields">
-                            <input type="text" id="DB_ADMIN_USERNAME" class="form-control form-control-sm" placeholder="root" title="Usuario con permiso" style="flex: 1; min-width: 0;">
+                            <input type="text" id="DB_ADMIN_USERNAME" class="form-control form-control-sm" placeholder="root" style="flex: 1; min-width: 0;">
                             <span class="password-wrap">
-                                <input type="password" id="DB_ADMIN_PASSWORD" class="form-control form-control-sm" placeholder="adminisp% (root)" title="Contraseña de root">
-                                <button type="button" class="btn-password-toggle btn btn-outline-secondary form-control-sm" title="Ver contraseña" data-target="DB_ADMIN_PASSWORD">Ver</button>
+                                <input type="password" id="DB_ADMIN_PASSWORD" class="form-control form-control-sm" placeholder="adminisp%">
+                                <button type="button" class="btn-password-toggle btn btn-outline-secondary form-control-sm" data-target="DB_ADMIN_PASSWORD">Ver</button>
                             </span>
                         </div>
                     </div>
                     <div id="create-user-result" class="mt-2" style="display: none;"></div>
                 </div>
             </div>
-        </div>
+        </details>
 
-        <div class="installer-flow">
-            <span>1. Crear BD</span><span class="arrow">→</span><span>2. Crear usuario</span><span class="arrow">→</span><span>3. Probar</span><span class="arrow">→</span><span>4. Guardar</span>
-        </div>
-        <div class="installer-actions">
+        <div class="installer-actions" style="margin-top: 1.25rem;">
             <button type="button" id="btn-test-db" class="btn btn-outline-primary">Probar conexión</button>
             <button type="submit" class="btn btn-primary">Guardar y continuar</button>
         </div>
