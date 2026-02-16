@@ -100,7 +100,7 @@ return Application::configure(basePath: dirname(__DIR__))
                     'line' => $exception->getLine(),
                     'trace' => $exception->getTraceAsString(),
                 ]);
-                return response()->view('superadmin.error-dashboard', [
+                return response()->view('superadmin.error-dashboard-raw', [
                     'message' => $exception->getMessage(),
                     'file' => $exception->getFile(),
                     'line' => $exception->getLine(),
