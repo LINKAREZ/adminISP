@@ -109,5 +109,25 @@ Route::middleware('auth')->group(function () {
                 'roles' => $names,
             ]);
         })->name('debug-roles');
+
+        // Debug: reproducir error 500 en /permissions (solo superadmin)
+        Route::get('/debug-permissions', function () {
+            try {
+                $service = app(\App\Modules\ControlAcceso\Services\PermissionService::class);
+                $permissions = $service->getAllPermissions([]);
+                $modules = $service->getModules();
+                $view = view('permissions.index', compact('permissions', 'modules'));
+                $html = $view->render();
+                return response()->json(['ok' => true, 'permissions_count' => $permissions->count(), 'modules_count' => $modules->count()]);
+            } catch (\Throwable $e) {
+                return response()->json([
+                    'ok' => false,
+                    'message' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => array_slice(explode("\n", $e->getTraceAsString()), 0, 15),
+                ], 500);
+            }
+        })->name('debug-permissions');
     });
 });
