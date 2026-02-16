@@ -430,11 +430,13 @@ class InstallerController extends Controller
         try {
             $pdo = $connectAsRoot($adminPassword);
         } catch (\PDOException $e) {
+            $envPassword = config('database.connections.mysql.password') ?? env('DB_PASSWORD') ?? '';
             if (($e->getCode() === 1045 || str_contains($e->getMessage(), 'Access denied'))
                 && $adminUser === 'root'
-                && ($adminPassword !== env('DB_PASSWORD'))) {
+                && $envPassword !== ''
+                && $adminPassword !== $envPassword) {
                 try {
-                    $pdo = $connectAsRoot(env('DB_PASSWORD') ?? '');
+                    $pdo = $connectAsRoot($envPassword);
                 } catch (\PDOException $e2) {
                     return response()->json([
                         'success' => false,
