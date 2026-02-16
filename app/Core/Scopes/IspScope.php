@@ -31,6 +31,12 @@ class IspScope implements Scope
             return;
         }
 
+        // Modelos con UsesTenantConnection: la BD ya es de un solo ISP, no filtrar por isp_id
+        // (evita ocultar filas con isp_id null en tenant y es lógicamente correcto)
+        if (in_array(\App\Core\Traits\UsesTenantConnection::class, class_uses_recursive($model), true)) {
+            return;
+        }
+
         $ispId = $this->getCurrentIspId();
 
         if ($ispId) {
