@@ -430,7 +430,7 @@ class InstallerController extends Controller
         try {
             $pdo = $connectAsRoot($adminPassword);
         } catch (\PDOException $e) {
-            $envPassword = config('database.connections.mysql.password') ?? env('DB_PASSWORD') ?? '';
+            $envPassword = $this->readDbPasswordFromEnvFile();
             if (($e->getCode() === 1045 || str_contains($e->getMessage(), 'Access denied'))
                 && $adminUser === 'root'
                 && $envPassword !== ''
@@ -479,6 +479,22 @@ class InstallerController extends Controller
                 'message' => 'Error: ' . $e->getMessage(),
             ], 400);
         }
+    }
+
+    /**
+     * Lee DB_PASSWORD directamente del archivo .env (evita config/env cacheada).
+     */
+    private function readDbPasswordFromEnvFile(): string
+    {
+        $path = base_path('.env');
+        if (!is_readable($path)) {
+            return '';
+        }
+        $content = file_get_contents($path);
+        if (preg_match('/^\s*DB_PASSWORD\s*=\s*["\']?([^"\'\\n]*)/m', $content, $m)) {
+            return trim($m[1], " \t\"'");
+        }
+        return '';
     }
 
 }
