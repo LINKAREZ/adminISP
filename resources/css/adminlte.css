@@ -166,6 +166,10 @@
     min-height: 100vh !important;
     height: 100vh !important;
     z-index: 1034 !important;
+    transition: margin-left 0.3s ease-in-out;
+}
+.main-sidebar::before {
+    transition: margin-left 0.3s ease-in-out;
 }
 .main-sidebar .sidebar {
     min-height: 100% !important;
@@ -194,16 +198,18 @@ body.sidebar-mini:not(.sidebar-collapse) .main-header {
     width: calc(100vw - 280px) !important;
     max-width: calc(100vw - 280px) !important;
 }
+/* Sidebar colapsado: ocultar por completo (fuera de vista), contenido a ancho completo */
 body.sidebar-mini.sidebar-collapse .main-sidebar,
 body.sidebar-mini.sidebar-collapse .main-sidebar::before {
-    width: 64px !important;
+    width: 280px !important;
+    margin-left: -280px !important;
 }
 body.sidebar-mini.sidebar-collapse .content-wrapper,
 body.sidebar-mini.sidebar-collapse .main-footer,
 body.sidebar-mini.sidebar-collapse .main-header {
-    margin-left: 64px !important;
-    width: calc(100vw - 64px) !important;
-    max-width: calc(100vw - 64px) !important;
+    margin-left: 0 !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
 }
 /* ========== Pantallas pequeñas (<992px): mostrar/ocultar sidebar correctamente ========== */
 @media (max-width: 991.98px) {
