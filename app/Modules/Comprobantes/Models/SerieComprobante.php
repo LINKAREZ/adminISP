@@ -7,6 +7,7 @@ use App\Core\Traits\BelongsToIsp;
 use App\Core\Traits\UsesTenantConnection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class SerieComprobante extends Model
 {
@@ -63,14 +64,17 @@ class SerieComprobante extends Model
     }
 
     /**
-     * Obtener serie activa por tipo
+     * Obtener serie activa por tipo.
+     * Si la tabla no tiene columna activo (BD tenant antigua), devuelve la primera del tipo.
      */
     public static function obtenerSerieActiva(string $tipo): ?self
     {
-        return self::where('tipo', $tipo)
-            ->where('activo', true)
-            ->orderBy('id')
-            ->first();
+        $conn = (new static)->getConnectionName();
+        $query = self::where('tipo', $tipo)->orderBy('id');
+        if ($conn && Schema::connection($conn)->hasColumn('series_comprobantes', 'activo')) {
+            $query->where('activo', true);
+        }
+        return $query->first();
     }
 
     /**
@@ -82,11 +86,15 @@ class SerieComprobante extends Model
     }
 
     /**
-     * Scope para series activas
+     * Scope para series activas (solo si la tabla tiene columna activo).
      */
     public function scopeActivas($query)
     {
-        return $query->where('activo', true);
+        $conn = $this->getConnectionName();
+        if ($conn && Schema::connection($conn)->hasColumn('series_comprobantes', 'activo')) {
+            return $query->where('activo', true);
+        }
+        return $query;
     }
 
     /**

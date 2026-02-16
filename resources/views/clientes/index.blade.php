@@ -22,9 +22,11 @@
                     <x-btn :route="route('clientes.pppoe.importar')" variant="secondary" size="sm" icon="fa-download">
                         Importar PPPoE
                     </x-btn>
+                    @if(Route::has('clientes.importar-clientes.index'))
                     <x-btn :route="route('clientes.importar-clientes.index')" variant="outline-secondary" size="sm" icon="fa-file-csv">
                         Importar clientes CSV
                     </x-btn>
+                    @endif
                 </x-slot>
 
                 <form method="GET" action="{{ route('clientes.index') }}" class="mb-3">

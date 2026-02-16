@@ -45,12 +45,15 @@ Route::middleware('auth')->group(function () {
         if ($ispId < 1) {
             return redirect()->back()->with('error', 'ISP inválido.');
         }
-        $isp = \App\Modules\Sistema\Models\Isp::on(\App\Core\Services\TenantConnectionService::centralConnection())
+        $centralConn = \App\Core\Services\TenantConnectionService::centralConnection();
+        $qb = \App\Modules\Sistema\Models\Isp::on($centralConn)
             ->where('id', $ispId)
-            ->where('activo', true)
             ->whereNotNull('database_name')
-            ->where('database_name', '!=', '')
-            ->first();
+            ->where('database_name', '!=', '');
+        if (\Illuminate\Support\Facades\Schema::connection($centralConn)->hasColumn('isps', 'activo')) {
+            $qb->where('activo', true);
+        }
+        $isp = $qb->first();
         if (!$isp) {
             return redirect()->back()->with('error', 'ISP no encontrado o sin base de datos.');
         }

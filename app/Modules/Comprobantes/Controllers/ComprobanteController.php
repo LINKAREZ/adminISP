@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 class ComprobanteController extends Controller
 {
     public function __construct(
@@ -299,10 +300,15 @@ class ComprobanteController extends Controller
 
     private function obtenerSeriesActivas()
     {
-        return Cache::remember('series_comprobantes.activas', 600, function () {
-            return SerieComprobante::where('activo', true)
-                ->orderBy('tipo')
-                ->get();
+        $conn = TenantConnectionService::currentTenantConnectionName();
+        $cacheKey = 'series_comprobantes.activas.' . ($conn ?? 'central');
+        return Cache::remember($cacheKey, 600, function () {
+            $conn = TenantConnectionService::currentTenantConnectionName();
+            $query = SerieComprobante::orderBy('tipo');
+            if ($conn && Schema::connection($conn)->hasColumn('series_comprobantes', 'activo')) {
+                $query->where('activo', true);
+            }
+            return $query->get();
         });
     }
 
