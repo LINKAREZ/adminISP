@@ -56,10 +56,14 @@ class SuperAdminController extends Controller
 
         // Total clientes: suma en todas las BD tenant (clientes no está en la BD central)
         $totalClientes = 0;
+        $previousIspId = session('current_isp_id');
         $ispsConBd = Isp::withoutGlobalScope(IspScope::class)->whereNotNull('database_name')->get();
         foreach ($ispsConBd as $isp) {
             TenantConnectionService::setCurrentIspId($isp->id);
             $totalClientes += Cliente::count();
+        }
+        if ($previousIspId !== null) {
+            TenantConnectionService::setCurrentIspId((int) $previousIspId);
         }
 
         $recentIsps = Isp::withoutGlobalScope(IspScope::class)
@@ -69,6 +73,7 @@ class SuperAdminController extends Controller
             ->get();
 
         // Conteo de clientes por ISP (cada uno en su BD tenant)
+        $previousIspId = session('current_isp_id');
         foreach ($recentIsps as $isp) {
             if ($isp->database_name) {
                 TenantConnectionService::setCurrentIspId($isp->id);
@@ -76,6 +81,9 @@ class SuperAdminController extends Controller
             } else {
                 $isp->clientes_count = 0;
             }
+        }
+        if ($previousIspId !== null) {
+            TenantConnectionService::setCurrentIspId((int) $previousIspId);
         }
 
         $basesDeDatos = Isp::withoutGlobalScope(IspScope::class)
