@@ -14,17 +14,32 @@ trait Auditable
     /**
      * Boot del trait - registra eventos del modelo
      */
+    /**
+     * Comprueba si se debe omitir la auditoría (consola, tests o instalador).
+     */
+    protected static function shouldSkipAudit(): bool
+    {
+        if (app()->runningInConsole() && !app()->runningUnitTests()) {
+            return true;
+        }
+        $request = request();
+        if ($request && $request->is('install/*')) {
+            return true;
+        }
+        return false;
+    }
+
     protected static function bootAuditable(): void
     {
         static::created(function ($model) {
-            if (app()->runningInConsole() && !app()->runningUnitTests()) {
+            if (static::shouldSkipAudit()) {
                 return;
             }
             static::logAudit('created', $model, null, $model->getAttributes());
         });
 
         static::updated(function ($model) {
-            if (app()->runningInConsole() && !app()->runningUnitTests()) {
+            if (static::shouldSkipAudit()) {
                 return;
             }
             // Solo registrar si hubo cambios reales
@@ -36,7 +51,7 @@ trait Auditable
         });
 
         static::deleted(function ($model) {
-            if (app()->runningInConsole() && !app()->runningUnitTests()) {
+            if (static::shouldSkipAudit()) {
                 return;
             }
             static::logAudit('deleted', $model, $model->getAttributes(), null);
