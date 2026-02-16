@@ -19,6 +19,10 @@ class SetIspContext
         if ($request->is('install') || $request->is('install/*')) {
             return $next($request);
         }
+        // En superadmin no establecer contexto tenant (evita consultas que puedan fallar)
+        if ($request->is('superadmin') || $request->is('superadmin/*')) {
+            return $next($request);
+        }
 
         // Si hay usuario autenticado, establecer su ISP en la sesión y registrar conexión tenant
         if (Auth::check()) {
