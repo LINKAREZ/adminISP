@@ -15,7 +15,7 @@ services:
       - DB_HOST=db
       - DB_DATABASE=${DB_DATABASE:-adminisp}
       - DB_USERNAME=${DB_USERNAME:-adminisp}
-      - DB_PASSWORD=${DB_PASSWORD:-secret}
+      - DB_PASSWORD=${DB_PASSWORD:-adminisp%}
     networks:
       - app
     depends_on:
@@ -43,9 +43,9 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: ${DB_DATABASE:-adminisp}
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-adminisp%}
       MYSQL_USER: ${DB_USERNAME:-adminisp}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-adminisp%}
     volumes:
       - dbdata:/var/lib/mysql
     networks:
