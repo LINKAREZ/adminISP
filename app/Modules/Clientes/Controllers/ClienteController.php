@@ -50,87 +50,90 @@ class ClienteController extends Controller
             if (! TenantConnectionService::currentTenantConnectionName()) {
                 return view('tenant-sin-configurar');
             }
+            $this->authorize('viewAny', Cliente::class);
+
+            $routers = \App\Modules\Red\Models\Router::where('estado', true)->orderBy('nombre')->get();
+            $routerId = $request->input('router_id');
+
+            $query = Cliente::query();
+            if (auth()->user()->hasPermission('clientes.own_only')) {
+                $query->assignedTo(auth()->id());
+            }
+
+            if (empty($routerId)) {
+                $clientes = collect();
+                return view('clientes.index', compact('clientes', 'routers', 'routerId'));
+            }
+
+            // Solo clientes con al menos una ubicación en este router (no mezclar routers)
+            $query->whereHas('ubicaciones', function ($q) use ($routerId) {
+                $q->where('router_id', $routerId);
+            });
+
+            // Búsqueda: nombre, documento, telefonos y usuario PPPoE de servicios en este router
+            if ($request->filled('buscar')) {
+                $buscar = trim($request->buscar);
+                $query->where(function ($q) use ($buscar, $routerId) {
+                    $q->where(function ($q2) use ($buscar) {
+                        $q2->where('nombre', 'like', '%' . $buscar . '%')
+                            ->orWhere('documento', 'like', '%' . $buscar . '%')
+                            ->orWhere('telefonos', 'like', '%' . $buscar . '%');
+                    })->orWhereHas('servicios', function ($sq) use ($buscar, $routerId) {
+                        $sq->where('usuario_pppoe', 'like', '%' . $buscar . '%')
+                            ->whereHas('ubicacion', function ($uq) use ($routerId) {
+                                $uq->where('router_id', $routerId);
+                            });
+                    });
+                });
+            }
+
+            $perPage = $request->input('per_page', 20);
+            if ($perPage === 'all' || $perPage === 'todas' || (is_numeric($perPage) && (int) $perPage > 500)) {
+                $perPage = 99999;
+            } else {
+                $perPage = min(max((int) $perPage ?: 20, 1), 500);
+            }
+
+            $clientes = $query->with(['ubicaciones' => function ($q) use ($routerId) {
+                $q->withCount('servicios')->where('router_id', $routerId);
+            }])
+                ->withCount([
+                    'ubicaciones',
+                    'servicios',
+                    'servicios as servicios_activos' => function ($q) {
+                        $q->where('servicios.estado', 'activo');
+                    },
+                    // En el listado por router, los badges usan solo servicios de este router
+                    'servicios as servicios_en_router' => function ($q) use ($routerId) {
+                        $q->whereHas('ubicacion', function ($uq) use ($routerId) {
+                            $uq->where('router_id', $routerId);
+                        });
+                    },
+                    'servicios as servicios_activos_en_router' => function ($q) use ($routerId) {
+                        $q->where('servicios.estado', 'activo')
+                            ->whereHas('ubicacion', function ($uq) use ($routerId) {
+                                $uq->where('router_id', $routerId);
+                            });
+                    },
+                    'recibos as tiene_recibos_pendientes' => function ($q) {
+                        $q->where(function ($query) {
+                            $query->whereIn('estado', ['pendiente', 'vencido'])
+                                ->where('saldo', '>', 0);
+                        });
+                    },
+                    'recibos as tiene_recibos_vencidos' => function ($q) {
+                        $q->where('estado', 'vencido')
+                            ->where('saldo', '>', 0);
+                    }
+                ])
+                ->latest()
+                ->paginate($perPage)
+                ->withQueryString();
+
+            return view('clientes.index', compact('clientes', 'routers', 'routerId'));
         } catch (\Throwable $e) {
             return view('tenant-sin-configurar');
         }
-        $this->authorize('viewAny', Cliente::class);
-
-        $routers = \App\Modules\Red\Models\Router::where('estado', true)->orderBy('nombre')->get();
-        $routerId = $request->input('router_id');
-
-        $query = Cliente::query();
-
-        if (empty($routerId)) {
-            $clientes = collect();
-            return view('clientes.index', compact('clientes', 'routers', 'routerId'));
-        }
-
-        // Solo clientes con al menos una ubicación en este router (no mezclar routers)
-        $query->whereHas('ubicaciones', function ($q) use ($routerId) {
-            $q->where('router_id', $routerId);
-        });
-
-        // Búsqueda: nombre, documento, telefonos y usuario PPPoE de servicios en este router
-        if ($request->filled('buscar')) {
-            $buscar = trim($request->buscar);
-            $query->where(function ($q) use ($buscar, $routerId) {
-                $q->where(function ($q2) use ($buscar) {
-                    $q2->where('nombre', 'like', '%' . $buscar . '%')
-                        ->orWhere('documento', 'like', '%' . $buscar . '%')
-                        ->orWhere('telefonos', 'like', '%' . $buscar . '%');
-                })->orWhereHas('servicios', function ($sq) use ($buscar, $routerId) {
-                    $sq->where('usuario_pppoe', 'like', '%' . $buscar . '%')
-                        ->whereHas('ubicacion', function ($uq) use ($routerId) {
-                            $uq->where('router_id', $routerId);
-                        });
-                });
-            });
-        }
-
-        $perPage = $request->input('per_page', 20);
-        if ($perPage === 'all' || $perPage === 'todas' || (is_numeric($perPage) && (int) $perPage > 500)) {
-            $perPage = 99999;
-        } else {
-            $perPage = min(max((int) $perPage ?: 20, 1), 500);
-        }
-
-        $clientes = $query->with(['ubicaciones' => function ($q) use ($routerId) {
-            $q->withCount('servicios')->where('router_id', $routerId);
-        }])
-            ->withCount([
-                'ubicaciones',
-                'servicios',
-                'servicios as servicios_activos' => function ($q) {
-                    $q->where('servicios.estado', 'activo');
-                },
-                // En el listado por router, los badges usan solo servicios de este router
-                'servicios as servicios_en_router' => function ($q) use ($routerId) {
-                    $q->whereHas('ubicacion', function ($uq) use ($routerId) {
-                        $uq->where('router_id', $routerId);
-                    });
-                },
-                'servicios as servicios_activos_en_router' => function ($q) use ($routerId) {
-                    $q->where('servicios.estado', 'activo')
-                        ->whereHas('ubicacion', function ($uq) use ($routerId) {
-                            $uq->where('router_id', $routerId);
-                        });
-                },
-                'recibos as tiene_recibos_pendientes' => function ($q) {
-                    $q->where(function ($query) {
-                        $query->whereIn('estado', ['pendiente', 'vencido'])
-                            ->where('saldo', '>', 0);
-                    });
-                },
-                'recibos as tiene_recibos_vencidos' => function ($q) {
-                    $q->where('estado', 'vencido')
-                        ->where('saldo', '>', 0);
-                }
-            ])
-            ->latest()
-            ->paginate($perPage)
-            ->withQueryString();
-
-        return view('clientes.index', compact('clientes', 'routers', 'routerId'));
     }
 
     /**
@@ -142,12 +145,11 @@ class ClienteController extends Controller
             if (! TenantConnectionService::currentTenantConnectionName()) {
                 return view('tenant-sin-configurar');
             }
+            $this->authorize('create', Cliente::class);
+            return view('clientes.create');
         } catch (\Throwable $e) {
             return view('tenant-sin-configurar');
         }
-        $this->authorize('create', Cliente::class);
-
-        return view('clientes.create');
     }
 
     public function importarPppoeForm(Request $request, RouterOSPppoeService $pppoeService)

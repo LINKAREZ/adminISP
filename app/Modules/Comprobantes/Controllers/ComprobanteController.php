@@ -103,16 +103,15 @@ class ComprobanteController extends Controller
             if (! TenantConnectionService::currentTenantConnectionName()) {
                 return view('tenant-sin-configurar');
             }
+            $this->authorize('create', Comprobante::class);
+            $clientes = $this->obtenerClientesParaSelect();
+            $series = $this->obtenerSeriesActivas();
+            $clienteId = $request->query('cliente_id');
+
+            return view('comprobantes.comprobantes.create', compact('clientes', 'series', 'clienteId'));
         } catch (\Throwable $e) {
             return view('tenant-sin-configurar');
         }
-        $this->authorize('create', Comprobante::class);
-
-        $clientes = $this->obtenerClientesParaSelect();
-        $series = $this->obtenerSeriesActivas();
-        $clienteId = $request->query('cliente_id');
-
-        return view('comprobantes.comprobantes.create', compact('clientes', 'series', 'clienteId'));
     }
 
     /**
