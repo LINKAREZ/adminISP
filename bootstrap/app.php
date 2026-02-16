@@ -91,6 +91,24 @@ return Application::configure(basePath: dirname(__DIR__))
             return null;
         });
 
+        // En rutas superadmin: mostrar error con mensaje para diagnosticar 500
+        $exceptions->render(function (\Throwable $exception, \Illuminate\Http\Request $request) {
+            if ($request->is('superadmin*') && !$request->expectsJson() && !$request->ajax()) {
+                Log::error('Excepción en superadmin', [
+                    'message' => $exception->getMessage(),
+                    'file' => $exception->getFile(),
+                    'line' => $exception->getLine(),
+                    'trace' => $exception->getTraceAsString(),
+                ]);
+                return response()->view('superadmin.error-dashboard', [
+                    'message' => $exception->getMessage(),
+                    'file' => $exception->getFile(),
+                    'line' => $exception->getLine(),
+                ], 500);
+            }
+            return null;
+        });
+
         // Manejo de excepciones para respuestas AJAX/JSON
         $exceptions->render(function (\Throwable $exception, \Illuminate\Http\Request $request) {
             if ($request->expectsJson() || $request->ajax()) {
