@@ -458,7 +458,7 @@ body.superadmin-panel .btn-outline-secondary:hover {
 
 /* ========== BADGES ========== */
 body.superadmin-panel .badge.badge-success {
-  background-color: var(--sa-success);
+  background-color: #166534; /* Verde más intenso para "Activo" (green-800), no pálido */
   color: #fff;
 }
 body.superadmin-panel .badge.badge-danger {
