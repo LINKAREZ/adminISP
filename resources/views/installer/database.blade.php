@@ -82,7 +82,7 @@
                         <div class="row-of-fields">
                             <input type="text" id="DB_ADMIN_USERNAME" class="form-control form-control-sm" placeholder="root" title="Usuario con permiso" style="flex: 1; min-width: 0;">
                             <span class="password-wrap">
-                                <input type="password" id="DB_ADMIN_PASSWORD" class="form-control form-control-sm" placeholder="Contraseña" title="Contraseña">
+                                <input type="password" id="DB_ADMIN_PASSWORD" class="form-control form-control-sm" placeholder="adminisp% (root)" title="Contraseña de root">
                                 <button type="button" class="btn-password-toggle btn btn-outline-secondary form-control-sm" title="Ver contraseña" data-target="DB_ADMIN_PASSWORD">Ver</button>
                             </span>
                         </div>
