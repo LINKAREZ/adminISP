@@ -5,6 +5,7 @@ namespace App\Modules\Instalaciones\Requests;
 use App\Core\Rules\DocumentoUnico;
 use App\Core\Rules\DocumentoValido;
 use App\Core\Rules\TelefonoValido;
+use App\Core\Traits\MergesIspId;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -13,6 +14,8 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class StorePaso1ClienteRequest extends FormRequest
 {
+    use MergesIspId;
+
     public function authorize(): bool
     {
         return auth()->check() && auth()->user()->hasPermission('instalaciones.create');
@@ -54,9 +57,7 @@ class StorePaso1ClienteRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        if (!$this->has('isp_id') && auth()->check() && auth()->user()->isp_id) {
-            $this->merge(['isp_id' => auth()->user()->isp_id]);
-        }
+        $this->mergeIspId();
         if ($this->has('telefonos') && !empty($this->telefonos)) {
             $telefonos = array_map('trim', explode(',', $this->telefonos));
             $telefonos = array_filter($telefonos);

@@ -2,10 +2,12 @@
 
 namespace App\Modules\Red\Requests;
 
+use App\Core\Traits\MergesIspId;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreNodoRequest extends FormRequest
 {
+    use MergesIspId;
     public function authorize(): bool
     {
         return auth()->check() && auth()->user()->hasPermission('red.create');
@@ -21,14 +23,8 @@ class StoreNodoRequest extends FormRequest
         ];
     }
 
-    /**
-     * Prepare the data for validation.
-     */
     protected function prepareForValidation(): void
     {
-        // Auto-asignar isp_id si no viene en el request
-        if (!$this->has('isp_id') && auth()->check() && auth()->user()->isp_id) {
-            $this->merge(['isp_id' => auth()->user()->isp_id]);
-        }
+        $this->mergeIspId();
     }
 }

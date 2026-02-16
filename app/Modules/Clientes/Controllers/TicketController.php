@@ -2,61 +2,31 @@
 
 namespace App\Modules\Clientes\Controllers;
 
-use App\Core\Services\TenantConnectionService;
+use App\Core\Traits\RequiresTenantContext;
 use App\Http\Controllers\Controller;
 use App\Modules\Clientes\Models\Cliente;
 use App\Modules\Clientes\Models\Ticket;
 use App\Modules\Clientes\Models\TicketMensaje;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Schema;
 
 class TicketController extends Controller
 {
+    use RequiresTenantContext;
+
     public function __construct()
     {
         $this->middleware('auth');
     }
 
-    /**
-     * Exige que el usuario tenga isp_id (contexto tenant). Si no, redirige al dashboard.
-     */
-    private function requireIspContext(): ?RedirectResponse
-    {
-        $user = auth()->user();
-        if (! $user || ! $user->isp_id) {
-            return redirect()->route('dashboard')
-                ->with('warning', 'Para acceder a Tickets debe usar una cuenta asignada a un ISP.');
-        }
-        return null;
-    }
-
-    /**
-     * Comprueba que la tabla tickets exista en la conexión tenant. Si no, redirige con mensaje.
-     */
-    private function ensureTicketsTableExists(): ?RedirectResponse
-    {
-        $ispId = auth()->user()?->isp_id;
-        $conn = TenantConnectionService::currentTenantConnectionName();
-        if (! $conn || ! Schema::connection($conn)->hasTable('tickets')) {
-            $comando = $ispId
-                ? 'php artisan isp:migrate-tenant --isp=' . $ispId
-                : 'php artisan isp:migrate-tenant --isp=ID';
-            return redirect()->route('dashboard')
-                ->with('warning', 'Ejecute las migraciones del ISP para usar Tickets. En el servidor ejecute: ' . $comando);
-        }
-        return null;
-    }
-
     public function index(Request $request)
     {
         Gate::authorize('tickets.read');
-        if ($redirect = $this->requireIspContext()) {
+        if ($redirect = $this->requireIspContext('Para acceder a Tickets debe usar una cuenta asignada a un ISP.')) {
             return $redirect;
         }
-        if ($redirect = $this->ensureTicketsTableExists()) {
+        if ($redirect = $this->redirectIfTenantTableMissing('tickets', 'Ejecute las migraciones del ISP para usar Tickets. En el servidor ejecute:')) {
             return $redirect;
         }
 
@@ -82,10 +52,10 @@ class TicketController extends Controller
     public function create(Request $request)
     {
         Gate::authorize('tickets.create');
-        if ($redirect = $this->requireIspContext()) {
+        if ($redirect = $this->requireIspContext('Para acceder a Tickets debe usar una cuenta asignada a un ISP.')) {
             return $redirect;
         }
-        if ($redirect = $this->ensureTicketsTableExists()) {
+        if ($redirect = $this->redirectIfTenantTableMissing('tickets', 'Ejecute las migraciones del ISP para usar Tickets. En el servidor ejecute:')) {
             return $redirect;
         }
 
@@ -100,10 +70,10 @@ class TicketController extends Controller
     public function store(Request $request)
     {
         Gate::authorize('tickets.create');
-        if ($redirect = $this->requireIspContext()) {
+        if ($redirect = $this->requireIspContext('Para acceder a Tickets debe usar una cuenta asignada a un ISP.')) {
             return $redirect;
         }
-        if ($redirect = $this->ensureTicketsTableExists()) {
+        if ($redirect = $this->redirectIfTenantTableMissing('tickets', 'Ejecute las migraciones del ISP para usar Tickets. En el servidor ejecute:')) {
             return $redirect;
         }
 

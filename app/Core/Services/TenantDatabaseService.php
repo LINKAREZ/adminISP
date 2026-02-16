@@ -6,6 +6,8 @@ use App\Modules\Sistema\Models\Isp;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 /**
@@ -56,6 +58,54 @@ class TenantDatabaseService
             self::runTenantSeeders();
         }
         Config::set('database.default', TenantConnectionService::centralConnection());
+    }
+
+    /**
+     * Si la tabla no existe en el tenant, ejecuta migraciones tenant. Útil para módulos opcionales (Instalaciones, Almacén).
+     *
+     * @param int|null $ispId ID del ISP (session/app/auth). Si null, retorna sin hacer nada.
+     * @param string $table Nombre de tabla a comprobar (ej. ordenes_instalacion, articulos).
+     * @param string $moduleLabel Etiqueta para el mensaje de error (ej. Instalaciones, Almacén).
+     * @throws \RuntimeException Si tras migrar la tabla sigue sin existir.
+     */
+    public static function runMigrationsIfTableMissing(?int $ispId, string $table, string $moduleLabel): void
+    {
+        if (!$ispId) {
+            return;
+        }
+        $tenantConn = TenantConnectionService::connectionNameForId($ispId);
+        if (!Config::has("database.connections.{$tenantConn}")) {
+            TenantConnectionService::registerConnectionForIspId($ispId);
+        }
+        try {
+            if (Schema::connection($tenantConn)->hasTable($table)) {
+                return;
+            }
+        } catch (\Throwable $e) {
+            Log::debug("{$moduleLabel}: hasTable falló", ['error' => $e->getMessage()]);
+        }
+        $isp = Isp::on(TenantConnectionService::centralConnection())->find($ispId);
+        if (!$isp || !$isp->database_name) {
+            return;
+        }
+        $central = TenantConnectionService::centralConnection();
+        try {
+            Config::set('database.default', $tenantConn);
+            Artisan::call('migrate', [
+                '--path' => config('tenant.migrations_path', 'database/migrations/tenant'),
+                '--force' => true,
+            ]);
+        } catch (\Throwable $e) {
+            Config::set('database.default', $central);
+            Log::warning("{$moduleLabel}: fallo al ejecutar migraciones tenant", ['isp_id' => $ispId, 'error' => $e->getMessage()]);
+            throw new \RuntimeException(
+                "Las tablas de {$moduleLabel} no existen. Ejecute: php artisan isp:migrate-tenant --isp={$ispId}",
+                0,
+                $e
+            );
+        } finally {
+            Config::set('database.default', $central);
+        }
     }
 
     /**

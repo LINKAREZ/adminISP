@@ -19,13 +19,8 @@ use App\Modules\Red\Models\Nodo;
 use App\Modules\Red\Models\Router;
 use App\Modules\Servicios\Models\Plan;
 use App\Modules\ControlAcceso\Models\User;
-use App\Modules\Sistema\Models\Isp;
-use App\Core\Services\TenantConnectionService;
+use App\Core\Services\TenantDatabaseService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 
 class OrdenInstalacionController extends Controller
@@ -36,48 +31,10 @@ class OrdenInstalacionController extends Controller
         private ComisionService $comisionService
     ) {}
 
-    /**
-     * Asegura que la tabla ordenes_instalacion exista en el tenant actual (ejecuta migraciones si falta).
-     */
     private function asegurarTablaInstalaciones(): void
     {
         $ispId = session('current_isp_id') ?? (app()->has('current_isp_id') ? app('current_isp_id') : null);
-        if (!$ispId) {
-            return;
-        }
-        $tenantConn = TenantConnectionService::connectionNameForId((int) $ispId);
-        if (!Config::has("database.connections.{$tenantConn}")) {
-            TenantConnectionService::registerConnectionForIspId((int) $ispId);
-        }
-        try {
-            if (Schema::connection($tenantConn)->hasTable('ordenes_instalacion')) {
-                return;
-            }
-        } catch (\Throwable $e) {
-            Log::debug('Instalaciones: hasTable falló, se ejecutarán migraciones', ['error' => $e->getMessage()]);
-        }
-        $isp = Isp::on(TenantConnectionService::CENTRAL_CONNECTION)->find($ispId);
-        if (!$isp || !$isp->database_name) {
-            return;
-        }
-        $central = TenantConnectionService::CENTRAL_CONNECTION;
-        try {
-            Config::set('database.default', $tenantConn);
-            Artisan::call('migrate', [
-                '--path' => 'database/migrations/tenant',
-                '--force' => true,
-            ]);
-        } catch (\Throwable $e) {
-            Config::set('database.default', $central);
-            Log::warning('Instalaciones: fallo al ejecutar migraciones tenant automáticas', ['isp_id' => $ispId, 'error' => $e->getMessage()]);
-            throw new \RuntimeException(
-                'La tabla de instalaciones no existe. Ejecuta en el servidor: php artisan isp:migrate-tenant --isp=' . $ispId,
-                0,
-                $e
-            );
-        } finally {
-            Config::set('database.default', $central);
-        }
+        TenantDatabaseService::runMigrationsIfTableMissing($ispId ? (int) $ispId : null, 'ordenes_instalacion', 'Instalaciones');
     }
 
     public function index(Request $request)

@@ -5,10 +5,12 @@ namespace App\Modules\Clientes\Requests;
 use App\Core\Rules\DocumentoUnico;
 use App\Core\Rules\DocumentoValido;
 use App\Core\Rules\TelefonoValido;
+use App\Core\Traits\MergesIspId;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreClienteRequest extends FormRequest
 {
+    use MergesIspId;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -81,10 +83,7 @@ class StoreClienteRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        // Auto-asignar isp_id si no viene en el request
-        if (!$this->has('isp_id') && auth()->check() && auth()->user()->isp_id) {
-            $this->merge(['isp_id' => auth()->user()->isp_id]);
-        }
+        $this->mergeIspId();
 
         // Normalizar teléfonos antes de validar
         if ($this->has('telefonos') && !empty($this->telefonos)) {

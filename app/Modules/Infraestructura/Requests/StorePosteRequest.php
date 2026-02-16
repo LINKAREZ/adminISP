@@ -2,10 +2,12 @@
 
 namespace App\Modules\Infraestructura\Requests;
 
+use App\Core\Traits\MergesIspId;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePosteRequest extends FormRequest
 {
+    use MergesIspId;
     public function authorize(): bool
     {
         return auth()->check() && auth()->user()->hasPermission('infraestructura.create');
@@ -26,8 +28,6 @@ class StorePosteRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        if (!$this->has('isp_id') && auth()->check() && auth()->user()->isp_id) {
-            $this->merge(['isp_id' => auth()->user()->isp_id]);
-        }
+        $this->mergeIspId();
     }
 }

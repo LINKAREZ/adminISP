@@ -3,11 +3,13 @@
 namespace App\Modules\Comprobantes\Requests;
 
 use App\Core\Rules\ValidationRules;
+use App\Core\Traits\MergesIspId;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
 class StorePagoRequest extends FormRequest
 {
+    use MergesIspId;
     public function authorize(): bool
     {
         /** @var \App\Modules\ControlAcceso\Models\User|null $user */
@@ -18,12 +20,7 @@ class StorePagoRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        // Auto-asignar isp_id si no viene en el request
-        /** @var \App\Modules\ControlAcceso\Models\User|null $user */
-        $user = Auth::user();
-        if (!$this->has('isp_id') && $user && $user->isp_id) {
-            $this->merge(['isp_id' => $user->isp_id]);
-        }
+        $this->mergeIspId();
 
         if ($this->has('numero_operacion')) {
             $numeroOperacion = trim($this->input('numero_operacion'));
