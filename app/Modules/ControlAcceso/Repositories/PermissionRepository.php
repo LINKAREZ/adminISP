@@ -98,7 +98,7 @@ class PermissionRepository
     public function getAllWithFilters(array $filters = []): \Illuminate\Support\Collection
     {
         $conn = TenantConnectionService::centralConnection();
-        $query = Permission::on($conn)->query();
+        $query = Permission::on($conn);
 
         // Filtro por módulo (exacto)
         if (isset($filters['module']) && !empty($filters['module'])) {
