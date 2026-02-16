@@ -173,9 +173,22 @@ document.getElementById('btn-create-db').addEventListener('click', function () {
         if (noPermission) {
             var rootPass = password || 'adminisp%';
             return doCreateDb('root', rootPass).then(function (r2) {
+                if (r2.ok) {
+                    result.className = 'mt-2 result-box success';
+                    result.innerHTML = 'Base de datos "' + database + '" creada o ya existía correctamente.';
+                    return;
+                }
+                var accessDenied = r2.json.message && (r2.json.message.indexOf('Access denied') !== -1 || r2.json.message.indexOf('1045') !== -1);
+                if (accessDenied) {
+                    return doCreateDb('root', 'secret').then(function (r3) {
+                        result.style.display = 'block';
+                        result.className = 'mt-2 result-box ' + (r3.ok ? 'success' : 'danger');
+                        result.innerHTML = r3.ok ? ('Base de datos "' + database + '" creada. Tu contenedor usa la contraseña antigua de root; puedes cambiarla después con el script mysql-reset-root-password-docker.sh.') : (r3.json.message || 'Error.');
+                    });
+                }
                 result.style.display = 'block';
-                result.className = 'mt-2 result-box ' + (r2.ok ? 'success' : 'danger');
-                result.innerHTML = r2.ok ? ('Base de datos "' + database + '" creada o ya existía correctamente.') : (r2.json.message || 'Error.');
+                result.className = 'mt-2 result-box danger';
+                result.innerHTML = r2.json.message || 'Error.';
             });
         }
         result.className = 'mt-2 result-box danger';
@@ -214,36 +227,53 @@ document.getElementById('btn-create-user').addEventListener('click', function ()
         adminPass = password || 'adminisp%';
     }
 
+    function doCreateUser(adminPassword) {
+        var fd = new FormData();
+        fd.append('_token', document.querySelector('input[name="_token"]').value);
+        fd.append('DB_HOST', host);
+        fd.append('DB_PORT', port);
+        fd.append('DB_DATABASE', database);
+        fd.append('DB_USERNAME', user);
+        fd.append('DB_PASSWORD', password || '');
+        fd.append('DB_ADMIN_USERNAME', adminUser);
+        fd.append('DB_ADMIN_PASSWORD', adminPassword || '');
+        return fetch('{{ route("installer.create-database-user") }}', {
+            method: 'POST',
+            body: fd,
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+        }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, json: j }; }); });
+    }
+
     btn.disabled = true;
     result.style.display = 'block';
     result.className = 'mt-2 result-box info';
     result.innerHTML = 'Creando usuario en MySQL…';
 
-    var formData = new FormData();
-    formData.append('_token', document.querySelector('input[name="_token"]').value);
-    formData.append('DB_HOST', host);
-    formData.append('DB_PORT', port);
-    formData.append('DB_DATABASE', database);
-    formData.append('DB_USERNAME', user);
-    formData.append('DB_PASSWORD', password || '');
-    formData.append('DB_ADMIN_USERNAME', adminUser);
-    formData.append('DB_ADMIN_PASSWORD', adminPass || '');
-
-    fetch('{{ route("installer.create-database-user") }}', {
-        method: 'POST',
-        body: formData,
-        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
-    })
-    .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, json: j }; }); })
+    doCreateUser(adminPass)
     .then(function (_ref) {
         var ok = _ref.ok, json = _ref.json;
+        if (ok) {
+            result.style.display = 'block';
+            result.className = 'mt-2 result-box success';
+            result.innerHTML = json.message || 'Usuario creado.';
+            return;
+        }
+        var accessDenied = json.message && (json.message.indexOf('Access denied') !== -1 || json.message.indexOf('1045') !== -1);
+        if (accessDenied && adminPass !== 'secret') {
+            return doCreateUser('secret').then(function (r2) {
+                result.style.display = 'block';
+                result.className = 'mt-2 result-box ' + (r2.ok ? 'success' : 'danger');
+                result.innerHTML = r2.ok ? ('Usuario creado. Tu contenedor MySQL usa la contraseña antigua de root; puedes unificarla después con mysql-reset-root-password-docker.sh.') : (r2.json.message || 'Error.');
+                if (!r2.ok && adminWrap) { adminWrap.style.display = 'block'; }
+            });
+        }
         result.style.display = 'block';
-        result.className = 'mt-2 result-box ' + (ok ? 'success' : 'danger');
-        result.innerHTML = json.message || (ok ? 'Usuario creado.' : 'Error.');
-        if (!ok && adminWrap) {
+        result.className = 'mt-2 result-box danger';
+        result.innerHTML = json.message || 'Error.';
+        if (adminWrap) {
             adminWrap.style.display = 'block';
             if (result.innerHTML.indexOf('campos') === -1) {
-                result.innerHTML = result.innerHTML + ' En Docker, prueba usuario <code>root</code> y la misma contraseña que arriba (Contraseña).';
+                result.innerHTML = result.innerHTML + ' En Docker, prueba usuario <code>root</code> y la misma contraseña que arriba, o la antigua del contenedor.';
             }
         }
     })
