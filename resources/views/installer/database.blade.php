@@ -157,7 +157,7 @@ document.getElementById('btn-create-db').addEventListener('click', function () {
         }
         var noPermission = json.message && (json.message.indexOf('permiso') !== -1 || json.message.indexOf('root') !== -1);
         if (noPermission) {
-            return doCreateDb('root', 'secret').then(function (r2) {
+            return doCreateDb('root', 'adminisp%').then(function (r2) {
                 result.style.display = 'block';
                 result.className = 'mt-2 result-box ' + (r2.ok ? 'success' : 'danger');
                 result.innerHTML = r2.ok ? ('Base de datos "' + database + '" creada o ya existía correctamente.') : (r2.json.message || 'Error.');
@@ -196,7 +196,7 @@ document.getElementById('btn-create-user').addEventListener('click', function ()
     }
     if (!adminUser) {
         adminUser = 'root';
-        adminPass = 'secret';
+        adminPass = 'adminisp%';
     }
 
     btn.disabled = true;
