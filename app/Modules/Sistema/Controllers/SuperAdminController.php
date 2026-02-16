@@ -45,7 +45,24 @@ class SuperAdminController extends Controller
      *
      * @return View
      */
-    public function dashboard(): View
+    public function dashboard()
+    {
+        try {
+            return $this->renderDashboard();
+        } catch (\Throwable $e) {
+            report($e);
+            return response()->view('superadmin.error-dashboard', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Renderizado del dashboard (extraído para try-catch).
+     */
+    private function renderDashboard(): View
     {
         // Estadísticas básicas de ISPs (activo puede no existir en BD antiguas; migración 2026_02_16_200000 la añade)
         $query = Isp::withoutGlobalScope(IspScope::class);

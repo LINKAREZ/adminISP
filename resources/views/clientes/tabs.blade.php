@@ -1,3 +1,4 @@
+@unless(request()->is('superadmin*'))
 @php
     $tabsClientes = [
         [
@@ -31,3 +32,4 @@
     }
 @endphp
 @include('components.nav-tabs', ['tabs' => $tabsClientes])
+@endunless
