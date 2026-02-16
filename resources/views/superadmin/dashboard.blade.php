@@ -118,6 +118,39 @@
         </div>
     </div>
 
+    {{-- Base de datos principal (central: isps, users, roles, permissions) --}}
+    <div class="row mb-3 mb-md-4">
+        <div class="col-12">
+            <x-card title="Base de datos principal" icon="fa-server" variant="info" subtitle="Conexión central: isps, users, roles, permissions">
+                @if(!empty($databaseCentral['error']))
+                    <p class="text-danger mb-0 small">{{ $databaseCentral['error'] }}</p>
+                @else
+                    <dl class="row mb-0 small">
+                        <dt class="col-sm-2 text-muted">Conexión</dt>
+                        <dd class="col-sm-10"><code>{{ $databaseCentral['connection'] ?? '—' }}</code></dd>
+                        <dt class="col-sm-2 text-muted">Base de datos</dt>
+                        <dd class="col-sm-10"><code>{{ $databaseCentral['database'] ?? '—' }}</code></dd>
+                        <dt class="col-sm-2 text-muted">Tablas</dt>
+                        <dd class="col-sm-10">{{ $databaseCentral['tables_count'] ?? 0 }}</dd>
+                    </dl>
+                    @if(!empty($databaseCentral['tables']))
+                    <div class="mt-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="collapse" data-target="#dashboard-db-central-tables" aria-expanded="false" aria-controls="dashboard-db-central-tables" style="min-height: 44px; cursor: pointer;">
+                            <i class="fas fa-list mr-1" aria-hidden="true"></i> Ver listado de tablas
+                        </button>
+                        <div class="collapse mt-2" id="dashboard-db-central-tables">
+                            <div class="d-flex flex-wrap" style="gap: 0.25rem;">
+                                @foreach($databaseCentral['tables'] as $table)
+                                    <span class="badge badge-light border font-monospace" style="font-size: 0.75rem;">{{ $table }}</span>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+                @endif
+            </x-card>
+        </div>
+    </div>
+
     {{-- Bases de datos tenant: x-card estándar con iconos para ver cada BD --}}
     <div class="row mb-3 mb-md-4">
         <div class="col-12">

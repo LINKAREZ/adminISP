@@ -138,6 +138,8 @@ class SuperAdminController extends Controller
             ->orderBy('id')
             ->get(['id', 'nombre', 'database_name']);
 
+        $databaseCentral = $this->getCentralDatabaseInfo();
+
         return view('superadmin.dashboard', compact(
             'totalIsps',
             'ispsActivos',
@@ -146,8 +148,46 @@ class SuperAdminController extends Controller
             'totalAdminsDefault',
             'recentIsps',
             'totalClientes',
-            'basesDeDatos'
+            'basesDeDatos',
+            'databaseCentral'
         ));
+    }
+
+    /**
+     * Información de la base de datos central (principal): isps, users, roles, permissions.
+     */
+    private function getCentralDatabaseInfo(): array
+    {
+        $connName = TenantConnectionService::centralConnection();
+        try {
+            $database = \Illuminate\Support\Facades\DB::connection($connName)->getConfig('database');
+            $driver = \Illuminate\Support\Facades\DB::connection($connName)->getDriverName();
+            $tables = [];
+            if ($driver === 'mysql') {
+                $rows = \Illuminate\Support\Facades\DB::connection($connName)->select('SHOW TABLES');
+                foreach ($rows as $row) {
+                    $arr = (array) $row;
+                    $tables[] = reset($arr) ?: '';
+                }
+                $tables = array_values(array_filter($tables));
+                sort($tables);
+            }
+            return [
+                'connection' => $connName,
+                'database' => $database,
+                'tables' => $tables,
+                'tables_count' => count($tables),
+                'driver' => $driver,
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'connection' => $connName,
+                'database' => null,
+                'tables' => [],
+                'tables_count' => 0,
+                'error' => $e->getMessage(),
+            ];
+        }
     }
 
     /**
