@@ -155,14 +155,14 @@
                         <i class="fas fa-exclamation-circle mr-2"></i>{{ $errors->first() }}
                     </div>
                 @endif
-                <form method="POST" action="{{ url('/login') }}" id="loginForm">
+                <form method="POST" action="{{ url('/login') }}" id="loginForm" data-testid="login-form">
                     @csrf
                     <div class="form-group">
                         <label for="email">Correo electrónico</label>
                         <div class="input-icon-wrapper">
                             <span class="input-icon fas fa-envelope"></span>
                             <input id="email" type="email" name="email" class="form-control @error('email') is-invalid @enderror"
-                                placeholder="tu@email.com" value="{{ old('email') }}" required autofocus autocomplete="email" />
+                                placeholder="tu@email.com" value="{{ old('email') }}" required autofocus autocomplete="email" data-testid="login-email" />
                         </div>
                         @error('email')<span class="invalid-feedback">{{ $message }}</span>@enderror
                     </div>
@@ -171,7 +171,7 @@
                         <div class="input-icon-wrapper">
                             <span class="input-icon fas fa-lock"></span>
                             <input id="password" type="password" name="password" class="form-control @error('password') is-invalid @enderror"
-                                placeholder="••••••••" required autocomplete="current-password" />
+                                placeholder="••••••••" required autocomplete="current-password" data-testid="login-password" />
                         </div>
                         @error('password')<span class="invalid-feedback">{{ $message }}</span>@enderror
                     </div>
@@ -181,7 +181,7 @@
                             <label for="remember">Recordar sesión</label>
                         </div>
                     </div>
-                    <button type="submit" class="btn-login">
+                    <button type="submit" class="btn-login" data-testid="login-submit">
                         <i class="fas fa-sign-in-alt mr-2"></i>Iniciar Sesión
                     </button>
                 </form>
