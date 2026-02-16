@@ -25,6 +25,8 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Instalador: excluir POST AJAX del instalador de CSRF (fetch puede fallar sin cookie en algunos entornos)
+        $middleware->validateCsrfTokens(except: ['install/migrate/run', 'install/migrate/seed']);
         // Detrás de nginx/proxy: usar X-Forwarded-Proto para HTTPS y evitar 419 en login
         $middleware->trustProxies(at: '*');
         $middleware->redirectGuestsTo('/login');
