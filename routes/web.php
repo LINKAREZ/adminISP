@@ -68,9 +68,11 @@ Route::middleware('auth')->group(function () {
     // Módulo Servicios - Las rutas están en app/Modules/Servicios/Routes/web.php
     // Cargadas automáticamente por ModuleServiceProvider
 
-    // Módulo Clientes - Las rutas están en app/Modules/Clientes/Routes/web.php
-    // Cargadas automáticamente por ModuleServiceProvider
-    // Rutas anidadas de clientes están en app/Modules/Clientes/Routes/web.php
+    // Módulo Clientes - Rutas de importar-clientes registradas aquí para que route() esté disponible en todas las vistas (sidebar, tabs, etc.)
+    Route::get('clientes/importar-clientes', [\App\Modules\Clientes\Controllers\ImportarClientesController::class, 'index'])->name('clientes.importar-clientes.index');
+    Route::post('clientes/importar-clientes', [\App\Modules\Clientes\Controllers\ImportarClientesController::class, 'store'])->name('clientes.importar-clientes.store');
+    Route::get('clientes/importar-clientes/plantilla', [\App\Modules\Clientes\Controllers\ImportarClientesController::class, 'plantilla'])->name('clientes.importar-clientes.plantilla');
+    // Resto del módulo Clientes en app/Modules/Clientes/Routes/web.php vía ModuleServiceProvider
 
     // Módulo Comprobantes - Rutas en app/Modules/Comprobantes/Routes/web.php
     // Cargadas automáticamente por ModuleServiceProvider

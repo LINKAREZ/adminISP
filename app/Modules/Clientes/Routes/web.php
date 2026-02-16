@@ -2,7 +2,6 @@
 
 use App\Modules\Clientes\Controllers\ClienteController;
 use App\Modules\Clientes\Controllers\ClienteIndexFallbackController;
-use App\Modules\Clientes\Controllers\ImportarClientesController;
 use App\Modules\Clientes\Controllers\UbicacionController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,10 +13,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('clientes/consultar-ruc', [ClienteController::class, 'consultarRuc']);
     Route::get('clientes/pppoe/importar', [ClienteController::class, 'importarPppoeForm'])->name('clientes.pppoe.importar');
     Route::post('clientes/pppoe/importar', [ClienteController::class, 'importarPppoe'])->name('clientes.pppoe.importar.store');
-    // Importar clientes CSV (rutas fijas antes de clientes/{cliente})
-    Route::get('clientes/importar-clientes', [ImportarClientesController::class, 'index'])->name('clientes.importar-clientes.index');
-    Route::post('clientes/importar-clientes', [ImportarClientesController::class, 'store'])->name('clientes.importar-clientes.store');
-    Route::get('clientes/importar-clientes/plantilla', [ImportarClientesController::class, 'plantilla'])->name('clientes.importar-clientes.plantilla');
+    // Importar clientes CSV: rutas registradas en routes/web.php para que estén disponibles al cargar vistas (evita 500 en /superadmin)
     // API movida a routes/api.php: api.clientes.servicios.credenciales
     Route::post('clientes/servicios/vencidos/cortar', [ClienteController::class, 'cortarServiciosVencidos'])->name('clientes.cortar-servicios-vencidos');
     Route::post('clientes/cortar-servicios-vencidos', [ClienteController::class, 'cortarServiciosVencidos']);
