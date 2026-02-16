@@ -136,7 +136,7 @@ class PermissionService
             $hasIsHiddenColumn = \Schema::connection($conn)->hasColumn('permissions', 'is_hidden');
             $query = $hasIsHiddenColumn
                 ? \App\Modules\ControlAcceso\Models\Permission::on($conn)->visible()
-                : \App\Modules\ControlAcceso\Models\Permission::on($conn)->query();
+                : \App\Modules\ControlAcceso\Models\Permission::on($conn);
 
             return $query
                 ->distinct()
