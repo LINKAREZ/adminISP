@@ -17,6 +17,9 @@
         <div class="col-12">
             <x-card title="Roles" icon="fa-user-shield" variant="primary">
                 <x-slot name="actions">
+                    @if(auth()->user() && method_exists(auth()->user(), 'isSuperAdmin') && auth()->user()->isSuperAdmin())
+                        <span class="badge badge-secondary align-middle mr-2" title="Debug: total que recibe la vista">Total: {{ $roles->total() }}</span>
+                    @endif
                     <x-btn :route="route('roles.create')" variant="primary" size="sm" icon="fa-plus">
                         Nuevo Rol
                     </x-btn>

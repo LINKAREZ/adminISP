@@ -22,9 +22,9 @@ class RoleController extends Controller
     {
         $this->authorize('viewAny', Role::class);
 
-        // Obtener filtros de búsqueda
+        // Obtener filtros de búsqueda (el formulario envía 'buscar')
         $filters = [
-            'search' => $request->get('search'),
+            'search' => $request->get('search') ?? $request->get('buscar'),
         ];
 
         $roles = $this->roleService->getPaginatedRoles(15, $filters);
