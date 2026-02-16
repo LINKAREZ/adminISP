@@ -3,6 +3,18 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Response;
 
+// Debug sesión (solo en local/debug; eliminar en producción)
+if (config('app.debug')) {
+    Route::get('/session-debug', function () {
+        return response()->json([
+            'session_id' => session()->getId(),
+            'auth_check' => auth()->check(),
+            'auth_id' => auth()->id(),
+            'session_keys' => array_keys(session()->all()),
+        ]);
+    })->middleware('web');
+}
+
 // Ruta para favicon.ico (fallback para navegadores antiguos)
 Route::get('/favicon.ico', function () {
     $faviconPath = public_path('favicon.svg');
