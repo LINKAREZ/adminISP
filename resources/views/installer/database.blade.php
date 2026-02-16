@@ -23,23 +23,25 @@
 
     @if(isset($isVpsDefaults) && $isVpsDefaults)
         <div class="result-box success" style="margin-bottom: 1rem;">
-            <strong>VPS / Docker.</strong> Los valores por defecto ya están listos. Revisa la URL si hace falta y pulsa <strong>Guardar y continuar</strong>.
+            <strong>VPS / Docker.</strong> Valores por defecto listos. Puedes editarlos abajo si necesitas. Al guardar, se escriben en <code>.env</code> y la aplicación los usará en cada conexión.
         </div>
     @else
         <div class="result-box info" style="margin-bottom: 1rem;">
-            <strong>cPanel u otro.</strong> Edita host, base de datos y credenciales según tu proveedor.
+            <strong>cPanel u otro.</strong> Edita los campos según tu proveedor. Al guardar, se escriben en <code>.env</code> y quedarán guardados para la aplicación.
         </div>
     @endif
 
     <form method="POST" action="{{ route('installer.save-database') }}">
         @csrf
+        <p class="text-muted small" style="margin-bottom: 1rem;">Todos los campos son editables. Los valores se guardan en el archivo <code>.env</code> del servidor y la app los usará al conectar a MySQL.</p>
+
         <div class="installer-section">
             <label for="APP_URL" class="installer-section-title">URL de la aplicación</label>
             <input type="text" id="APP_URL" name="APP_URL" class="form-control" value="{{ old('APP_URL', $current['APP_URL']) }}" required placeholder="https://panel.tudominio.com">
         </div>
 
         <div class="installer-section installer-section-box">
-            <div class="installer-section-title">MySQL</div>
+            <div class="installer-section-title">MySQL <span class="text-muted font-weight-normal small">(puedes editar cada valor)</span></div>
             <div class="form-row-2">
                 <div class="form-group" style="margin-bottom: 0.5rem;">
                     <label for="DB_HOST">Host</label>
@@ -56,7 +58,7 @@
             </div>
             <div class="form-group" style="margin-bottom: 0.5rem;">
                 <label for="DB_USERNAME">Usuario</label>
-                <input type="text" id="DB_USERNAME" name="DB_USERNAME" class="form-control" value="{{ old('DB_USERNAME', $current['DB_USERNAME']) }}" required placeholder="root">
+                <input type="text" id="DB_USERNAME" name="DB_USERNAME" class="form-control" value="{{ old('DB_USERNAME', $current['DB_USERNAME']) }}" required placeholder="adminisp o root">
             </div>
             <div class="form-group" style="margin-bottom: 0;">
                 <label for="DB_PASSWORD">Contraseña</label>
@@ -64,9 +66,20 @@
                     <input type="password" id="DB_PASSWORD" name="DB_PASSWORD" class="form-control" value="{{ old('DB_PASSWORD', $current['DB_PASSWORD']) }}" placeholder="adminisp%" autocomplete="off">
                     <button type="button" class="btn-password-toggle btn btn-outline-secondary" data-target="DB_PASSWORD">Ver</button>
                 </div>
-                <small class="text-muted">Por defecto: <code>adminisp%</code>. Si ves «Access denied»: prueba contraseña <code>secret</code> (contenedor antiguo) o usa usuario <code>adminisp</code> en vez de root.</small>
+                <small class="text-muted">Por defecto: <code>adminisp%</code>. Si ves «Access denied»: prueba contraseña <code>secret</code> (contenedor antiguo) o usuario <code>adminisp</code>.</small>
             </div>
         </div>
+
+        <details class="installer-section" style="margin-top: 1rem;">
+            <summary class="installer-section-title" style="cursor: pointer; list-style: none;">Buenas prácticas (recomendaciones)</summary>
+            <div class="installer-section-box" style="margin-top: 0.5rem;">
+                <ul class="small text-muted mb-0" style="padding-left: 1.25rem;">
+                    <li>Usar un <strong>usuario dedicado</strong> (ej. <code>adminisp</code>) en lugar de <code>root</code> para la aplicación.</li>
+                    <li>En producción, usar una <strong>contraseña fuerte</strong> y guardarla en <code>.env</code> (nunca en el código).</li>
+                    <li>Los valores que guardes aquí se escriben en <code>.env</code> y la aplicación los usará en cada petición.</li>
+                </ul>
+            </div>
+        </details>
 
         <details class="installer-section" style="margin-top: 1rem;">
             <summary class="installer-section-title" style="cursor: pointer; list-style: none;">Opciones avanzadas (crear BD o usuario en MySQL)</summary>

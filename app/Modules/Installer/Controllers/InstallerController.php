@@ -91,12 +91,13 @@ class InstallerController extends Controller
         }
         $dbHost = env('DB_HOST', 'db');
         $isVpsDefaults = ($dbHost === 'db' || $dbHost === '');
+        // Recomendación: usuario dedicado (adminisp) en lugar de root para la aplicación
         $current = [
             'APP_URL'     => $appUrl,
             'DB_HOST'     => $dbHost ?: 'db',
             'DB_PORT'     => env('DB_PORT', '3306'),
             'DB_DATABASE' => env('DB_DATABASE', 'adminisp'),
-            'DB_USERNAME' => env('DB_USERNAME', 'root'),
+            'DB_USERNAME' => env('DB_USERNAME', $isVpsDefaults ? 'adminisp' : 'root'),
             'DB_PASSWORD' => env('DB_PASSWORD', $isVpsDefaults ? 'adminisp%' : ''),
         ];
         return view('installer.database', compact('current', 'isVpsDefaults'));
@@ -194,7 +195,7 @@ class InstallerController extends Controller
         }
         Artisan::call('config:clear');
 
-        return redirect()->route('installer.migrate')->with('success', 'Configuración de base de datos guardada.');
+        return redirect()->route('installer.migrate')->with('success', 'Configuración guardada en .env. La aplicación usará estos valores para conectarse a la base de datos.');
     }
 
     /**
