@@ -99,11 +99,8 @@ class InstallerController extends Controller
         $dbHost = env('DB_HOST', 'db');
         $isVpsDefaults = ($dbHost === 'db' || $dbHost === '');
         // Recomendación: usuario dedicado (adminisp) en lugar de root para la aplicación.
-        // No mostrar "secret" como valor: si está en .env se sustituye por adminisp%.
+        // Mostrar la contraseña real del .env para que Crear BD / Crear usuario funcionen (p. ej. secret en VPS).
         $dbPassword = env('DB_PASSWORD', $isVpsDefaults ? 'adminisp%' : '');
-        if ($dbPassword === 'secret') {
-            $dbPassword = 'adminisp%';
-        }
         $current = [
             'APP_URL'     => $appUrl,
             'DB_HOST'     => $dbHost ?: 'db',
