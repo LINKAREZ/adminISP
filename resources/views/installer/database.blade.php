@@ -1,7 +1,7 @@
 @extends('layouts.installer')
 
 @section('content')
-<div class="installer-card">
+<div class="installer-card installer-database-step">
     <div class="steps">
         <span class="step done">1. Requisitos</span>
         <span class="step active">2. Base de datos</span>
@@ -22,87 +22,64 @@
     @endif
 
     @if(isset($isVpsDefaults) && $isVpsDefaults)
-        <div class="result-box success" style="margin-bottom: 1rem;">
-            <strong>VPS / Docker.</strong> Valores por defecto listos. Puedes editarlos abajo si necesitas. Al guardar, se escriben en <code>.env</code> y la aplicación los usará en cada conexión.
-        </div>
+        <p class="installer-lead">Configuración para <strong>VPS / Docker</strong>. Los valores por defecto están listos; puedes modificarlos y se guardarán en <code>.env</code>.</p>
     @else
-        <div class="result-box info" style="margin-bottom: 1rem;">
-            <strong>cPanel u otro.</strong> Edita los campos según tu proveedor. Al guardar, se escriben en <code>.env</code> y quedarán guardados para la aplicación.
-        </div>
+        <p class="installer-lead">Configuración para <strong>cPanel u otro entorno</strong>. Completa los datos de conexión; se guardarán en <code>.env</code>.</p>
     @endif
 
     <form method="POST" action="{{ route('installer.save-database') }}">
         @csrf
-        <p class="text-muted small" style="margin-bottom: 1rem;">Todos los campos son editables. Los valores se guardan en el archivo <code>.env</code> del servidor y la app los usará al conectar a MySQL.</p>
-
         <div class="installer-section">
             <label for="APP_URL" class="installer-section-title">URL de la aplicación</label>
-            <input type="text" id="APP_URL" name="APP_URL" class="form-control" value="{{ old('APP_URL', $current['APP_URL']) }}" required placeholder="https://panel.tudominio.com">
+            <input type="url" id="APP_URL" name="APP_URL" class="form-control" value="{{ old('APP_URL', $current['APP_URL']) }}" required placeholder="https://panel.tudominio.com" autocomplete="url">
         </div>
 
         <div class="installer-section installer-section-box">
-            <div class="installer-section-title">MySQL <span class="text-muted font-weight-normal small">(puedes editar cada valor)</span></div>
+            <div class="installer-section-title">Conexión MySQL</div>
             <div class="form-row-2">
                 <div class="form-group" style="margin-bottom: 0.5rem;">
                     <label for="DB_HOST">Host</label>
-                    <input type="text" id="DB_HOST" name="DB_HOST" class="form-control" value="{{ old('DB_HOST', $current['DB_HOST']) }}" required placeholder="db">
+                    <input type="text" id="DB_HOST" name="DB_HOST" class="form-control" value="{{ old('DB_HOST', $current['DB_HOST']) }}" required placeholder="db" autocomplete="off">
                 </div>
                 <div class="form-group" style="margin-bottom: 0.5rem;">
                     <label for="DB_PORT">Puerto</label>
-                    <input type="text" id="DB_PORT" name="DB_PORT" class="form-control" value="{{ old('DB_PORT', $current['DB_PORT']) }}" placeholder="3306">
+                    <input type="text" id="DB_PORT" name="DB_PORT" class="form-control" value="{{ old('DB_PORT', $current['DB_PORT']) }}" placeholder="3306" autocomplete="off">
                 </div>
             </div>
             <div class="form-group" style="margin-bottom: 0.5rem;">
                 <label for="DB_DATABASE">Base de datos</label>
-                <input type="text" id="DB_DATABASE" name="DB_DATABASE" class="form-control" value="{{ old('DB_DATABASE', $current['DB_DATABASE']) }}" required placeholder="adminisp">
+                <input type="text" id="DB_DATABASE" name="DB_DATABASE" class="form-control" value="{{ old('DB_DATABASE', $current['DB_DATABASE']) }}" required placeholder="adminisp" autocomplete="off">
             </div>
             <div class="form-group" style="margin-bottom: 0.5rem;">
                 <label for="DB_USERNAME">Usuario</label>
-                <input type="text" id="DB_USERNAME" name="DB_USERNAME" class="form-control" value="{{ old('DB_USERNAME', $current['DB_USERNAME']) }}" required placeholder="adminisp o root">
+                <input type="text" id="DB_USERNAME" name="DB_USERNAME" class="form-control" value="{{ old('DB_USERNAME', $current['DB_USERNAME']) }}" required placeholder="adminisp" autocomplete="username">
             </div>
             <div class="form-group" style="margin-bottom: 0;">
                 <label for="DB_PASSWORD">Contraseña</label>
                 <div class="password-wrap">
                     <input type="password" id="DB_PASSWORD" name="DB_PASSWORD" class="form-control" value="{{ old('DB_PASSWORD', $current['DB_PASSWORD']) }}" placeholder="adminisp%" autocomplete="off">
-                    <button type="button" class="btn-password-toggle btn btn-outline-secondary" data-target="DB_PASSWORD">Ver</button>
+                    <button type="button" class="btn-password-toggle btn btn-outline-secondary" data-target="DB_PASSWORD" aria-label="Mostrar contraseña">Ver</button>
                 </div>
-                <small class="text-muted">Por defecto: <code>adminisp%</code>. Si ves «Access denied»: prueba contraseña <code>secret</code> (contenedor antiguo) o usuario <code>adminisp</code>.</small>
+                <small class="text-muted" style="display: block; margin-top: 0.25rem;">Si aparece «Access denied», prueba <code>secret</code> o usuario <code>adminisp</code>.</small>
             </div>
         </div>
 
-        <details class="installer-section" style="margin-top: 1rem;">
-            <summary class="installer-section-title" style="cursor: pointer; list-style: none;">Buenas prácticas (recomendaciones)</summary>
-            <div class="installer-section-box" style="margin-top: 0.5rem;">
-                <ul class="small text-muted mb-0" style="padding-left: 1.25rem;">
-                    <li>Usar un <strong>usuario dedicado</strong> (ej. <code>adminisp</code>) en lugar de <code>root</code> para la aplicación.</li>
-                    <li>En producción, usar una <strong>contraseña fuerte</strong> y guardarla en <code>.env</code> (nunca en el código).</li>
-                    <li>Los valores que guardes aquí se escriben en <code>.env</code> y la aplicación los usará en cada petición.</li>
-                </ul>
-            </div>
-        </details>
-
-        <details class="installer-section" style="margin-top: 1rem;">
-            <summary class="installer-section-title" style="cursor: pointer; list-style: none;">Opciones avanzadas (crear BD o usuario en MySQL)</summary>
-            <div class="installer-section-box" style="margin-top: 0.5rem;">
+        <details class="installer-details">
+            <summary>Más opciones</summary>
+            <div class="installer-section-box" style="margin-top: 0.75rem;">
                 <div class="form-group">
-                    <label>Crear base de datos</label>
-                    <div class="row-of-fields">
-                        <span style="flex:1; min-width:0;"></span>
-                        <button type="button" id="btn-create-db" class="btn btn-outline-primary">Crear BD</button>
-                    </div>
+                    <label class="small text-muted">Crear base de datos en el servidor</label>
+                    <button type="button" id="btn-create-db" class="btn btn-outline-primary btn-sm">Crear BD</button>
                     <div id="create-db-result" class="mt-2" style="display: none;"></div>
                 </div>
                 <div class="form-group">
-                    <label>Crear usuario MySQL</label>
-                    <div class="row-of-fields">
-                        <span style="flex:1; min-width:0;"></span>
-                        <button type="button" id="btn-create-user" class="btn btn-outline-secondary">Crear usuario</button>
-                    </div>
+                    <label class="small text-muted">Crear usuario MySQL</label>
+                    <button type="button" id="btn-create-user" class="btn btn-outline-secondary btn-sm">Crear usuario</button>
                     <div id="create-user-admin-wrap" style="display: none; margin-top: 0.5rem;">
                         <div class="row-of-fields">
-                            <input type="text" id="DB_ADMIN_USERNAME" class="form-control form-control-sm" placeholder="root" style="flex: 1; min-width: 0;">
+                            <input type="text" id="DB_ADMIN_USERNAME" class="form-control form-control-sm" placeholder="Usuario admin (ej. root)" style="flex: 1; min-width: 0;">
                             <span class="password-wrap">
-                                <input type="password" id="DB_ADMIN_PASSWORD" class="form-control form-control-sm" placeholder="adminisp%">
+                                <input type="password" id="DB_ADMIN_PASSWORD" class="form-control form-control-sm" placeholder="Contraseña admin">
                                 <button type="button" class="btn-password-toggle btn btn-outline-secondary form-control-sm" data-target="DB_ADMIN_PASSWORD">Ver</button>
                             </span>
                         </div>
@@ -112,15 +89,34 @@
             </div>
         </details>
 
-        <div class="installer-actions" style="margin-top: 1.25rem;">
-            <button type="button" id="btn-test-db" class="btn btn-outline-primary">Probar conexión</button>
+        <div class="installer-actions installer-actions-primary">
             <button type="submit" class="btn btn-primary">Guardar y continuar</button>
+            <button type="button" id="btn-test-db" class="btn btn-outline-primary">Probar conexión</button>
         </div>
         <div id="test-db-result" class="mt-2" style="display: none;"></div>
     </form>
 
-    <a href="{{ route('installer.index') }}" class="btn btn-outline-secondary btn-block" style="margin-top: 1rem;">← Volver</a>
+    <a href="{{ route('installer.index') }}" class="btn btn-outline-secondary btn-block" style="margin-top: 1rem;">Volver</a>
 </div>
+
+@push('styles')
+<style>
+.installer-database-step .installer-lead { font-size: 0.9rem; color: #495057; margin-bottom: 1.25rem; line-height: 1.45; }
+.installer-database-step .installer-lead code { font-size: 0.85em; background: #e9ecef; padding: 0.15em 0.4em; border-radius: 4px; }
+.installer-database-step .installer-details { margin-top: 1.25rem; }
+.installer-database-step .installer-details summary { font-size: 0.8rem; font-weight: 600; color: #6c757d; cursor: pointer; list-style: none; }
+.installer-database-step .installer-details summary::-webkit-details-marker { display: none; }
+.installer-database-step .installer-details summary::before { content: '▶ '; font-size: 0.65rem; }
+.installer-database-step .installer-details[open] summary::before { content: '▼ '; }
+.installer-database-step .btn-sm { padding: 0.5rem 0.75rem; font-size: 0.875rem; min-height: 36px; }
+.installer-database-step .installer-actions-primary { display: flex; flex-direction: column-reverse; gap: 0.5rem; margin-top: 1.5rem; }
+.installer-database-step .installer-actions-primary .btn-primary { order: -1; }
+@media (min-width: 480px) {
+    .installer-database-step .installer-actions-primary { flex-direction: row; }
+    .installer-database-step .installer-actions-primary .btn-primary { order: 0; }
+}
+</style>
+@endpush
 
 @push('scripts')
 <script>
