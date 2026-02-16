@@ -101,14 +101,16 @@ class PermissionService
      */
     public function getAllPermissions(array $filters = []): \Illuminate\Support\Collection
     {
-        // Generar clave de caché única basada en los filtros
         $cacheKey = 'permissions.all.' . md5(serialize($filters));
-
-        return Cache::remember(
-            $cacheKey,
-            3600,
-            fn() => $this->permissionRepository->getAllWithFilters($filters)
-        );
+        $result = Cache::get($cacheKey);
+        if ($result !== null) {
+            return $result;
+        }
+        $result = $this->permissionRepository->getAllWithFilters($filters);
+        if ($result->isNotEmpty()) {
+            Cache::put($cacheKey, $result, 3600);
+        }
+        return $result;
     }
 
     /**

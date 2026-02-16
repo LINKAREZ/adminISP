@@ -2,6 +2,7 @@
 
 namespace App\Modules\ControlAcceso\Repositories;
 
+use App\Core\Services\TenantConnectionService;
 use App\Modules\ControlAcceso\Models\Permission;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Schema;
@@ -96,9 +97,8 @@ class PermissionRepository
      */
     public function getAllWithFilters(array $filters = []): \Illuminate\Support\Collection
     {
-        // En la vista de administración mostramos TODOS los permisos (visibles y ocultos)
-        // para que el administrador pueda gestionarlos
-        $query = Permission::query();
+        $conn = TenantConnectionService::centralConnection();
+        $query = Permission::on($conn)->query();
 
         // Filtro por módulo (exacto)
         if (isset($filters['module']) && !empty($filters['module'])) {

@@ -25,7 +25,7 @@ class PermissionController extends Controller
 
         $filters = [
             'module' => $request->get('module'),
-            'search' => $request->get('search'),
+            'search' => $request->get('search') ?? $request->get('buscar'),
         ];
 
         // Obtener todos los permisos como colección (no paginado) para poder agruparlos por módulo

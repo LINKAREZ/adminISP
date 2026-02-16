@@ -91,9 +91,9 @@ class UserController extends Controller
             $this->authorize('viewAny', User::class);
         }
 
-        // Obtener filtros de búsqueda
+        // Obtener filtros de búsqueda (el formulario envía 'buscar')
         $filters = [
-            'search' => $request->get('search'),
+            'search' => $request->get('search') ?? $request->get('buscar'),
         ];
 
         $users = $this->userService->getPaginatedUsers(15, $filters);

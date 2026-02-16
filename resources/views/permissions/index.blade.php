@@ -179,9 +179,9 @@
                             @endforeach
                         </div>
 
-                        <!-- Vista desktop: Tabla -->
-                        <div class="table-responsive d-none d-md-block">
-                            <table id="tablaPermisos" class="table table-hover" data-datatable="true" data-options='{"dom": "<\"row\"<\"col-sm-12 col-md-6\"l>>rt<\"row\"<\"col-sm-12 col-md-5\"i><\"col-sm-12 col-md-7\"p>>"}'>
+                        <!-- Vista desktop: Tabla (sin DataTables para que se vean las filas) -->
+                        <div class="table-responsive">
+                            <table id="tablaPermisos" class="table table-hover table-striped">
                                 <thead>
                                     <tr>
                                         <th class="align-middle" style="width: 20%;">Módulo</th>
@@ -354,71 +354,4 @@
         })();
     </script>
 
-    @push('styles')
-    <style>
-        /* Ocultar el buscador nativo de DataTables */
-        .dataTables_filter {
-            display: none !important;
-        }
-    </style>
-    @endpush
-
-    @push('scripts')
-    <script>
-    (function() {
-        'use strict';
-
-        // Función para ocultar el buscador de DataTables
-        function hideDataTablesFilter() {
-            const filter = document.querySelector('.dataTables_filter');
-            if (filter) {
-                filter.style.display = 'none';
-            }
-        }
-
-        // Ocultar inmediatamente si ya existe
-        hideDataTablesFilter();
-
-        // Observar cambios en el DOM para cuando DataTables se inicialice
-        const observer = new MutationObserver(function(mutations) {
-            hideDataTablesFilter();
-        });
-
-        // Observar el contenedor de la tabla
-        const tableContainer = document.querySelector('.table-responsive');
-        if (tableContainer) {
-            observer.observe(tableContainer.parentElement, {
-                childList: true,
-                subtree: true
-            });
-        }
-
-        // También ocultar después de que se cargue la página
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', function() {
-                setTimeout(hideDataTablesFilter, 100);
-                setTimeout(hideDataTablesFilter, 500);
-                setTimeout(hideDataTablesFilter, 1000);
-            });
-        } else {
-            setTimeout(hideDataTablesFilter, 100);
-            setTimeout(hideDataTablesFilter, 500);
-            setTimeout(hideDataTablesFilter, 1000);
-        }
-
-        // Si jQuery está disponible, también usar eventos de DataTables
-        if (typeof jQuery !== 'undefined') {
-            jQuery(document).ready(function($) {
-                // Ocultar cuando DataTables se inicialice
-                $(document).on('init.dt', function() {
-                    hideDataTablesFilter();
-                });
-
-                // Verificar periódicamente
-                setInterval(hideDataTablesFilter, 500);
-            });
-        }
-    })();
-    </script>
-    @endpush
 @endsection
