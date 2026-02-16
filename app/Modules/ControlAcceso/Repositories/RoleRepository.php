@@ -2,6 +2,7 @@
 
 namespace App\Modules\ControlAcceso\Repositories;
 
+use App\Core\Services\TenantConnectionService;
 use App\Modules\ControlAcceso\Models\Role;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
@@ -50,7 +51,8 @@ class RoleRepository
      */
     public function getPaginatedWithUserCount(int $perPage = 15, array $filters = []): LengthAwarePaginator
     {
-        $query = Role::withCount('users'); // Conteo sin cargar relaciones
+        $conn = TenantConnectionService::centralConnection();
+        $query = Role::on($conn)->withCount('users');
 
         // Búsqueda avanzada en múltiples campos
         if (isset($filters['search']) && !empty($filters['search'])) {

@@ -60,20 +60,8 @@ class RoleService
      */
     public function getPaginatedRoles(int $perPage = 15, array $filters = []): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
-        $cacheKey = 'roles.paginated.' . md5(serialize($filters)) . ".{$perPage}." . request()->get('page', 1);
-
-        $result = Cache::get($cacheKey);
-        if ($result !== null) {
-            return $result;
-        }
-
-        $result = $this->roleRepository->getPaginatedWithUserCount($perPage, $filters);
-        // Solo cachear cuando hay datos; evita que una lista vacía cacheada oculte roles tras ejecutar el seeder
-        if ($result->total() > 0) {
-            Cache::put($cacheKey, $result, 3600);
-        }
-
-        return $result;
+        // Sin caché: siempre leer de BD para evitar listas vacías por caché antigua
+        return $this->roleRepository->getPaginatedWithUserCount($perPage, $filters);
     }
 
     /**

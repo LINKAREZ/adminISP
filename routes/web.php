@@ -97,5 +97,17 @@ Route::middleware('auth')->group(function () {
         Route::resource('isps', \App\Modules\Sistema\Controllers\IspController::class)->parameters(['isps' => 'isp']);
         Route::post('isps/{isp}/create-database', [\App\Modules\Sistema\Controllers\IspController::class, 'createDatabase'])->name('isps.create-database');
         Route::patch('isps/{isp}/toggle', [\App\Modules\Sistema\Controllers\IspController::class, 'toggleStatus'])->name('isps.toggle');
+
+        // Debug: comprobar que la app ve roles en la BD central (solo superadmin)
+        Route::get('/debug-roles', function () {
+            $conn = \App\Core\Services\TenantConnectionService::centralConnection();
+            $count = \Illuminate\Support\Facades\DB::connection($conn)->table('roles')->count();
+            $names = \App\Modules\ControlAcceso\Models\Role::on($conn)->orderBy('id')->pluck('name')->toArray();
+            return response()->json([
+                'connection' => $conn,
+                'roles_count' => $count,
+                'roles' => $names,
+            ]);
+        })->name('debug-roles');
     });
 });
