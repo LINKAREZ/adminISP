@@ -421,10 +421,35 @@ class InstallerController extends Controller
             return str_replace(['\\', "'"], ['\\\\', "''"], (string) $s);
         };
 
-        try {
-            $dsn = "mysql:host={$host};port={$port};charset=utf8mb4";
-            $pdo = new \PDO($dsn, $adminUser, $adminPassword, [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION]);
+        $dsn = "mysql:host={$host};port={$port};charset=utf8mb4";
+        $pdo = null;
+        $connectAsRoot = function (string $password) use ($dsn, $adminUser) {
+            return new \PDO($dsn, $adminUser, $password, [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION]);
+        };
 
+        try {
+            $pdo = $connectAsRoot($adminPassword);
+        } catch (\PDOException $e) {
+            if (($e->getCode() === 1045 || str_contains($e->getMessage(), 'Access denied'))
+                && $adminUser === 'root'
+                && ($adminPassword !== env('DB_PASSWORD'))) {
+                try {
+                    $pdo = $connectAsRoot(env('DB_PASSWORD') ?? '');
+                } catch (\PDOException $e2) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Credenciales de root incorrectas. Comprueba que DB_PASSWORD en el .env del servidor coincida con la contraseña de root de MySQL.',
+                    ], 400);
+                }
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Credenciales de root incorrectas. Comprueba que DB_PASSWORD en el .env del servidor coincida con la contraseña de root de MySQL.',
+                ], 400);
+            }
+        }
+
+        try {
             $dbName = '`' . str_replace('`', '``', $database) . '`';
             $userQuoted = "'" . $escape($appUser) . "'@'%'";
 
@@ -447,17 +472,9 @@ class InstallerController extends Controller
                 'message' => "Usuario \"{$appUser}\" creado o actualizado con permisos sobre \"{$database}\".",
             ]);
         } catch (\PDOException $e) {
-            $code = (int) $e->getCode();
-            $msg = $e->getMessage();
-            if ($code === 1045 || str_contains($msg, 'Access denied')) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Credenciales de root incorrectas. Escribe la contraseña de root de MySQL en «Contraseña del usuario admin» (en Más opciones) y pulsa Crear usuario de nuevo. En Docker suele ser la del campo Contraseña de arriba o la antigua del contenedor.',
-                ], 400);
-            }
             return response()->json([
                 'success' => false,
-                'message' => 'Error: ' . $msg,
+                'message' => 'Error: ' . $e->getMessage(),
             ], 400);
         }
     }
