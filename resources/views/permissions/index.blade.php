@@ -1,13 +1,10 @@
 @extends('layouts.adminlte')
 
 @section('title', 'Permisos')
-@section('page-title', 'Permisos')
-
+@section('page-title', '')
 @section('breadcrumb')
-    <x-breadcrumb :items="[
-        ['label' => 'Permisos']
-    ]" />
 @endsection
+@section('hide-content-header', true)
 
 @section('content')
     <!-- Pestañas del Módulo Control de Acceso -->
@@ -61,37 +58,34 @@
 
     <div class="row">
         <div class="col-12">
-            <x-card title="Permisos" icon="fa-key" variant="primary">
-                <x-slot name="actions">
-                    <x-btn :route="route('permissions.create')" variant="primary" size="sm" icon="fa-plus">Nuevo Permiso</x-btn>
-                </x-slot>
-                <!-- Buscador -->
-                <form method="GET" action="{{ route('permissions.index') }}" id="form-buscar-permissions">
-                    <div class="row mb-3">
-                        <div class="col-12 col-md-6 col-lg-4">
-                            <div class="input-group">
-                                <input
-                                    type="text"
-                                    name="buscar"
-                                    id="buscar-permissions"
-                                    value="{{ request('buscar') }}"
-                                    placeholder="Buscar por módulo, submódulo o acción..."
-                                    class="form-control"
-                                />
-                                <div class="input-group-append">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                    @if(request('buscar'))
-                                        <a href="{{ route('permissions.index') }}" class="btn btn-outline-secondary">
-                                            <i class="fas fa-times"></i>
-                                        </a>
-                                    @endif
-                                </div>
+            <x-card title="Permisos" icon="fa-key" variant="primary" :actionsOverlay="true" :hideTitle="true">
+                <x-slot name="headerPrefix">
+                    <form method="GET" action="{{ route('permissions.index') }}" id="form-buscar-permissions" class="w-100" style="max-width: 280px;">
+                        <div class="input-group input-group-sm">
+                            <input
+                                type="text"
+                                name="buscar"
+                                id="buscar-permissions"
+                                value="{{ request('buscar') }}"
+                                placeholder="Buscar por módulo, submódulo o acción..."
+                                class="form-control form-control-sm"
+                            />
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-light">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                                @if(request('buscar'))
+                                    <a href="{{ route('permissions.index') }}" class="btn btn-light">
+                                        <i class="fas fa-times"></i>
+                                    </a>
+                                @endif
                             </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </x-slot>
+                <x-slot name="actions">
+                    <x-btn :route="route('permissions.create')" variant="light" size="sm" icon="fa-plus" title="Nuevo Permiso" class="btn-add-icon"></x-btn>
+                </x-slot>
                     @if($groupedByModule->isEmpty())
                         <x-empty-state
                             icon="fa-inbox"

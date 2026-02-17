@@ -4,6 +4,7 @@
 @section('page-title', '')
 @section('breadcrumb')
 @endsection
+@section('hide-content-header', true)
 
 @section('content')
     <!-- Pestañas del Módulo Control de Acceso -->
@@ -11,39 +12,34 @@
 
     <div class="row">
         <div class="col-12">
-            <x-card title="Usuarios" icon="fa-users" variant="primary">
-                <x-slot name="actions">
-                    <x-btn :route="route('users.create')" variant="primary" size="sm" icon="fa-plus">
-                        Agregar Usuario
-                    </x-btn>
-                </x-slot>
-                <!-- Buscador -->
-                <form method="GET" action="{{ route('users.index') }}" id="form-buscar-users" class="mb-2">
-                    <div class="row">
-                        <div class="col-12 col-md-6 col-lg-4">
-                            <div class="input-group">
-                                <input
-                                    type="text"
-                                    name="buscar"
-                                    id="buscar-users"
-                                    value="{{ request('buscar') }}"
-                                    placeholder="Buscar por nombre, email o rol..."
-                                    class="form-control"
-                                />
-                                <div class="input-group-append">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                    @if(request('buscar'))
-                                        <a href="{{ route('users.index') }}" class="btn btn-outline-secondary">
-                                            <i class="fas fa-times"></i>
-                                        </a>
-                                    @endif
-                                </div>
+            <x-card title="Usuarios" icon="fa-users" variant="primary" :actionsOverlay="true" :hideTitle="true">
+                <x-slot name="headerPrefix">
+                    <form method="GET" action="{{ route('users.index') }}" id="form-buscar-users" class="w-100" style="max-width: 280px;">
+                        <div class="input-group input-group-sm">
+                            <input
+                                type="text"
+                                name="buscar"
+                                id="buscar-users"
+                                value="{{ request('buscar') }}"
+                                placeholder="Buscar por nombre, email o rol..."
+                                class="form-control form-control-sm"
+                            />
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-light">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                                @if(request('buscar'))
+                                    <a href="{{ route('users.index') }}" class="btn btn-light">
+                                        <i class="fas fa-times"></i>
+                                    </a>
+                                @endif
                             </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </x-slot>
+                <x-slot name="actions">
+                    <x-btn :route="route('users.create')" variant="light" size="sm" icon="fa-plus" title="Agregar Usuario" class="btn-add-icon"></x-btn>
+                </x-slot>
 
                     <!-- Vista móvil: Cards -->
                     <div class="d-md-none">

@@ -33,15 +33,14 @@
             display: flex;
             align-items: flex-start;
             justify-content: center;
-            padding: 2rem 1.5rem 1.5rem;
-            padding-top: min(6vh, 4rem);
+            padding: 0.5rem 1.5rem 1.5rem;
             background: linear-gradient(145deg, var(--gray-900) 0%, #1e2433 40%, var(--primary-dark) 100%);
             background-attachment: fixed;
         }
         .login-container { width: 100%; max-width: 420px; }
         .login-logo {
             text-align: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.75rem;
         }
         .login-logo h1 {
             font-size: 2.25rem;

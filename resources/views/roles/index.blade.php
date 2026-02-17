@@ -1,13 +1,10 @@
 @extends('layouts.adminlte')
 
 @section('title', 'Roles')
-@section('page-title', 'Roles')
-
+@section('page-title', '')
 @section('breadcrumb')
-    <x-breadcrumb :items="[
-        ['label' => 'Roles']
-    ]" />
 @endsection
+@section('hide-content-header', true)
 
 @section('content')
     <!-- Pestañas del Módulo Control de Acceso -->
@@ -15,39 +12,34 @@
 
     <div class="row">
         <div class="col-12">
-            <x-card title="Roles" icon="fa-user-shield" variant="primary">
-                <x-slot name="actions">
-                    <x-btn :route="route('roles.create')" variant="primary" size="sm" icon="fa-plus">
-                        Nuevo Rol
-                    </x-btn>
-                </x-slot>
-                <!-- Buscador -->
-                <form method="GET" action="{{ route('roles.index') }}" id="form-buscar-roles">
-                    <div class="row mb-3">
-                        <div class="col-12 col-md-6 col-lg-4">
-                            <div class="input-group">
-                                <input
-                                    type="text"
-                                    name="buscar"
-                                    id="buscar-roles"
-                                    value="{{ request('buscar') }}"
-                                    placeholder="Buscar por nombre o descripción..."
-                                    class="form-control"
-                                />
-                                <div class="input-group-append">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                    @if(request('buscar'))
-                                        <a href="{{ route('roles.index') }}" class="btn btn-outline-secondary">
-                                            <i class="fas fa-times"></i>
-                                        </a>
-                                    @endif
-                                </div>
+            <x-card title="Roles" icon="fa-user-shield" variant="primary" :actionsOverlay="true" :hideTitle="true">
+                <x-slot name="headerPrefix">
+                    <form method="GET" action="{{ route('roles.index') }}" id="form-buscar-roles" class="w-100" style="max-width: 280px;">
+                        <div class="input-group input-group-sm">
+                            <input
+                                type="text"
+                                name="buscar"
+                                id="buscar-roles"
+                                value="{{ request('buscar') }}"
+                                placeholder="Buscar por nombre o descripción..."
+                                class="form-control form-control-sm"
+                            />
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-light">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                                @if(request('buscar'))
+                                    <a href="{{ route('roles.index') }}" class="btn btn-light">
+                                        <i class="fas fa-times"></i>
+                                    </a>
+                                @endif
                             </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </x-slot>
+                <x-slot name="actions">
+                    <x-btn :route="route('roles.create')" variant="light" size="sm" icon="fa-plus" title="Nuevo Rol" class="btn-add-icon"></x-btn>
+                </x-slot>
 
                     <!-- Vista móvil: Cards (mismo patrón que Red/Instalaciones: título enlace + badge + dropdown en header) -->
                     <div class="d-md-none">

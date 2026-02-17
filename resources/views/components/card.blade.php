@@ -72,7 +72,9 @@
     'collapsible' => false,
     'collapsed' => false,
     'noPadding' => false,
-    'outline' => false
+    'outline' => false,
+    'actionsOverlay' => false,
+    'hideTitle' => false,  // Oculta título cuando hay pestañas que ya indican la sección (evita redundancia)
 ])
 
 @php
@@ -80,6 +82,9 @@
     $cardClass = "card card-{$variant}";
     if ($outline) {
         $cardClass .= ' card-outline';
+    }
+    if ($actionsOverlay) {
+        $cardClass .= ' card-actions-overlay';
     }
     // En Blade, cuando hay un slot 'title', la variable $title contiene el slot (objeto ComponentSlot)
     // Si no hay slot, $title será el prop pasado como atributo o null
@@ -99,9 +104,14 @@
         <div class="card-header p-0 border-bottom-0 card-header-mobile">
             {{ $tabs }}
         </div>
-    @elseif($hasTitle || isset($title))
-        {{-- Header estándar con título --}}
-        <div class="card-header card-header-mobile">
+    @elseif($hasTitle || isset($title) || isset($headerPrefix) || isset($actions) || $collapsible)
+        {{-- Header estándar (título opcional cuando hideTitle para evitar redundancia con pestañas) --}}
+        <div class="card-header card-header-mobile {{ $hideTitle ? 'card-header-no-title' : '' }} {{ isset($headerPrefix) ? 'card-header-with-prefix' : '' }}">
+            @if(isset($headerPrefix))
+            <div class="card-header-prefix flex-grow-1 d-flex align-items-center">
+                {{ $headerPrefix }}
+            </div>
+            @elseif(!$hideTitle && ($hasTitle || isset($title)))
             <h3 class="card-title card-title-mobile">
                 @if($icon && !$hasTitleSlot)
                     <i class="fas {{ $icon }} mr-2"></i>
@@ -117,9 +127,10 @@
             @if($subtitle)
                 <p class="text-muted mb-0 small card-subtitle-mobile">{{ $subtitle }}</p>
             @endif
+            @endif
 
             @if(isset($actions) || $collapsible)
-                <div class="card-tools card-tools-mobile">
+                <div class="card-tools card-tools-mobile ml-auto">
                     {{ $actions ?? '' }}
 
                     @if($collapsible)
@@ -158,6 +169,86 @@
 <style>
     .card-tabs-below {
         border-top: 1px solid var(--gray-200, #e2e8f0);
+    }
+    .card-actions-overlay {
+        position: relative;
+    }
+    .card-header-no-title {
+        min-height: 52px;
+        padding: 0.75rem 1rem;
+    }
+    .card-header-no-title .card-tools {
+        margin-top: 0 !important;
+    }
+    .card-header-with-prefix {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .card-header-with-prefix .card-header-prefix {
+        flex: 1;
+        min-width: 0;
+    }
+    .card-actions-overlay .card-header-with-prefix .card-header-prefix {
+        padding-right: 3rem;
+    }
+    /* Diseño armónico: buscador y botones misma altura, bordes suaves (card-primary) */
+    .card.card-primary .card-header-prefix .input-group,
+    .card.card-outline-primary .card-header-prefix .input-group {
+        --header-bar-height: 36px;
+        --header-bar-radius: 8px;
+    }
+    .card.card-primary .card-header-prefix .input-group .form-control,
+    .card.card-outline-primary .card-header-prefix .input-group .form-control {
+        height: var(--header-bar-height) !important;
+        min-height: var(--header-bar-height) !important;
+        border-radius: var(--header-bar-radius) 0 0 var(--header-bar-radius) !important;
+        border: 1px solid rgba(255,255,255,0.9) !important;
+        font-size: 0.875rem !important;
+    }
+    .card.card-primary .card-header-prefix .input-group-append .btn,
+    .card.card-primary .card-header-prefix .input-group-append a.btn,
+    .card.card-outline-primary .card-header-prefix .input-group-append .btn,
+    .card.card-outline-primary .card-header-prefix .input-group-append a.btn {
+        width: var(--header-bar-height) !important; height: var(--header-bar-height) !important;
+        min-width: var(--header-bar-height) !important; min-height: var(--header-bar-height) !important;
+        padding: 0 !important; border-radius: 0 !important;
+        display: inline-flex !important; align-items: center !important; justify-content: center !important;
+        background: #fff !important; color: #1e40af !important; border: 1px solid rgba(255,255,255,0.9) !important;
+        font-weight: 600 !important; box-shadow: 0 1px 2px rgba(0,0,0,0.06) !important;
+    }
+    .card.card-primary .card-header-prefix .input-group .input-group-append > .btn:last-child,
+    .card.card-primary .card-header-prefix .input-group .input-group-append > a.btn:last-child,
+    .card.card-outline-primary .card-header-prefix .input-group .input-group-append > .btn:last-child,
+    .card.card-outline-primary .card-header-prefix .input-group .input-group-append > a.btn:last-child {
+        border-radius: 0 var(--header-bar-radius) var(--header-bar-radius) 0 !important;
+    }
+    .card.card-primary .card-header-prefix .input-group-append .btn i,
+    .card.card-primary .card-header-prefix .input-group-append a.btn i,
+    .card.card-outline-primary .card-header-prefix .input-group-append .btn i,
+    .card.card-outline-primary .card-header-prefix .input-group-append a.btn i {
+        margin: 0 !important; font-size: 0.8rem;
+    }
+    /* Botón + mismo tamaño que el buscador (armonía visual) */
+    .card.card-primary .card-header-with-prefix .card-tools .btn-add-icon,
+    .card.card-outline-primary .card-header-with-prefix .card-tools .btn-add-icon {
+        width: 36px !important; height: 36px !important; min-width: 36px !important; min-height: 36px !important;
+        border-radius: 8px !important;
+    }
+    .card.card-primary .card-header-with-prefix .card-tools .btn-add-icon i,
+    .card.card-outline-primary .card-header-with-prefix .card-tools .btn-add-icon i {
+        font-size: 0.8rem !important;
+    }
+    .card-actions-overlay .card-header {
+        position: relative;
+    }
+    .card-actions-overlay .card-tools {
+        position: absolute !important;
+        top: 50%;
+        right: 1rem;
+        transform: translateY(-50%);
+        z-index: 10;
+        margin: 0 !important;
     }
     /* Mobile-first: base = móvil */
     .card-mobile-optimized {

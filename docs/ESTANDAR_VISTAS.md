@@ -1,17 +1,19 @@
 # Estándar de vistas Blade (panel AdminLTE)
 
-Todas las vistas del panel que usan el layout `layouts.adminlte` deben seguir el **patrón Control de acceso** para mantener consistencia en estructura, filtros, tablas y acciones.
-
-## 0. Patrón de referencia: Control de acceso
+**Regla principal:** La vista de **Control de Acceso** (Users, Roles, Permissions) es la **plantilla de referencia** para el resto de vistas del panel. Todas las vistas de listado deben replicar su estructura y estilo.
 
 Referencia: `resources/views/users/index.blade.php`, `roles/index.blade.php`, `permissions/index.blade.php`.
+
+## 0. Patrón de referencia: Control de acceso (plantilla base)
 
 | Elemento | Patrón |
 |----------|--------|
 | Encabezado | `page-title` vacío, `breadcrumb` vacío, `hide-content-header` true |
 | Content | `@include('modulo.tabs')` + `row` > `col-12` > `x-card` |
-| Botón acción | `x-btn variant="light" icon="fa-plus" class="btn-add-icon" title="..."` (solo icono +) |
-| Filtros | form `mb-2`, labels `small d-block mb-1`, `input-group` con buscar + limpiar |
+| Card | `actionsOverlay="true"`, `hideTitle="true"` (evita redundancia con pestañas) |
+| Buscador | slot `headerPrefix` en la barra azul, alineado con botón + |
+| Botón acción | `x-btn variant="light" icon="fa-plus" class="btn-add-icon" title="..."` (cuadrado 36×36px, mismo tamaño que buscador) |
+| Filtros | `input-group input-group-sm`, botones buscar/X cuadrados (36×36px), `border-radius: 8px` |
 | Tabla | `table table-hover table-striped mb-0`, `thead thead-light`, sin iconos en th |
 | Footer | `<x-slot name="footer">` con solo `{{ $items->links() }}` en `div.text-md-right` |
 | Estado vacío | `<x-empty-state>` o fila con `colspan` y `text-center text-muted py-2` |
@@ -33,13 +35,24 @@ Cada vista de listado debe incluir:
     @include('modulo.tabs')
     <div class="row">
         <div class="col-12">
-            <x-card title="Título" icon="fa-icono" variant="primary">
+            <x-card title="Título" icon="fa-icono" variant="primary" :actionsOverlay="true" :hideTitle="true">
+                <x-slot name="headerPrefix">
+                    <form method="GET" action="{{ route('modulo.index') }}" class="w-100" style="max-width: 280px;">
+                        <div class="input-group input-group-sm">
+                            <input type="text" name="buscar" value="{{ request('buscar') }}" placeholder="Buscar..." class="form-control form-control-sm" />
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-light"><i class="fas fa-search"></i></button>
+                                @if(request('buscar'))
+                                    <a href="{{ route('modulo.index') }}" class="btn btn-light"><i class="fas fa-times"></i></a>
+                                @endif
+                            </div>
+                        </div>
+                    </form>
+                </x-slot>
                 <x-slot name="actions">
                     <x-btn :route="route('modulo.create')" variant="light" size="sm" icon="fa-plus" title="Nuevo" class="btn-add-icon"></x-btn>
                 </x-slot>
-                <form method="GET" action="{{ route('modulo.index') }}" class="mb-2">
-                    ...
-                </form>
+                <!-- Vista móvil: cards / Vista desktop: tabla -->
                 ...
             </x-card>
         </div>
@@ -104,9 +117,10 @@ Para que todas las listas/filtros/tablas se vean y funcionen igual:
 - **No repetir** `<div class="container-fluid">` en la vista; el layout ya envuelve `@yield('content')` en `container-fluid`.
 - Siempre: `<div class="row"><div class="col-12">` y dentro `<x-card>...</x-card>`.
 
-### 8.2 Card
-- Usar `<x-card title="..." icon="fa-..." variant="primary">` con `subtitle` opcional.
-- Acciones en header: `<x-slot name="actions">` con `<x-btn variant="light" size="sm" icon="fa-plus" title="..." class="btn-add-icon">` (botón principal, solo icono +).
+### 8.2 Card (plantilla Control de Acceso)
+- Usar `<x-card title="..." icon="fa-..." variant="primary" :actionsOverlay="true" :hideTitle="true">`.
+- Buscador en barra: slot `headerPrefix` con form + `input-group input-group-sm` (botones buscar/X cuadrados 36×36px, mismo estilo que botón +).
+- Acciones en header: `<x-slot name="actions">` con `<x-btn variant="light" size="sm" icon="fa-plus" title="..." class="btn-add-icon">` (cuadrado 36×36px, `border-radius: 8px`).
 - Botones secundarios: mantener o simplificar a icono si aplica.
 
 ### 8.3 Formulario de filtros

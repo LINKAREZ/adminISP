@@ -76,6 +76,7 @@
 
 - Blade: componentes reutilizables, directivas Blade antes que PHP puro, layouts y secciones.
 - **Vistas panel (adminlte):** Todas las vistas que extienden `layouts.adminlte` deben seguir el estándar en `docs/ESTANDAR_VISTAS.md`: incluir siempre `@section('title')`, `@section('page-title')`, `@section('breadcrumb')` con `<x-breadcrumb>`, y `@section('content')` con estructura row/col y `<x-card>` cuando aplique.
+- **Plantilla de referencia:** La vista de **Control de Acceso** (Users, Roles, Permissions) es la plantilla base para el resto de vistas de listado. Al crear o modificar vistas de módulos (Clientes, Comprobantes, Sistema, etc.), replicar la estructura de `resources/views/users/index.blade.php`, `roles/index.blade.php`, `permissions/index.blade.php`: `hide-content-header`, `x-card` con `actionsOverlay`, `hideTitle`, slot `headerPrefix` (buscador en barra azul), botón `btn-add-icon` (36×36px cuadrado), diseño armónico.
 - Tailwind: clases base = móvil; prefijos sm:, md:, lg: para progresión. AlpineJS para interactividad.
 - Estructura: `app/`, `config/`, `resources/` (views, assets), `routes/`, `database/`, `tests/`.
 

@@ -1,5 +1,5 @@
 {{-- Pestañas Control de acceso: siempre visibles (autorización en controladores) --}}
-<ul class="nav nav-tabs mb-3" role="tablist">
+<ul class="nav nav-tabs mb-2" role="tablist">
     <li class="nav-item">
         <a href="{{ route('users.index') }}"
            class="nav-link {{ request()->is('users*') && !request()->is('roles*') && !request()->is('permissions*') ? 'active' : '' }}"
