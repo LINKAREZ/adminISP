@@ -1,12 +1,8 @@
 @extends('layouts.adminlte')
 
 @section('title', 'Usuarios')
-@section('page-title', 'Usuarios')
-
+@section('page-title', '')
 @section('breadcrumb')
-    <x-breadcrumb :items="[
-        ['label' => 'Usuarios']
-    ]" />
 @endsection
 
 @section('content')
@@ -22,8 +18,8 @@
                     </x-btn>
                 </x-slot>
                 <!-- Buscador -->
-                <form method="GET" action="{{ route('users.index') }}" id="form-buscar-users">
-                    <div class="row mb-3">
+                <form method="GET" action="{{ route('users.index') }}" id="form-buscar-users" class="mb-2">
+                    <div class="row">
                         <div class="col-12 col-md-6 col-lg-4">
                             <div class="input-group">
                                 <input
