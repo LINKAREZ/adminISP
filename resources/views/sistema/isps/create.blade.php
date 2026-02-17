@@ -1,20 +1,18 @@
 @extends('layouts.adminlte')
 
 @section('title', 'Crear Nuevo ISP')
-
 @section('page-title', 'Crear Nuevo ISP')
 
 @section('breadcrumb')
     <x-breadcrumb :items="[
-        ['label' => 'Super Admin', 'route' => 'superadmin.dashboard'],
         ['label' => 'ISPs', 'route' => 'superadmin.isps.index'],
         ['label' => 'Crear']
     ]" />
 @endsection
 
 @section('content')
-<div class="container-fluid">
-    <div class="row">
+    @include('sistema.isps.tabs')
+    <div class="row mt-2">
         <div class="col-12 col-lg-10 offset-lg-1">
             <form action="{{ route('superadmin.isps.store') }}" method="POST">
                 @csrf
@@ -179,7 +177,6 @@
             </form>
         </div>
     </div>
-</div>
 
 @push('styles')
 <style>

@@ -38,6 +38,26 @@
                     </a>
                 </li>
 
+                @if(Route::has('superadmin.plans.index'))
+                <!-- Planes SaaS -->
+                <li class="nav-item">
+                    <a href="{{ route('superadmin.plans.index') }}" class="nav-link {{ request()->is('superadmin/plans*') ? 'active' : '' }}" title="Planes SaaS">
+                        <i class="nav-icon fas fa-boxes"></i>
+                        <p>Planes SaaS</p>
+                    </a>
+                </li>
+                @endif
+
+                @if(Route::has('superadmin.solicitudes.index'))
+                <!-- Solicitudes de Onboarding -->
+                <li class="nav-item">
+                    <a href="{{ route('superadmin.solicitudes.index') }}" class="nav-link {{ request()->is('superadmin/solicitudes*') ? 'active' : '' }}" title="Solicitudes">
+                        <i class="nav-icon fas fa-inbox"></i>
+                        <p>Solicitudes</p>
+                    </a>
+                </li>
+                @endif
+
                 @if(Route::has('superadmin.audit'))
                 <!-- Auditoría -->
                 <li class="nav-item">

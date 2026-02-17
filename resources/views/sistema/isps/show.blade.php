@@ -1,20 +1,18 @@
 @extends('layouts.adminlte')
 
 @section('title', 'ISP: ' . $isp->nombre)
-
 @section('page-title', $isp->nombre)
 
 @section('breadcrumb')
     <x-breadcrumb :items="[
-        ['label' => 'Super Admin', 'route' => 'superadmin.dashboard'],
         ['label' => 'ISPs', 'route' => 'superadmin.isps.index'],
         ['label' => $isp->nombre]
     ]" />
 @endsection
 
 @section('content')
-<div class="container-fluid">
-    <div class="row">
+    @include('sistema.isps.tabs')
+    <div class="row mt-2">
         <!-- Información Principal (mobile first: contenido arriba) -->
         <div class="col-12 col-md-8 order-1 order-md-1">
             <!-- Información del ISP -->
@@ -155,11 +153,6 @@
     <div class="row mt-3">
         <div class="col-12">
             <x-card title="Usuarios Administradores" icon="fa-user-shield" variant="secondary" :outline="true">
-                <x-slot name="actions">
-                    <a href="{{ route('superadmin.create-admin-user') }}?isp_id={{ $isp->id }}" class="btn btn-sm btn-primary">
-                        <i class="fas fa-user-plus"></i> <span class="d-none d-sm-inline">Crear administrador</span><span class="d-sm-none">Crear</span>
-                    </a>
-                </x-slot>
                     @if($defaultAdmins->count() > 0)
                         <!-- Vista escritorio: Tabla -->
                         <div class="table-responsive d-none d-md-block">
@@ -234,15 +227,11 @@
                         <div class="alert alert-warning alert-dismissible">
                             <h5><i class="icon fas fa-exclamation-triangle"></i> Sin administradores</h5>
                             Este ISP no tiene usuarios con rol de administrador.
-                            <a href="{{ route('superadmin.create-admin-user') }}?isp_id={{ $isp->id }}" class="alert-link font-weight-bold">
-                                Crear uno ahora
-                            </a>
                         </div>
                     @endif
             </x-card>
         </div>
     </div>
-</div>
 
 @push('styles')
 <style>

@@ -9,7 +9,8 @@ use App\Modules\Clientes\Models\Cliente;
 use App\Modules\ControlAcceso\Models\User;
 use App\Modules\ControlAcceso\Models\Role;
 use App\Modules\Sistema\Models\Isp;
-use App\Modules\Sistema\Requests\StoreSuperAdminUserRequest;
+use App\Modules\Sistema\Models\Plan;
+use App\Modules\Sistema\Models\TenantRequest;
 use App\Modules\Sistema\Services\IspExportService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -191,58 +192,6 @@ class SuperAdminController extends Controller
     }
 
     /**
-     * Mostrar formulario para crear usuario administrador por ISP
-     */
-    public function createAdminUser()
-    {
-        if (!$this->isSuperAdmin()) {
-            abort(403, 'Solo los super administradores pueden acceder.');
-        }
-
-        $ispsQuery = Isp::withoutGlobalScope(IspScope::class)->orderBy('nombre');
-        if (\Illuminate\Support\Facades\Schema::connection(\App\Core\Services\TenantConnectionService::centralConnection())->hasColumn('isps', 'activo')) {
-            $ispsQuery->where('activo', true);
-        }
-        $isps = $ispsQuery->get();
-
-        $roles = Role::withoutGlobalScope(IspScope::class)
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->get();
-
-        return view('superadmin.create-admin-user', compact('isps', 'roles'));
-    }
-
-    /**
-     * Crear usuario administrador por ISP.
-     *
-     * @param StoreSuperAdminUserRequest $request
-     * @return RedirectResponse
-     */
-    public function storeAdminUser(StoreSuperAdminUserRequest $request): RedirectResponse
-    {
-        if (!$this->isSuperAdmin()) {
-            abort(403, 'Solo los super administradores pueden acceder.');
-        }
-
-        $validated = $request->validated();
-
-        // Crear usuario como administrador por defecto
-        // Nota: El modelo User tiene 'password' => 'hashed' en casts, así que no necesitamos Hash::make()
-        $user = User::withoutGlobalScope(IspScope::class)->create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => $validated['password'], // El modelo lo hasheará automáticamente
-            'isp_id' => $validated['isp_id'],
-            'role_id' => $validated['role_id'],
-            'is_default_admin' => true, // Marcar como admin por defecto
-        ]);
-
-        return redirect()->route('superadmin.create-admin-user')
-            ->with('success', "Usuario administrador creado exitosamente para el ISP. Este usuario no puede ser eliminado.");
-    }
-
-    /**
      * Exportar datos: vista de selección o descarga según isp_id y format.
      *
      * @param Request $request
@@ -288,5 +237,49 @@ class SuperAdminController extends Controller
             ->get();
 
         return view('superadmin.export', compact('isps'));
+    }
+
+    /**
+     * Listado de planes SaaS (central).
+     */
+    public function plans(): View
+    {
+        if (!$this->isSuperAdmin()) {
+            abort(403);
+        }
+
+        $plans = collect();
+        $conn = TenantConnectionService::centralConnection();
+        if (\Illuminate\Support\Facades\Schema::connection($conn)->hasTable('plans')) {
+            $plans = Plan::withCount('isps')->orderBy('sort_order')->orderBy('name')->get();
+        }
+
+        return view('superadmin.plans.index', compact('plans'));
+    }
+
+    /**
+     * Listado de solicitudes de onboarding (tenant_requests).
+     */
+    public function solicitudes(): View
+    {
+        if (!$this->isSuperAdmin()) {
+            abort(403);
+        }
+
+        $conn = TenantConnectionService::centralConnection();
+        if (!\Illuminate\Support\Facades\Schema::connection($conn)->hasTable('tenant_requests')) {
+            $solicitudes = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 25);
+            return view('superadmin.solicitudes.index', compact('solicitudes'));
+        }
+
+        $query = TenantRequest::with('isp')->orderByDesc('created_at');
+
+        if (request()->filled('status')) {
+            $query->where('status', request('status'));
+        }
+
+        $solicitudes = $query->paginate(25)->withQueryString();
+
+        return view('superadmin.solicitudes.index', compact('solicitudes'));
     }
 }

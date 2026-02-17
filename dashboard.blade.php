@@ -53,11 +53,6 @@
                             <i class="fas fa-plus mr-1"></i> Crear nuevo ISP
                         </a>
                     </div>
-                    <div class="col-12 col-md-4 mb-2 mb-md-0">
-                        <a href="{{ route('superadmin.create-admin-user') }}" class="btn btn-outline-primary btn-sm btn-block">
-                            <i class="fas fa-user-shield mr-1"></i> Crear admin por ISP
-                        </a>
-                    </div>
                     <div class="col-12 col-md-4">
                         <a href="{{ route('superadmin.export') }}" class="btn btn-outline-secondary btn-sm btn-block">
                             <i class="fas fa-download mr-1"></i> Exportar datos
@@ -101,8 +96,8 @@
                 description="En el sistema"
                 icon="fas fa-users"
                 variant="secondary"
-                :link="route('superadmin.create-admin-user')"
-                linkText="Crear admin"
+                :link="route('users.index')"
+                linkText="Ver usuarios"
                 class="shadow-sm dashboard-stat-card"
             />
         </div>
@@ -234,7 +229,7 @@
                 description="Por ISP"
                 icon="fas fa-user-shield"
                 variant="secondary"
-                :link="route('superadmin.create-admin-user')"
+                :link="route('users.index')"
                 linkText="Gestionar"
                 class="shadow-sm dashboard-stat-card"
             />

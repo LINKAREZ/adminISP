@@ -6,6 +6,7 @@ use App\Core\Services\TenantConnectionService;
 use App\Core\Services\TenantDatabaseService;
 use App\Http\Controllers\Controller;
 use App\Modules\Sistema\Models\Isp;
+use App\Modules\Sistema\Models\Plan;
 use App\Modules\Sistema\Requests\IndexIspRequest;
 use App\Modules\Sistema\Requests\StoreIspRequest;
 use App\Modules\Sistema\Requests\UpdateIspRequest;
@@ -13,6 +14,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
 class IspController extends Controller
@@ -49,7 +51,7 @@ class IspController extends Controller
             });
         }
 
-        if ($request->filled('estado')) {
+        if ($request->filled('estado') && Schema::connection(\App\Core\Services\TenantConnectionService::centralConnection())->hasColumn('isps', 'activo')) {
             $query->where('activo', $request->estado === 'activo');
         }
 
@@ -70,7 +72,8 @@ class IspController extends Controller
         }
 
         $totalIsps = (clone $query)->count();
-        $ispsActivos = (clone $query)->where('activo', true)->count();
+        $hasActivo = Schema::connection(\App\Core\Services\TenantConnectionService::centralConnection())->hasColumn('isps', 'activo');
+        $ispsActivos = $hasActivo ? (clone $query)->where('activo', true)->count() : $totalIsps;
         $ispsInactivos = $totalIsps - $ispsActivos;
 
         $perPage = (int) config('isp.paginacion.default', 15);
@@ -118,7 +121,12 @@ class IspController extends Controller
             abort(403, 'Solo los super administradores pueden crear ISPs.');
         }
 
-        return view('sistema.isps.create');
+        $plans = collect();
+        if (Schema::connection(\App\Core\Services\TenantConnectionService::centralConnection())->hasTable('plans')) {
+            $plans = Plan::where('is_active', true)->orderBy('sort_order')->orderBy('name')->get();
+        }
+
+        return view('sistema.isps.create', compact('plans'));
     }
 
     /**
@@ -215,7 +223,12 @@ class IspController extends Controller
         $isp = Isp::withoutGlobalScope(\App\Core\Scopes\IspScope::class)
             ->findOrFail($isp->id);
 
-        return view('sistema.isps.edit', compact('isp'));
+        $plans = collect();
+        if (Schema::connection(\App\Core\Services\TenantConnectionService::centralConnection())->hasTable('plans')) {
+            $plans = Plan::where('is_active', true)->orderBy('sort_order')->orderBy('name')->get();
+        }
+
+        return view('sistema.isps.edit', compact('isp', 'plans'));
     }
 
     /**

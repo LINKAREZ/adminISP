@@ -1,9 +1,11 @@
-{{-- Pestañas Gestión ISP (mismo estilo que Control de acceso) --}}
-<ul class="nav nav-tabs mb-3" role="tablist">
+{{-- Pestañas Gestión ISP (solo ISPs - Auditoría y Exportar tienen sus propias vistas) --}}
+<ul class="nav nav-tabs mb-2" role="tablist">
     <li class="nav-item">
-        <a href="{{ route('superadmin.isps.index') }}" class="nav-link {{ request()->routeIs('superadmin.isps.index') ? 'active' : '' }}" role="tab">
-            <i class="fas fa-list mr-1"></i>
-            Lista de ISPs
+        <a href="{{ route('superadmin.isps.index') }}"
+           class="nav-link {{ request()->routeIs('superadmin.isps.*') ? 'active' : '' }}"
+           role="tab">
+            <i class="fas fa-building mr-1"></i>
+            ISPs
         </a>
     </li>
 </ul>

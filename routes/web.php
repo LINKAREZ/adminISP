@@ -86,12 +86,10 @@ Route::middleware('auth')->group(function () {
     // Rutas de Super Admin (solo para super administradores)
     Route::middleware('superadmin')->prefix('superadmin')->name('superadmin.')->group(function () {
         Route::get('/', [\App\Modules\Sistema\Controllers\SuperAdminController::class, 'dashboard'])->name('dashboard');
-        Route::get('/create-admin-user', [\App\Modules\Sistema\Controllers\SuperAdminController::class, 'createAdminUser'])->name('create-admin-user');
-        Route::post('/create-admin-user', [\App\Modules\Sistema\Controllers\SuperAdminController::class, 'storeAdminUser'])
-            ->middleware('throttle:10,1')
-            ->name('store-admin-user');
         Route::get('/export', [\App\Modules\Sistema\Controllers\SuperAdminController::class, 'export'])->name('export');
         Route::get('/audit', [\App\Modules\Sistema\Controllers\SuperAdminAuditController::class, 'index'])->name('audit');
+        Route::get('/plans', [\App\Modules\Sistema\Controllers\SuperAdminController::class, 'plans'])->name('plans.index');
+        Route::get('/solicitudes', [\App\Modules\Sistema\Controllers\SuperAdminController::class, 'solicitudes'])->name('solicitudes.index');
 
         // ISPs (solo super admin)
         Route::resource('isps', \App\Modules\Sistema\Controllers\IspController::class)->parameters(['isps' => 'isp']);

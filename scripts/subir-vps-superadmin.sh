@@ -9,7 +9,6 @@ LOCAL_DIR="${1:-.}"
 echo "Subiendo vistas superadmin a ${VPS}:${REMOTE_DIR}..."
 scp "$LOCAL_DIR/resources/views/superadmin/dashboard.blade.php" \
     "$LOCAL_DIR/resources/views/superadmin/export.blade.php" \
-    "$LOCAL_DIR/resources/views/superadmin/create-admin-user.blade.php" \
     "$VPS:${REMOTE_DIR}/resources/views/superadmin/"
 
 scp "$LOCAL_DIR/resources/views/superadmin/audit/index.blade.php" \

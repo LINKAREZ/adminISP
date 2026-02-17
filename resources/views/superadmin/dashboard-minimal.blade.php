@@ -15,7 +15,6 @@
     <p>Funcionando correctamente.</p>
     <div class="links">
         <a href="{{ url('/superadmin/isps') }}">Gestionar ISPs</a>
-        <a href="{{ url('/superadmin/create-admin-user') }}">Crear admin</a>
         <a href="{{ url('/superadmin/audit') }}">Auditoría</a>
         <a href="{{ url('/superadmin/export') }}">Exportar datos</a>
         <a href="{{ url('/superadmin?full=1') }}">Dashboard completo</a>
