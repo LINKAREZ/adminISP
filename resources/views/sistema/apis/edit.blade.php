@@ -22,7 +22,7 @@
                     @if($api->nombre === 'apisperu')
                         <div class="alert alert-info">
                             <i class="fas fa-info-circle mr-1"></i>
-                            <strong>APIsPERU – DNI y RUC:</strong> Pega aquí el token que te enviaron por email (ej. eyJ0eXAiOiJKV1...). Se usa en la URL como <code>?token=</code>. Sin token, en Crear Cliente no se completarán los nombres al buscar DNI/RUC.
+                            <strong>APIsPERU – DNI y RUC:</strong> Pega aquí el token que te enviaron por email. Se usa en la URL como <code>?token=</code>. Sin token, en Crear Cliente no se completarán los nombres al buscar DNI/RUC.
                         </div>
                     @endif
 
