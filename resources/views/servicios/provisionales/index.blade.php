@@ -1,15 +1,10 @@
 @extends('layouts.adminlte')
 
 @section('title', 'Servicios Provisionales')
-@section('page-title', 'Servicios Provisionales')
-
+@section('page-title', '')
 @section('breadcrumb')
-    <x-breadcrumb :items="[
-        ['label' => 'Servicios', 'route' => 'servicios.home'],
-        ['label' => 'Internet Fibra Óptica', 'route' => 'servicios.internet.index'],
-        ['label' => 'Provisionales']
-    ]" />
 @endsection
+@section('hide-content-header', true)
 
 @section('content')
     @include('servicios.tabs-internet')
@@ -72,8 +67,8 @@
 
                 <!-- Vista desktop: Tabla -->
                 <div class="table-responsive d-none d-md-block">
-                    <table id="tablaServiciosProvisionales" class="table table-hover" data-datatable="true">
-                        <thead>
+                    <table id="tablaServiciosProvisionales" class="table table-hover table-striped mb-0" data-datatable="true">
+                        <thead class="thead-light">
                             <tr>
                                 <th>MAC Address</th>
                                 <th>Cliente</th>
@@ -113,6 +108,13 @@
                         </tbody>
                     </table>
                 </div>
+                @if($serviciosProvisionales->hasPages())
+                    <x-slot name="footer">
+                        <div class="text-md-right">
+                            {{ $serviciosProvisionales->withQueryString()->links() }}
+                        </div>
+                    </x-slot>
+                @endif
             </x-card>
         </div>
     </div>

@@ -1,15 +1,10 @@
 @extends('layouts.adminlte')
 
 @section('title', 'ODFs')
-@section('page-title', 'ODFs — Trazabilidad FTTH')
-
+@section('page-title', '')
 @section('breadcrumb')
-    <x-breadcrumb :items="[
-        ['label' => 'Mapa de red', 'route' => 'infraestructura.mapa.index'],
-        ['label' => 'Detalle PON', 'route' => 'infraestructura.detalle-pon.index'],
-        ['label' => 'ODFs']
-    ]" />
 @endsection
+@section('hide-content-header', true)
 
 @section('content')
     @include('infraestructura.tabs')
@@ -19,13 +14,13 @@
             <x-card title="ODFs" icon="fa-plug" variant="primary">
                 <x-slot name="actions">
                     @if(auth()->user()->hasPermission('infraestructura.create'))
-                        <x-btn :route="route('infraestructura.odfs.create')" variant="primary" size="sm" icon="fa-plus">Nuevo ODF</x-btn>
+                        <x-btn :route="route('infraestructura.odfs.create')" variant="light" size="sm" icon="fa-plus" title="Nuevo ODF" class="btn-add-icon"></x-btn>
                     @endif
                 </x-slot>
                 <div class="table-responsive">
                     @if($odfs->count() > 0)
-                        <table id="tablaOdfs" class="table table-hover">
-                            <thead>
+                        <table id="tablaOdfs" class="table table-hover table-striped mb-0">
+                            <thead class="thead-light">
                                 <tr>
                                     <th>Nombre</th>
                                     <th>Ubicación</th>
@@ -58,9 +53,6 @@
                                 @endforeach
                             </tbody>
                         </table>
-                        @if($odfs->hasPages())
-                            <div class="mt-2">{{ $odfs->withQueryString()->links() }}</div>
-                        @endif
                     @else
                         <x-empty-state
                             icon="fa-plug"
@@ -71,6 +63,13 @@
                         />
                     @endif
                 </div>
+                @if($odfs->hasPages())
+                    <x-slot name="footer">
+                        <div class="text-md-right">
+                            {{ $odfs->withQueryString()->links() }}
+                        </div>
+                    </x-slot>
+                @endif
             </x-card>
         </div>
     </div>

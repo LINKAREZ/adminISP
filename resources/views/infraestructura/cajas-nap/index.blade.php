@@ -1,14 +1,10 @@
 @extends('layouts.adminlte')
 
 @section('title', 'Cajas NAP')
-@section('page-title', 'Cajas NAP')
-
+@section('page-title', '')
 @section('breadcrumb')
-    <x-breadcrumb :items="[
-        ['label' => 'Mapa de red', 'route' => 'infraestructura.mapa.index'],
-        ['label' => 'Cajas NAP']
-    ]" />
 @endsection
+@section('hide-content-header', true)
 
 @section('content')
     @include('infraestructura.tabs')
@@ -17,11 +13,12 @@
         <div class="col-12">
             <x-card title="Cajas NAP" icon="fa-box" variant="primary">
                 <x-slot name="actions">
-                    <x-btn :route="route('infraestructura.cajas-nap.create')" variant="primary" size="sm" icon="fa-plus">Agregar Caja NAP</x-btn>
+                    <x-btn :route="route('infraestructura.cajas-nap.create')" variant="light" size="sm" icon="fa-plus" title="Agregar Caja NAP" class="btn-add-icon"></x-btn>
                 </x-slot>
-                <form method="GET" action="{{ route('infraestructura.cajas-nap.index') }}">
-                    <div class="row mb-3">
+                <form method="GET" action="{{ route('infraestructura.cajas-nap.index') }}" class="mb-2">
+                    <div class="row">
                         <div class="col-12 col-md-6 col-lg-4">
+                            <label class="small d-block mb-1">Buscar</label>
                             <div class="input-group">
                                 <input type="text" name="buscar" value="{{ request('buscar') }}" placeholder="Código o poste..." class="form-control" />
                                 <div class="input-group-append">
@@ -66,8 +63,8 @@
 
                 <div class="table-responsive d-none d-md-block">
                     @if($cajasNap->count() > 0)
-                        <table id="tablaCajasNap" class="table table-hover">
-                            <thead>
+                        <table id="tablaCajasNap" class="table table-hover table-striped mb-0">
+                            <thead class="thead-light">
                                 <tr>
                                     <th>Código</th>
                                     <th>Poste</th>
@@ -100,11 +97,17 @@
                                 @endforeach
                             </tbody>
                         </table>
-                        <div class="mt-2">{{ $cajasNap->withQueryString()->links() }}</div>
                     @else
                         <x-empty-state icon="fa-box" title="No hay cajas NAP" description="Crea primero un poste y luego agrega cajas NAP." action-label="Agregar Caja NAP" action-route="infraestructura.cajas-nap.create" />
                     @endif
                 </div>
+                @if($cajasNap->hasPages())
+                    <x-slot name="footer">
+                        <div class="text-md-right">
+                            {{ $cajasNap->withQueryString()->links() }}
+                        </div>
+                    </x-slot>
+                @endif
             </x-card>
         </div>
     </div>

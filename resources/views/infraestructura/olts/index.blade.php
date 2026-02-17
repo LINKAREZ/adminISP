@@ -1,15 +1,10 @@
 @extends('layouts.adminlte')
 
 @section('title', 'OLTs')
-@section('page-title', 'OLTs — Trazabilidad FTTH')
-
+@section('page-title', '')
 @section('breadcrumb')
-    <x-breadcrumb :items="[
-        ['label' => 'Mapa de red', 'route' => 'infraestructura.mapa.index'],
-        ['label' => 'Detalle PON', 'route' => 'infraestructura.detalle-pon.index'],
-        ['label' => 'OLTs']
-    ]" />
 @endsection
+@section('hide-content-header', true)
 
 @section('content')
     @include('infraestructura.tabs')
@@ -19,13 +14,13 @@
             <x-card title="OLTs" icon="fa-server" variant="primary">
                 <x-slot name="actions">
                     @if(auth()->user()->hasPermission('infraestructura.create'))
-                        <x-btn :route="route('infraestructura.olts.create')" variant="primary" size="sm" icon="fa-plus">Nuevo OLT</x-btn>
+                        <x-btn :route="route('infraestructura.olts.create')" variant="light" size="sm" icon="fa-plus" title="Nuevo OLT" class="btn-add-icon"></x-btn>
                     @endif
                 </x-slot>
                 <div class="table-responsive">
                     @if($olts->count() > 0)
-                        <table id="tablaOlts" class="table table-hover">
-                            <thead>
+                        <table id="tablaOlts" class="table table-hover table-striped mb-0">
+                            <thead class="thead-light">
                                 <tr>
                                     <th>Nombre</th>
                                     <th>Ubicación</th>
@@ -58,9 +53,6 @@
                                 @endforeach
                             </tbody>
                         </table>
-                        @if($olts->hasPages())
-                            <div class="mt-2">{{ $olts->withQueryString()->links() }}</div>
-                        @endif
                     @else
                         <x-empty-state
                             icon="fa-server"
@@ -71,6 +63,13 @@
                         />
                     @endif
                 </div>
+                @if($olts->hasPages())
+                    <x-slot name="footer">
+                        <div class="text-md-right">
+                            {{ $olts->withQueryString()->links() }}
+                        </div>
+                    </x-slot>
+                @endif
             </x-card>
         </div>
     </div>

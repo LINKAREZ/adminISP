@@ -1,30 +1,20 @@
 @extends('layouts.adminlte')
 
 @section('title', 'Sistema - Equipo - Marcas')
-@section('page-title', 'Marcas')
-
+@section('page-title', '')
 @section('breadcrumb')
-    <x-breadcrumb :items="[
-        ['label' => 'Sistema', 'route' => 'sistema.index'],
-        ['label' => 'Equipo', 'route' => 'sistema.equipo.modelos.index'],
-        ['label' => 'Marcas']
-    ]" />
 @endsection
+@section('hide-content-header', true)
 
 @section('content')
-    <!-- Pestañas del Módulo Sistema -->
     @include('sistema.tabs')
-
-    <!-- Sub-pestañas de Equipo -->
     @include('sistema.equipo._tabs')
 
     <div class="row">
         <div class="col-12">
             <x-card title="Marcas de Equipos" icon="fa-server" variant="primary">
                 <x-slot name="actions">
-                    <x-btn :route="route('sistema.equipo.marcas.create')" variant="primary" size="sm" icon="fa-plus">
-                        Nueva Marca
-                    </x-btn>
+                    <x-btn :route="route('sistema.equipo.marcas.create')" variant="light" size="sm" icon="fa-plus" title="Nueva Marca" class="btn-add-icon"></x-btn>
                 </x-slot>
                     <!-- Vista móvil: Cards -->
                     <div class="d-md-none">
@@ -75,8 +65,8 @@
 
                     <!-- Vista desktop: Tabla -->
                     <div class="table-responsive d-none d-md-block">
-                        <table id="tablaMarcas" class="table table-hover" data-datatable="true">
-                            <thead>
+                        <table id="tablaMarcas" class="table table-hover table-striped mb-0" data-datatable="true">
+                            <thead class="thead-light">
                                 <tr>
                                     <th>Orden</th>
                                     <th>Nombre</th>

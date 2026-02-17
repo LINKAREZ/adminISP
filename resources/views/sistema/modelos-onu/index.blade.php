@@ -1,27 +1,26 @@
 @extends('layouts.adminlte')
 
 @section('title', 'Sistema - Modelos ONU')
-@section('page-title', 'Modelos ONU')
+@section('page-title', '')
+@section('breadcrumb')
+@endsection
+@section('hide-content-header', true)
 
 @section('content')
-    <!-- Pestañas del Módulo Sistema -->
     @include('sistema.tabs')
-
-    <!-- Sub-pestañas de Equipo -->
     @include('sistema.equipo._tabs')
 
     <div class="row">
         <div class="col-12">
             <x-card title="Modelos ONU" subtitle="Gestión de credenciales por defecto para cada modelo de ONU" icon="fa-server" variant="primary">
                 <x-slot name="actions">
-                    <x-btn :route="route('sistema.equipo.modelos.create')" variant="success" size="sm" icon="fa-plus">
-                        Nuevo Modelo
-                    </x-btn>
+                    <x-btn :route="route('sistema.equipo.modelos.create')" variant="light" size="sm" icon="fa-plus" title="Nuevo Modelo" class="btn-add-icon"></x-btn>
                 </x-slot>
-                    <!-- Filtro por Marca -->
-                    <div class="row mb-3">
-                        <div class="col-md-4">
-                            <form method="GET" action="{{ request()->is('sistema/equipo/modelos*') ? route('sistema.equipo.modelos.index') : route('sistema.modelos-onu.index') }}" id="filtro-marca-form" class="d-flex align-items-center">
+                <form method="GET" action="{{ request()->is('sistema/equipo/modelos*') ? route('sistema.equipo.modelos.index') : route('sistema.modelos-onu.index') }}" id="filtro-marca-form" class="mb-2">
+                    <div class="row">
+                        <div class="col-12 col-md-4">
+                            <label class="small d-block mb-1">Marca</label>
+                            <div class="d-flex align-items-center">
                                 <select name="marca_id" id="filtro-marca" class="form-control" style="min-width: 200px;">
                                     <option value="">Todas las marcas</option>
                                     @foreach($marcas as $marca)
@@ -31,14 +30,15 @@
                                     @endforeach
                                 </select>
                                 @if(request('marca_id'))
-                                    <a href="{{ request()->is('sistema/equipo/modelos*') ? route('sistema.equipo.modelos.index') : route('sistema.modelos-onu.index') }}" class="btn btn-secondary ml-2">
+                                    <a href="{{ request()->is('sistema/equipo/modelos*') ? route('sistema.equipo.modelos.index') : route('sistema.modelos-onu.index') }}" class="btn btn-outline-secondary ml-2">
                                         <i class="fas fa-times"></i> Limpiar
                                     </a>
                                 @endif
-                            </form>
+                            </div>
                         </div>
                     </div>
-                    <!-- Vista móvil: Lista compacta -->
+                </form>
+                <!-- Vista móvil: Lista compacta -->
                     <div class="d-block d-md-none">
                         @forelse($modelos as $modelo)
                             <div class="card card-outline card-secondary mb-2">
@@ -85,8 +85,8 @@
                     <!-- Vista desktop: Tabla -->
                     <div class="d-none d-md-block">
                         <div class="table-responsive">
-                            <table id="tablaModelosOnu" class="table table-hover" data-datatable="true">
-                                <thead>
+                            <table id="tablaModelosOnu" class="table table-hover table-striped mb-0" data-datatable="true">
+                                <thead class="thead-light">
                                     <tr>
                                         <th>Marca</th>
                                         <th>Modelo</th>
@@ -145,10 +145,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="7" class="text-center py-5">
-                                                <i class="fas fa-server fa-3x text-muted mb-3"></i>
-                                                <p class="text-muted mb-0">No hay modelos ONU registrados</p>
-                                            </td>
+                                            <td colspan="7" class="text-center text-muted py-2">No hay modelos ONU registrados.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>

@@ -1,13 +1,10 @@
 @extends('layouts.adminlte')
 
 @section('title', 'Comprobantes')
-@section('page-title', 'Comprobantes')
-
+@section('page-title', '')
 @section('breadcrumb')
-    <x-breadcrumb :items="[
-        ['label' => 'Comprobantes']
-    ]" />
 @endsection
+@section('hide-content-header', true)
 
 @section('content')
     <!-- Pestañas del Módulo Comprobantes -->
@@ -98,14 +95,8 @@
     <!-- Tabla de comprobantes -->
     <x-card title="Lista de Comprobantes" icon="fa-file-invoice" variant="primary">
         <x-slot name="actions">
-            <div class="d-flex flex-wrap" style="gap: 0.5rem;">
-                <x-btn :route="route('comprobantes.series')" variant="secondary" size="sm" icon="fa-list-ol">
-                    Series
-                </x-btn>
-                <x-btn :route="route('comprobantes.create')" variant="success" size="sm" icon="fa-plus">
-                    Nuevo Comprobante
-                </x-btn>
-            </div>
+            <x-btn :route="route('comprobantes.series')" variant="light" size="sm" icon="fa-list-ol" title="Series"></x-btn>
+            <x-btn :route="route('comprobantes.create')" variant="light" size="sm" icon="fa-plus" title="Nuevo Comprobante" class="btn-add-icon"></x-btn>
         </x-slot>
             <!-- Vista móvil: Cards -->
             <div class="d-md-none">
@@ -182,8 +173,8 @@
             <!-- Vista desktop: Tabla -->
             <div class="table-responsive d-none d-md-block">
                 @if($comprobantes->count() > 0)
-                    <table id="tablaComprobantes" class="table table-hover table-striped">
-                        <thead>
+                    <table id="tablaComprobantes" class="table table-hover table-striped mb-0">
+                        <thead class="thead-light">
                             <tr>
                                 <th>Número</th>
                                 <th>Cliente</th>

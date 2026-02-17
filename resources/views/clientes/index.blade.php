@@ -1,13 +1,10 @@
 @extends('layouts.adminlte')
 
 @section('title', 'Clientes')
-@section('page-title', 'Clientes')
-
+@section('page-title', '')
 @section('breadcrumb')
-    <x-breadcrumb :items="[
-        ['label' => 'Clientes']
-    ]" />
 @endsection
+@section('hide-content-header', true)
 
 @section('content')
     @include('clientes.tabs')
@@ -16,9 +13,7 @@
         <div class="col-12">
             <x-card title="Clientes" icon="fa-users" variant="primary">
                 <x-slot name="actions">
-                    <x-btn :route="route('clientes.create')" variant="primary" size="sm" icon="fa-plus">
-                        Nuevo Cliente
-                    </x-btn>
+                    <x-btn :route="route('clientes.create')" variant="light" size="sm" icon="fa-plus" title="Nuevo Cliente" class="btn-add-icon"></x-btn>
                     <x-btn :route="route('clientes.pppoe.importar')" variant="secondary" size="sm" icon="fa-download">
                         Importar PPPoE
                     </x-btn>
@@ -29,10 +24,10 @@
                     @endif
                 </x-slot>
 
-                <form method="GET" action="{{ route('clientes.index') }}" class="mb-3">
+                <form method="GET" action="{{ route('clientes.index') }}" class="mb-2">
                     <div class="row">
                         <div class="col-12 col-md-6 col-lg-4">
-                            <label>Router</label>
+                            <label class="small d-block mb-1">Router</label>
                             <select name="router_id" class="form-control" onchange="this.form.submit()" required>
                                 <option value="">Seleccione un router...</option>
                                 @foreach($routers as $router)
@@ -222,8 +217,8 @@
 
                     <!-- Vista desktop: Tabla -->
                     <div class="table-responsive d-none d-md-block">
-                        <table id="tablaClientes" class="table table-hover table-striped" data-datatable="true" data-options='{"dom": "rt<\"row\"<\"col-sm-12 col-md-5\"i><\"col-sm-12 col-md-7\"p>>", "pageLength": {{ request("per_page") == "all" ? max($clientes->total(), 1) : (int) request("per_page", 20) }}}'>
-                            <thead>
+                        <table id="tablaClientes" class="table table-hover table-striped mb-0" data-datatable="true" data-options='{"dom": "rt<\"row\"<\"col-sm-12 col-md-5\"i><\"col-sm-12 col-md-7\"p>>", "pageLength": {{ request("per_page") == "all" ? max($clientes->total(), 1) : (int) request("per_page", 20) }}}'>
+                            <thead class="thead-light">
                                 <tr>
                                     <th>Cliente</th>
                                     <th>Documento</th>

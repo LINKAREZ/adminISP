@@ -1,23 +1,23 @@
 @extends('layouts.adminlte')
+
 @section('title', 'Seguimiento de altas')
-@section('page-title', 'Seguimiento de altas')
+@section('page-title', '')
 @section('breadcrumb')
-    <x-breadcrumb :items="[
-        ['label' => 'Instalaciones', 'route' => 'instalaciones.index'],
-        ['label' => 'Seguimiento de altas']
-    ]" />
 @endsection
+@section('hide-content-header', true)
+
 @section('content')
     <div class="row">
         <div class="col-12">
             <x-card title="Seguimiento de altas nuevas" icon="fa-chart-line" variant="primary">
                 <x-slot name="actions">
-                    <a href="{{ route('instalaciones.comisiones.index') }}" class="btn btn-sm btn-success"><i class="fas fa-money-bill-wave mr-1"></i>Liquidar comisiones</a>
-                    <x-btn :route="route('instalaciones.index')" variant="secondary" size="sm" icon="fa-arrow-left">Volver</x-btn>
+                    <a href="{{ route('instalaciones.comisiones.index') }}" class="btn btn-light btn-sm"><i class="fas fa-money-bill-wave mr-1"></i>Liquidar comisiones</a>
+                    <x-btn :route="route('instalaciones.index')" variant="light" size="sm" icon="fa-arrow-left" title="Volver"></x-btn>
                 </x-slot>
-                <form method="GET" action="{{ route('instalaciones.altas') }}" class="mb-3 row">
-                    <div class="col-auto">
-                        <label class="sr-only">Vendedor</label>
+                <form method="GET" action="{{ route('instalaciones.altas') }}" class="mb-2">
+                    <div class="row">
+                    <div class="col-12 col-md-3 col-lg-2">
+                        <label class="small d-block mb-1">Vendedor</label>
                         <select name="vendedor_id" class="form-control form-control-sm">
                             <option value="">Todos los vendedores</option>
                             @foreach($vendedores as $v)
@@ -25,16 +25,16 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-auto">
-                        <label class="sr-only">Desde</label>
+                    <div class="col-12 col-md-3 col-lg-2">
+                        <label class="small d-block mb-1">Desde</label>
                         <input type="date" name="fecha_desde" class="form-control form-control-sm" value="{{ request('fecha_desde') }}" placeholder="Desde">
                     </div>
-                    <div class="col-auto">
-                        <label class="sr-only">Hasta</label>
+                    <div class="col-12 col-md-3 col-lg-2">
+                        <label class="small d-block mb-1">Hasta</label>
                         <input type="date" name="fecha_hasta" class="form-control form-control-sm" value="{{ request('fecha_hasta') }}" placeholder="Hasta">
                     </div>
-                    <div class="col-auto">
-                        <label class="sr-only">Mes permanencia</label>
+                    <div class="col-12 col-md-3 col-lg-2">
+                        <label class="small d-block mb-1">Mes permanencia</label>
                         <select name="mes_permanencia" class="form-control form-control-sm">
                             <option value="">Todos</option>
                             <option value="1" {{ request('mes_permanencia') === '1' ? 'selected' : '' }}>Mes 1</option>
@@ -42,13 +42,18 @@
                             <option value="3" {{ request('mes_permanencia') === '3' ? 'selected' : '' }}>3+</option>
                         </select>
                     </div>
-                    <div class="col-auto">
-                        <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
+                    <div class="col-12 col-md-3 col-lg-2">
+                        <label class="small d-block mb-1">&nbsp;</label>
+                        <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-search"></i> Filtrar</button>
+                        @if(request()->hasAny(['vendedor_id','fecha_desde','fecha_hasta','mes_permanencia']))
+                            <a href="{{ route('instalaciones.altas') }}" class="btn btn-outline-secondary btn-sm"><i class="fas fa-times"></i></a>
+                        @endif
+                    </div>
                     </div>
                 </form>
                 <div class="table-responsive">
-                    <table class="table table-hover table-sm">
-                        <thead>
+                    <table class="table table-hover table-striped mb-0">
+                        <thead class="thead-light">
                             <tr>
                                 <th>Orden</th>
                                 <th>Cliente</th>
@@ -91,12 +96,18 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="9" class="text-center text-muted">No hay altas con los filtros indicados.</td></tr>
+                                <tr><td colspan="9" class="text-center text-muted py-2">No hay altas con los filtros indicados.</td></tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
-                {{ $ordenes->links() }}
+                @if($ordenes->hasPages())
+                    <x-slot name="footer">
+                        <div class="text-md-right">
+                            {{ $ordenes->links() }}
+                        </div>
+                    </x-slot>
+                @endif
             </x-card>
         </div>
     </div>

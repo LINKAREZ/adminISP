@@ -1,31 +1,24 @@
 @extends('layouts.adminlte')
 
 @section('title', 'Nodos')
-@section('page-title', 'Nodos')
-
+@section('page-title', '')
 @section('breadcrumb')
-    <x-breadcrumb :items="[
-        ['label' => 'Red', 'route' => 'red.nodos.index'],
-        ['label' => 'Nodos']
-    ]" />
 @endsection
+@section('hide-content-header', true)
 
 @section('content')
-    <!-- Pestañas del Módulo Red -->
     @include('red.tabs')
 
     <div class="row">
         <div class="col-12">
             <x-card title="Nodos" icon="fa-sitemap" variant="primary">
                 <x-slot name="actions">
-                    <x-btn :route="route('red.nodos.create')" variant="primary" size="sm" icon="fa-plus">
-                        Agregar Nodo
-                    </x-btn>
+                    <x-btn :route="route('red.nodos.create')" variant="light" size="sm" icon="fa-plus" title="Agregar Nodo" class="btn-add-icon"></x-btn>
                 </x-slot>
-                <!-- Buscador -->
-                <form method="GET" action="{{ route('red.nodos.index') }}" id="form-buscar-nodos">
-                    <div class="row mb-3">
+                <form method="GET" action="{{ route('red.nodos.index') }}" id="form-buscar-nodos" class="mb-2">
+                    <div class="row">
                         <div class="col-12 col-md-6 col-lg-4">
+                            <label class="small d-block mb-1">Buscar</label>
                             <div class="input-group">
                                 <input
                                     type="text"
@@ -103,8 +96,8 @@
                     <!-- Vista desktop: Tabla -->
                     <div class="table-responsive d-none d-md-block">
                         @if($nodos->count() > 0)
-                            <table id="tablaNodos" class="table table-hover" data-datatable="true" data-options='{"dom": "<\"row\"<\"col-sm-12 col-md-6\"l>>rt<\"row\"<\"col-sm-12 col-md-5\"i><\"col-sm-12 col-md-7\"p>>"}'>
-                                <thead>
+                            <table id="tablaNodos" class="table table-hover table-striped mb-0" data-datatable="true" data-options='{"dom": "<\"row\"<\"col-sm-12 col-md-6\"l>>rt<\"row\"<\"col-sm-12 col-md-5\"i><\"col-sm-12 col-md-7\"p>>"}'>
+                                <thead class="thead-light">
                                     <tr>
                                         <th>Nombre</th>
                                         <th>Ubicación</th>

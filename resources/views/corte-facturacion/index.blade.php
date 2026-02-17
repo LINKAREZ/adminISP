@@ -1,11 +1,11 @@
 @extends('layouts.adminlte')
+
 @section('title', 'Corte y facturación')
-@section('page-title', 'Corte y facturación')
+@section('page-title', '')
 @section('breadcrumb')
-    <x-breadcrumb :items="[
-        ['label' => 'Corte y facturación']
-    ]" />
 @endsection
+@section('hide-content-header', true)
+
 @section('content')
     <x-card title="Corte y facturación automática" subtitle="Ejecutar manualmente las tareas programadas" icon="fa-calendar-check" variant="primary">
         <p class="text-muted">Las tareas de facturación y corte se ejecutan automáticamente cada día según la configuración del servidor. Aquí puede ejecutarlas ahora para este ISP.</p>

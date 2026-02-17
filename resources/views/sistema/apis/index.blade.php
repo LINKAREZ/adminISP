@@ -1,10 +1,12 @@
 @extends('layouts.adminlte')
 
 @section('title', 'Sistema - APIs')
-@section('page-title', 'APIs')
+@section('page-title', '')
+@section('breadcrumb')
+@endsection
+@section('hide-content-header', true)
 
 @section('content')
-    <!-- Pestañas del Módulo Sistema -->
     @include('sistema.tabs')
 
     <div class="row">
@@ -69,8 +71,8 @@
                     <!-- Vista desktop: Tabla -->
                     <div class="d-none d-md-block">
                         <div class="table-responsive">
-                            <table id="tablaApis" class="table table-hover" data-datatable="true">
-                                <thead>
+                            <table id="tablaApis" class="table table-hover table-striped mb-0" data-datatable="true">
+                                <thead class="thead-light">
                                     <tr>
                                         <th>API</th>
                                         <th>Descripción</th>

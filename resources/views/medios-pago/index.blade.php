@@ -1,31 +1,24 @@
 @extends('layouts.adminlte')
 
 @section('title', 'Sistema - Medios de Pago')
-@section('page-title', 'Medios de Pago')
-
+@section('page-title', '')
 @section('breadcrumb')
-    <x-breadcrumb :items="[
-        ['label' => 'Sistema', 'route' => 'sistema.medios-pago.index'],
-        ['label' => 'Medios de Pago']
-    ]" />
 @endsection
+@section('hide-content-header', true)
 
 @section('content')
-    <!-- Pestañas del Módulo Sistema -->
     @include('sistema.tabs')
 
     <div class="row">
         <div class="col-12">
             <x-card title="Medios de Pago" icon="fa-money-bill-wave" variant="primary">
                 <x-slot name="actions">
-                    <x-btn :route="route('sistema.medios-pago.create')" variant="primary" size="sm" icon="fa-plus">
-                        Agregar Medio de Pago
-                    </x-btn>
+                    <x-btn :route="route('sistema.medios-pago.create')" variant="light" size="sm" icon="fa-plus" title="Agregar Medio de Pago" class="btn-add-icon"></x-btn>
                 </x-slot>
-                <!-- Buscador -->
-                <form method="GET" action="{{ route('sistema.medios-pago.index') }}" id="form-buscar-medios-pago">
-                    <div class="row mb-3">
+                <form method="GET" action="{{ route('sistema.medios-pago.index') }}" id="form-buscar-medios-pago" class="mb-2">
+                    <div class="row">
                         <div class="col-12 col-md-6 col-lg-4">
+                            <label class="small d-block mb-1">Buscar</label>
                             <div class="input-group">
                                 <input
                                     type="text"
@@ -105,8 +98,8 @@
 
                     <!-- Vista desktop: Tabla -->
                     <div class="table-responsive d-none d-md-block">
-                        <table id="tablaMediosPago" class="table table-hover" data-datatable="true">
-                            <thead>
+                        <table id="tablaMediosPago" class="table table-hover table-striped mb-0" data-datatable="true">
+                            <thead class="thead-light">
                                 <tr>
                                     <th>Nombre</th>
                                     <th>Tipo</th>

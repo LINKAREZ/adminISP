@@ -1,14 +1,10 @@
 @extends('layouts.adminlte')
 
 @section('title', 'Internet Fibra Óptica')
-@section('page-title', 'Internet Fibra Óptica')
-
+@section('page-title', '')
 @section('breadcrumb')
-    <x-breadcrumb :items="[
-        ['label' => 'Servicios', 'route' => 'servicios.home'],
-        ['label' => 'Internet Fibra Óptica']
-    ]" />
 @endsection
+@section('hide-content-header', true)
 
 @section('content')
     @include('servicios.tabs-internet')

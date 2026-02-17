@@ -1,14 +1,10 @@
 @extends('layouts.adminlte')
 
 @section('title', 'Sistema - Avisos')
-@section('page-title', 'Avisos en pantalla')
-
+@section('page-title', '')
 @section('breadcrumb')
-    <x-breadcrumb :items="[
-        ['label' => 'Sistema', 'route' => 'sistema.index'],
-        ['label' => 'Avisos']
-    ]" />
 @endsection
+@section('hide-content-header', true)
 
 @section('content')
     @include('sistema.tabs')
@@ -16,12 +12,12 @@
     <div class="row">
         <div class="col-12">
             <x-card title="Avisos" subtitle="Mensajes para mostrar en pantalla" icon="fa-bullhorn" variant="primary">
-                <div class="mb-3">
-                    <a href="{{ route('sistema.avisos.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Nuevo aviso</a>
-                </div>
+                <x-slot name="actions">
+                    <x-btn :route="route('sistema.avisos.create')" variant="light" size="sm" icon="fa-plus" title="Nuevo aviso" class="btn-add-icon"></x-btn>
+                </x-slot>
                 <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
+                    <table class="table table-hover table-striped mb-0">
+                        <thead class="thead-light">
                             <tr>
                                 <th>ID</th>
                                 <th>Título</th>
@@ -60,13 +56,17 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center py-4 text-muted">No hay avisos.</td>
+                                    <td colspan="6" class="text-center text-muted py-2">No hay avisos.</td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
-                {{ $avisos->links() }}
+                <x-slot name="footer">
+                    <div class="text-md-right">
+                        {{ $avisos->links() }}
+                    </div>
+                </x-slot>
             </x-card>
         </div>
     </div>

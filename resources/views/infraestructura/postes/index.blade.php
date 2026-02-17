@@ -1,14 +1,10 @@
 @extends('layouts.adminlte')
 
 @section('title', 'Postes')
-@section('page-title', 'Postes')
-
+@section('page-title', '')
 @section('breadcrumb')
-    <x-breadcrumb :items="[
-        ['label' => 'Mapa de red', 'route' => 'infraestructura.mapa.index'],
-        ['label' => 'Postes (listado)']
-    ]" />
 @endsection
+@section('hide-content-header', true)
 
 @push('styles')
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">

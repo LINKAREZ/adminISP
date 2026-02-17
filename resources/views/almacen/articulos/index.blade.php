@@ -1,11 +1,10 @@
 @extends('layouts.adminlte')
 
 @section('title', 'Almacén - Artículos')
-@section('page-title', 'Artículos')
-
+@section('page-title', '')
 @section('breadcrumb')
-    <x-breadcrumb :items="[['label' => 'Almacén', 'route' => 'almacen.articulos.index'], ['label' => 'Artículos']]" />
 @endsection
+@section('hide-content-header', true)
 
 @section('content')
     @include('almacen.tabs')
@@ -14,15 +13,25 @@
             <x-card title="Artículos" icon="fa-boxes" variant="primary">
                 <x-slot name="actions">
                     @if(auth()->user()->hasPermission('almacen.create'))
-                        <x-btn :route="route('almacen.articulos.create')" variant="primary" size="sm" icon="fa-plus">Nuevo artículo</x-btn>
+                        <x-btn :route="route('almacen.articulos.create')" variant="light" size="sm" icon="fa-plus" title="Nuevo artículo" class="btn-add-icon"></x-btn>
                     @endif
                 </x-slot>
-                <form method="GET" action="{{ route('almacen.articulos.index') }}" class="mb-3">
+                <form method="GET" action="{{ route('almacen.articulos.index') }}" class="mb-2">
                     <div class="row">
-                        <div class="col-12 col-md-4">
-                            <input type="text" name="buscar" value="{{ request('buscar') }}" placeholder="Buscar..." class="form-control">
+                        <div class="col-12 col-md-4 col-lg-3">
+                            <label class="small d-block mb-1">Buscar</label>
+                            <div class="input-group">
+                                <input type="text" name="buscar" value="{{ request('buscar') }}" placeholder="Buscar..." class="form-control">
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i></button>
+                                    @if(request('buscar') || request('tipo'))
+                                        <a href="{{ route('almacen.articulos.index') }}" class="btn btn-outline-secondary"><i class="fas fa-times"></i></a>
+                                    @endif
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-12 col-md-2">
+                        <div class="col-12 col-md-3 col-lg-2">
+                            <label class="small d-block mb-1">Tipo</label>
                             <select name="tipo" class="form-control">
                                 <option value="">Todos</option>
                                 <option value="equipo" {{ request('tipo') === 'equipo' ? 'selected' : '' }}>Equipo</option>
@@ -31,14 +40,11 @@
                                 <option value="consumible" {{ request('tipo') === 'consumible' ? 'selected' : '' }}>Consumible</option>
                             </select>
                         </div>
-                        <div class="col-12 col-md-2">
-                            <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i></button>
-                        </div>
                     </div>
                 </form>
                 <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
+                    <table class="table table-hover table-striped mb-0">
+                        <thead class="thead-light">
                             <tr>
                                 <th>Nombre</th>
                                 <th>Código</th>
@@ -71,12 +77,18 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="6" class="text-center text-muted">No hay artículos.</td></tr>
+                                <tr><td colspan="6" class="text-center text-muted py-2">No hay artículos.</td></tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
-                <div class="mt-2">{{ $articulos->withQueryString()->links() }}</div>
+                @if($articulos->hasPages())
+                    <x-slot name="footer">
+                        <div class="text-md-right">
+                            {{ $articulos->withQueryString()->links() }}
+                        </div>
+                    </x-slot>
+                @endif
             </x-card>
         </div>
     </div>

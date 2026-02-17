@@ -1,13 +1,11 @@
 @extends('layouts.adminlte')
+
 @section('title', 'Liquidar comisiones')
-@section('page-title', 'Comisiones vendedor')
+@section('page-title', '')
 @section('breadcrumb')
-    <x-breadcrumb :items="[
-        ['label' => 'Instalaciones', 'route' => 'instalaciones.index'],
-        ['label' => 'Seguimiento de altas', 'route' => 'instalaciones.altas'],
-        ['label' => 'Liquidar comisiones']
-    ]" />
 @endsection
+@section('hide-content-header', true)
+
 @section('content')
     <div class="row">
         <div class="col-12">
@@ -19,16 +17,16 @@
             @endif
             <x-card title="Liquidar comisiones (3er mes)" icon="fa-money-bill-wave" variant="primary">
                 <x-slot name="actions">
-                    <a href="{{ route('instalaciones.altas') }}" class="btn btn-sm btn-outline-primary">Seguimiento de altas</a>
-                    <x-btn :route="route('instalaciones.index')" variant="secondary" size="sm" icon="fa-arrow-left">Volver</x-btn>
+                    <a href="{{ route('instalaciones.altas') }}" class="btn btn-light btn-sm">Seguimiento de altas</a>
+                    <x-btn :route="route('instalaciones.index')" variant="light" size="sm" icon="fa-arrow-left" title="Volver"></x-btn>
                 </x-slot>
 
                 <h6 class="mt-3">Altas elegibles (cumplieron 3 meses, sin comisión registrada)</h6>
                 <p class="small text-muted">Registre la comisión para que quede pendiente de pago. Luego márquela como pagada cuando efectúe el pago.</p>
                 <div class="table-responsive">
-                    <table class="table table-sm table-hover">
-                        <thead>
-                            <tr><th>Orden</th><th>Cliente</th><th>Vendedor</th><th>Fecha 3er mes</th><th>Monto</th><th></th></tr>
+                    <table class="table table-hover table-striped mb-0">
+                        <thead class="thead-light">
+                            <tr><th>Orden</th><th>Cliente</th><th>Vendedor</th><th>Fecha 3er mes</th><th>Monto</th><th width="100"></th></tr>
                         </thead>
                         <tbody>
                             @forelse($elegibles as $orden)
@@ -48,7 +46,7 @@
                                     <td></td>
                                 </tr>
                             @empty
-                                <tr><td colspan="6" class="text-muted">No hay altas elegibles por el momento.</td></tr>
+                                <tr><td colspan="6" class="text-center text-muted py-2">No hay altas elegibles por el momento.</td></tr>
                             @endforelse
                         </tbody>
                     </table>
@@ -57,9 +55,9 @@
                 <hr>
                 <h6>Comisiones pendientes de pago</h6>
                 <div class="table-responsive">
-                    <table class="table table-sm table-hover">
-                        <thead>
-                            <tr><th>Orden</th><th>Cliente</th><th>Vendedor</th><th>Monto</th><th>Fecha 3er mes</th><th></th></tr>
+                    <table class="table table-hover table-striped mb-0">
+                        <thead class="thead-light">
+                            <tr><th>Orden</th><th>Cliente</th><th>Vendedor</th><th>Monto</th><th>Fecha 3er mes</th><th width="100"></th></tr>
                         </thead>
                         <tbody>
                             @forelse($pendientes as $com)
@@ -77,7 +75,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="6" class="text-muted">No hay comisiones pendientes.</td></tr>
+                                <tr><td colspan="6" class="text-center text-muted py-2">No hay comisiones pendientes.</td></tr>
                             @endforelse
                         </tbody>
                     </table>

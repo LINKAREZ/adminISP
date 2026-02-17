@@ -1,10 +1,12 @@
 @extends('layouts.adminlte')
 
 @section('title', 'Sistema - Plantillas de WhatsApp')
-@section('page-title', 'Plantillas de WhatsApp')
+@section('page-title', '')
+@section('breadcrumb')
+@endsection
+@section('hide-content-header', true)
 
 @section('content')
-    <!-- Pestañas del Módulo Sistema -->
     @include('sistema.tabs')
 
     <div class="row">
@@ -49,8 +51,8 @@
                     <!-- Vista desktop: Tabla -->
                     <div class="d-none d-md-block">
                         <div class="table-responsive">
-                            <table id="tablaPlantillas" class="table table-hover" data-datatable="true">
-                                <thead>
+                            <table id="tablaPlantillas" class="table table-hover table-striped mb-0" data-datatable="true">
+                                <thead class="thead-light">
                                     <tr>
                                         <th>Tipo</th>
                                         <th>Nombre</th>
@@ -82,17 +84,13 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="4" class="text-center py-5">
-                                                <i class="fab fa-whatsapp fa-3x text-muted mb-3"></i>
-                                                <p class="text-muted mb-0">No hay plantillas configuradas</p>
-                                            </td>
+                                            <td colspan="4" class="text-center text-muted py-2">No hay plantillas configuradas.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
                             </table>
                         </div>
                     </div>
-                </div>
             </x-card>
         </div>
     </div>
