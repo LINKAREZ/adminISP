@@ -1,6 +1,21 @@
     <div class="row" id="servicio-edit-container">
         <div class="col-12">
             <x-card title="Editar Servicio PPPoE" icon="fa-wifi" variant="primary">
+                <x-slot name="actions">
+                    @php
+                        $clienteRef = $cliente ?? $servicio->ubicacion->cliente ?? null;
+                        $clienteId = $clienteId ?? ($clienteRef->id ?? $servicio->ubicacion->cliente_id ?? null);
+                    @endphp
+                    @if(isset($fromCliente) && $fromCliente && $clienteRef)
+                        <x-btn :route="route('clientes.servicios.show', [$clienteRef, $servicio])" variant="secondary" size="sm" icon="fa-arrow-left">
+                            Volver
+                        </x-btn>
+                    @else
+                        <x-btn :route="route('servicios.show', $servicio)" variant="secondary" size="sm" icon="fa-arrow-left">
+                            Volver
+                        </x-btn>
+                    @endif
+                </x-slot>
                 <form method="POST" action="{{ (isset($fromCliente) && $fromCliente && isset($clienteId)) ? route('clientes.servicios.update', ['cliente' => $clienteId, 'servicio' => $servicio]) : route('servicios.update', $servicio) }}" id="form-servicio-edit" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
@@ -172,6 +187,39 @@
                                             <strong>{{ $message }}</strong>
                                         </span>
                                     @enderror
+                                </div>
+
+                                <hr>
+                                <h6 class="text-muted">Facturación (opcional)</h6>
+                                <p class="small text-muted">Si se dejan en blanco se usa el valor global (día {{ config('isp.comprobantes.dia_emision', 20) }}, {{ config('isp.comprobantes.dias_gracia', 7) }} días de gracia).</p>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Día de facturación (1-28)</label>
+                                            <input type="number" name="dia_facturacion" class="form-control @error('dia_facturacion') is-invalid @enderror" min="1" max="28" placeholder="Ej: 20" value="{{ old('dia_facturacion', $servicio->dia_facturacion) }}">
+                                            @error('dia_facturacion')
+                                                <span class="invalid-feedback"><strong>{{ $message }}</strong></span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Día de corte (1-28)</label>
+                                            <input type="number" name="dia_corte" class="form-control @error('dia_corte') is-invalid @enderror" min="1" max="28" placeholder="Opcional" value="{{ old('dia_corte', $servicio->dia_corte) }}">
+                                            @error('dia_corte')
+                                                <span class="invalid-feedback"><strong>{{ $message }}</strong></span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Días de gracia</label>
+                                            <input type="number" name="dias_gracia" class="form-control @error('dias_gracia') is-invalid @enderror" min="0" max="31" placeholder="Ej: 7" value="{{ old('dias_gracia', $servicio->dias_gracia) }}">
+                                            @error('dias_gracia')
+                                                <span class="invalid-feedback"><strong>{{ $message }}</strong></span>
+                                            @enderror
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -410,23 +458,43 @@
 
                                 <div class="form-group mt-3">
                                     <label><i class="fas fa-camera mr-1"></i> Fotos de ubicación (hasta 3)</label>
-                                    <small class="d-block text-muted mb-2">Opcional. JPG/PNG, máx. 2 MB cada una.</small>
+                                    <small class="d-block text-muted mb-3"><span class="text-danger">*</span> Obligatorio al menos 1 foto. JPG/PNG, máx. 2 MB cada una. Asigna un título descriptivo (ej: fachada, puerta, piso).</small>
                                     @if(!$servicio->ubicacion_id || !$servicio->ubicacion)
                                         <p class="text-muted small mb-2">Guarda primero la dirección de la ubicación para poder subir fotos aquí.</p>
                                     @endif
+                                    @php
+                                        $fotoTitulosPorDefecto = [1 => 'Fachada', 2 => 'Puerta', 3 => 'Piso'];
+                                    @endphp
                                     <div class="row">
                                         @foreach([1 => 'ubicacion_foto_1', 2 => 'ubicacion_foto_2', 3 => 'ubicacion_foto_3'] as $num => $name)
-                                            <div class="col-md-4 mb-2">
-                                                <div class="border rounded p-2 text-center" style="min-height: 100px; background: #f8f9fa;">
-                                                    @php
-                                                        $fKey = 'foto_' . $num;
-                                                        $fotoPath = $servicio->ubicacion?->$fKey ?? null;
-                                                    @endphp
-                                                    @if(!empty($fotoPath))
-                                                        <img src="{{ route('ubicaciones.foto', ['ubicacion' => $servicio->ubicacion->id, 'num' => $num]) }}" alt="Foto {{ $num }}" class="img-fluid rounded mb-1" style="max-height: 80px; object-fit: cover;">
-                                                        <small class="d-block text-muted">Reemplazar:</small>
-                                                    @endif
-                                                    <input type="file" name="{{ $name }}" accept="image/jpeg,image/png,image/webp" class="form-control form-control-sm" @if(!$servicio->ubicacion_id || !$servicio->ubicacion) disabled @endif>
+                                            @php
+                                                $fKey = 'foto_' . $num;
+                                                $tituloKey = 'foto_' . $num . '_titulo';
+                                                $fotoPath = $servicio->ubicacion?->$fKey ?? null;
+                                                $tituloVal = old('ubicacion_' . $tituloKey, $servicio->ubicacion?->$tituloKey ?? $fotoTitulosPorDefecto[$num]);
+                                            @endphp
+                                            <div class="col-12 col-md-4 mb-3">
+                                                <div class="card h-100 shadow-sm border">
+                                                    <div class="card-body p-3 text-center">
+                                                        <label class="small font-weight-bold text-secondary mb-1">Foto {{ $num }}</label>
+                                                        <input type="text"
+                                                               name="ubicacion_{{ $tituloKey }}"
+                                                               value="{{ $tituloVal }}"
+                                                               placeholder="{{ $fotoTitulosPorDefecto[$num] }}"
+                                                               class="form-control form-control-sm mb-2 @error('ubicacion_' . $tituloKey) is-invalid @enderror"
+                                                               maxlength="80"
+                                                               @if(!$servicio->ubicacion_id || !$servicio->ubicacion) disabled @endif>
+                                                        <div class="rounded overflow-hidden bg-light mb-2" style="min-height: 100px;">
+                                                            @if(!empty($fotoPath))
+                                                                <img src="{{ route('ubicaciones.foto', ['ubicacion' => $servicio->ubicacion->id, 'num' => $num]) }}" alt="Foto {{ $num }}" class="img-fluid w-100" style="max-height: 120px; object-fit: cover;">
+                                                            @else
+                                                                <div class="d-flex align-items-center justify-content-center h-100 text-muted small">
+                                                                    <i class="fas fa-image fa-2x opacity-50"></i>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                        <input type="file" name="{{ $name }}" accept="image/jpeg,image/png,image/webp" capture="environment" class="form-control form-control-sm" style="min-height: 44px;" @if(!$servicio->ubicacion_id || !$servicio->ubicacion) disabled @endif>
+                                                    </div>
                                                 </div>
                                             </div>
                                         @endforeach
@@ -438,6 +506,15 @@
                                         <span class="invalid-feedback d-block" role="alert"><strong>{{ $message }}</strong></span>
                                     @enderror
                                     @error('ubicacion_foto_3')
+                                        <span class="invalid-feedback d-block" role="alert"><strong>{{ $message }}</strong></span>
+                                    @enderror
+                                    @error('ubicacion_foto_1_titulo')
+                                        <span class="invalid-feedback d-block" role="alert"><strong>{{ $message }}</strong></span>
+                                    @enderror
+                                    @error('ubicacion_foto_2_titulo')
+                                        <span class="invalid-feedback d-block" role="alert"><strong>{{ $message }}</strong></span>
+                                    @enderror
+                                    @error('ubicacion_foto_3_titulo')
                                         <span class="invalid-feedback d-block" role="alert"><strong>{{ $message }}</strong></span>
                                     @enderror
                                 </div>

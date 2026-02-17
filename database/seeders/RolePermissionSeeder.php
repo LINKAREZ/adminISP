@@ -20,8 +20,10 @@ class RolePermissionSeeder extends Seeder
     private const ROLES = [
         'administrador' => 'Máxima autoridad del ISP. Acceso total.',
         'supervisor' => 'Supervisión y reportes. Sin eliminar datos críticos.',
+        'gerente-finanzas' => 'Gerente Finanzas. Dashboard, comprobantes, gastos, reportes y auditoría.',
         'cobrador' => 'Cobranza y caja. Clientes (lectura), comprobantes.',
         'tecnico' => 'Operaciones y campo. Red, servicios, clientes, comprobantes. Sin eliminaciones.',
+        'soporte' => 'Soporte técnico. Tickets, clientes (consulta), comprobantes (consulta).',
         'ayudante' => 'Apoyo operativo. Consultas y registro básico.',
     ];
 
@@ -33,8 +35,13 @@ class RolePermissionSeeder extends Seeder
         'servicios' => ['create', 'read', 'update', 'delete'],
         'clientes' => ['create', 'read', 'update', 'delete'],
         'comprobantes' => ['create', 'read', 'update', 'delete'],
+        'instalaciones' => ['create', 'read', 'update', 'delete'],
+        'almacen' => ['create', 'read', 'update', 'delete'],
+        'infraestructura' => ['create', 'read', 'update', 'delete'],
+        'mapa-red' => ['read', 'edit', 'admin'],
         'sistema' => ['create', 'read', 'update', 'delete'],
         'auditoria' => ['read'],
+        'tickets' => ['read', 'create'],
     ];
 
     private const MODULE_LABELS = [
@@ -44,14 +51,21 @@ class RolePermissionSeeder extends Seeder
         'servicios' => 'Servicios',
         'clientes' => 'Clientes',
         'comprobantes' => 'Comprobantes',
+        'instalaciones' => 'Instalaciones',
+        'almacen' => 'Almacén',
+        'infraestructura' => 'Infraestructura',
+        'mapa-red' => 'Mapa de Red',
         'sistema' => 'Sistema',
         'auditoria' => 'Auditoría',
+        'tickets' => 'Tickets',
     ];
     private const ACTION_LABELS = [
         'create' => 'Crear',
         'read' => 'Ver',
         'update' => 'Editar',
         'delete' => 'Eliminar',
+        'edit' => 'Editar',
+        'admin' => 'Administrar',
     ];
 
     public function run(): void
@@ -121,7 +135,19 @@ class RolePermissionSeeder extends Seeder
                 'servicios.read', 'servicios.create', 'servicios.update',
                 'clientes.read', 'clientes.create', 'clientes.update',
                 'comprobantes.read', 'comprobantes.create', 'comprobantes.update', 'comprobantes.delete',
+                'instalaciones.read', 'instalaciones.create', 'instalaciones.update',
+                'almacen.read', 'almacen.create', 'almacen.update', 'almacen.delete',
+                'infraestructura.read', 'infraestructura.create', 'infraestructura.update',
+                'mapa-red.read', 'mapa-red.edit',
                 'sistema.read',
+                'auditoria.read',
+                'tickets.read', 'tickets.create',
+            ],
+            'gerente-finanzas' => [
+                'dashboard.read',
+                'clientes.read',
+                'comprobantes.read', 'comprobantes.create', 'comprobantes.update', 'comprobantes.delete',
+                'instalaciones.read',
                 'auditoria.read',
             ],
             'cobrador' => [
@@ -135,11 +161,23 @@ class RolePermissionSeeder extends Seeder
                 'servicios.read', 'servicios.create', 'servicios.update',
                 'clientes.read', 'clientes.create', 'clientes.update',
                 'comprobantes.read', 'comprobantes.create', 'comprobantes.update',
+                'instalaciones.read', 'instalaciones.create', 'instalaciones.update',
+                'infraestructura.read', 'infraestructura.create', 'infraestructura.update',
+                'mapa-red.read', 'mapa-red.edit',
+                'tickets.read', 'tickets.create',
+            ],
+            'soporte' => [
+                'dashboard.read',
+                'clientes.read',
+                'comprobantes.read',
+                'tickets.read', 'tickets.create',
             ],
             'ayudante' => [
                 'dashboard.read',
                 'clientes.read',
                 'comprobantes.read', 'comprobantes.create',
+                'instalaciones.read',
+                'infraestructura.read',
             ],
             default => [],
         };

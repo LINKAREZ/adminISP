@@ -11,6 +11,18 @@
        ============================================ */
 
     :root {
+        /* Mobile-first: breakpoints (usar en min-width para progresión) */
+        --bp-sm: 576px;
+        --bp-md: 768px;
+        --bp-lg: 992px;
+        --bp-xl: 1200px;
+
+        /* Safe areas (notch, home indicator) - respetar en móviles */
+        --safe-top: env(safe-area-inset-top, 0);
+        --safe-right: env(safe-area-inset-right, 0);
+        --safe-bottom: env(safe-area-inset-bottom, 0);
+        --safe-left: env(safe-area-inset-left, 0);
+
         /* Colores Primarios - Índigo moderno */
         --primary: #4f46e5;
         --primary-light: #6366f1;
@@ -65,7 +77,13 @@
         --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* === TIPOGRAFÍA MODERNA === */
+    /* === MOBILE-FIRST: BASE === */
+    html {
+        /* Evitar overflow horizontal en móvil */
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+
     body {
         font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         font-size: 0.875rem;
@@ -73,11 +91,13 @@
         background: var(--gray-50);
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        /* Mobile-first: prevenir zoom en inputs */
         -webkit-text-size-adjust: 100%;
+        /* Safe area: padding inferior para home indicator (iOS/Android) */
+        padding-left: var(--safe-left);
+        padding-right: var(--safe-right);
     }
-    
-    /* Mobile-first: Base font size más grande en móviles */
+
+    /* Mobile-first: base más grande y safe-area en contenido */
     @media (max-width: 767.98px) {
         body {
             font-size: 0.9375rem;
@@ -431,6 +451,16 @@
 
     .btn:active {
         transform: translateY(0);
+    }
+
+    /* Mobile-first: feedback táctil en botones */
+    @media (max-width: 767.98px) {
+        .btn:active {
+            opacity: 0.9;
+        }
+        .dropdown-item:active {
+            background: var(--primary-100);
+        }
     }
 
     .btn-sm {
@@ -896,6 +926,8 @@
     @media (max-width: 767.98px) {
         .content-header-mobile {
             padding: 0.75rem 1rem;
+            padding-left: calc(1rem + var(--safe-left));
+            padding-right: calc(1rem + var(--safe-right));
         }
 
         .page-title-mobile {
@@ -915,11 +947,23 @@
 
         .content-mobile {
             padding: 0.75rem 0.5rem;
+            padding-bottom: calc(1rem + var(--safe-bottom));
         }
 
         .container-fluid-mobile {
-            padding-left: 0.75rem;
-            padding-right: 0.75rem;
+            padding-left: max(0.75rem, var(--safe-left));
+            padding-right: max(0.75rem, var(--safe-right));
+        }
+    }
+
+    /* Content wrapper: safe area inferior para navegación/gestos */
+    @media (max-width: 767.98px) {
+        .content-wrapper {
+            padding-bottom: var(--safe-bottom);
+        }
+        .wrapper {
+            max-width: 100vw;
+            overflow-x: hidden;
         }
     }
 
@@ -1528,6 +1572,24 @@
         z-index: 9999 !important;
     }
 
+    /* Dropdown dentro de .table-responsive: no recortar (mismo comportamiento que fuera de tabla) */
+    .table-responsive .btn-group,
+    .table-responsive .dropdown {
+        position: static;
+    }
+    .table-responsive .btn-group .dropdown-menu,
+    .table-responsive .dropdown .dropdown-menu {
+        position: absolute;
+    }
+
+    /* Scroll vertical en dropdowns de acciones cuando hay muchas opciones */
+    .dropdown-actions-fix,
+    .actions-menu-dropdown,
+    .dropdown-menu-scroll {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+
     .dropdown-item {
         border-radius: var(--radius-sm);
         padding: 0.5rem 1rem;
@@ -1561,6 +1623,46 @@
         padding: 1rem 1.5rem;
     }
 
+    /* Mobile-first: modales full-screen en móvil (mejor UX táctil) */
+    @media (max-width: 767.98px) {
+        .modal-dialog {
+            margin: 0;
+            max-width: 100%;
+            min-height: 100vh;
+            min-height: 100dvh;
+        }
+        .modal-dialog .modal-content {
+            min-height: 100vh;
+            min-height: 100dvh;
+            border-radius: 0;
+            border: none;
+        }
+        .modal-dialog .modal-header {
+            padding: 1rem 1rem 1rem calc(1rem + var(--safe-left));
+            padding-right: calc(1rem + var(--safe-right));
+        }
+        .modal-dialog .modal-body {
+            padding: 1rem;
+            padding-left: calc(1rem + var(--safe-left));
+            padding-right: calc(1rem + var(--safe-right));
+            padding-bottom: calc(1rem + var(--safe-bottom));
+            -webkit-overflow-scrolling: touch;
+            overflow-y: auto;
+        }
+        .modal-dialog .modal-footer {
+            padding: 1rem;
+            padding-left: calc(1rem + var(--safe-left));
+            padding-right: calc(1rem + var(--safe-right));
+            padding-bottom: calc(1rem + var(--safe-bottom));
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .modal-dialog .modal-footer .btn {
+            flex: 1 1 auto;
+            min-height: 44px;
+        }
+    }
+
     /* === PAGINATION === */
     .pagination {
         gap: 0.25rem;
@@ -1585,6 +1687,27 @@
         background: var(--primary);
         border-color: var(--primary);
         color: white;
+    }
+
+    /* Mobile-first: paginación táctil (áreas de toque ≥44px) */
+    @media (max-width: 767.98px) {
+        .pagination {
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+        .page-link {
+            min-width: 44px;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.625rem;
+            font-size: 0.9375rem;
+        }
+        .page-item:not(.active) .page-link:active {
+            background: var(--gray-100);
+        }
     }
 
     /* === INPUT GROUP === */

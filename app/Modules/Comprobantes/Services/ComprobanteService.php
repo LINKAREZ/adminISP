@@ -290,7 +290,8 @@ class ComprobanteService extends BaseService
     }
 
     /**
-     * Calcular fecha inicio de servicio desde recibo
+     * Calcular fecha inicio de servicio desde recibo.
+     * Usa fecha_activacion_definitiva (inicio de cobro) o fecha_instalacion si es el primer mes.
      */
     private function calcularInicioServicio(?Recibo $recibo): ?Carbon
     {
@@ -299,14 +300,25 @@ class ComprobanteService extends BaseService
         }
 
         try {
-            return Carbon::createFromFormat('Y-m', $recibo->periodo)->startOfMonth();
+            $periodoMes = Carbon::createFromFormat('Y-m', $recibo->periodo);
+            if ($recibo->relationLoaded('servicio') && $recibo->servicio) {
+                $s = $recibo->servicio;
+                $inicioCobro = $s->fecha_activacion_definitiva
+                    ? $s->fecha_activacion_definitiva->copy()->startOfDay()
+                    : $s->fecha_instalacion?->copy()->startOfDay();
+                if ($inicioCobro && $inicioCobro->format('Y-m') === $periodoMes->format('Y-m')) {
+                    return $inicioCobro;
+                }
+            }
+            return $periodoMes->copy()->startOfMonth();
         } catch (\Exception $e) {
             return null;
         }
     }
 
     /**
-     * Calcular fecha fin de servicio desde recibo
+     * Calcular fecha fin de servicio desde recibo.
+     * Si el servicio tiene fecha_corte en ese mes (prorrateo por suspensión), usa esa fecha.
      */
     private function calcularFinServicio(?Recibo $recibo): ?Carbon
     {
@@ -315,7 +327,14 @@ class ComprobanteService extends BaseService
         }
 
         try {
-            return Carbon::createFromFormat('Y-m', $recibo->periodo)->endOfMonth();
+            $periodoMes = Carbon::createFromFormat('Y-m', $recibo->periodo);
+            if ($recibo->relationLoaded('servicio') && $recibo->servicio?->fecha_corte) {
+                $fc = $recibo->servicio->fecha_corte;
+                if ($fc->format('Y-m') === $periodoMes->format('Y-m')) {
+                    return $fc->copy()->startOfDay();
+                }
+            }
+            return $periodoMes->copy()->endOfMonth();
         } catch (\Exception $e) {
             return null;
         }

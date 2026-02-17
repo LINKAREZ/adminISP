@@ -145,11 +145,18 @@ class ReciboService
             $servicio->load('plan');
         }
 
-        if ($servicio->estado !== 'activo') {
-            $this->logDebug("Servicio no activo, no se genera recibo", [
-                'servicio_id' => $servicio->id,
-                'estado' => $servicio->estado
-            ]);
+        // Permitir activos o cortados en este período (prorrateo por suspensión)
+        $mesPeriodo = Carbon::createFromFormat('Y-m', $periodo);
+        $inicioPeriodo = $mesPeriodo->copy()->startOfMonth();
+        $finPeriodo = $mesPeriodo->copy()->endOfMonth();
+        if ($servicio->estado === 'cortado') {
+            if (!$servicio->fecha_corte || $servicio->fecha_corte->format('Y-m') !== $periodo) {
+                $this->logDebug("Servicio cortado fuera de este período, no se genera recibo", [
+                    'servicio_id' => $servicio->id,
+                ]);
+                return null;
+            }
+        } elseif ($servicio->estado !== 'activo') {
             return null;
         }
 
@@ -174,8 +181,24 @@ class ReciboService
             return $reciboExistente;
         }
 
-        $fechaEmision = Carbon::createFromFormat('Y-m', $periodo)->day(1);
-        $fechaVencimiento = Carbon::createFromFormat('Y-m', $periodo)->day(5);
+        // Fecha inicio de cobro: cuando el servicio recién está activo (ej. técnico instaló día 3, activo día 5)
+        $fechaInicioCobro = $servicio->fecha_activacion_definitiva
+            ? $servicio->fecha_activacion_definitiva->copy()->startOfDay()
+            : ($servicio->fecha_instalacion ? $servicio->fecha_instalacion->copy()->startOfDay() : null);
+        if (!$fechaInicioCobro) {
+            $this->logDebug("Servicio sin fecha de instalación ni activación, no se genera recibo", [
+                'servicio_id' => $servicio->id,
+                'periodo' => $periodo,
+            ]);
+            return null;
+        }
+        if ($fechaInicioCobro->format('Y-m') > $periodo) {
+            $this->logDebug("Período anterior al mes de inicio de cobro, no se genera recibo", [
+                'servicio_id' => $servicio->id,
+                'periodo' => $periodo,
+            ]);
+            return null;
+        }
 
         // ✅ Obtener cliente_id desde ubicación
         $servicio->load('ubicacion');
@@ -202,6 +225,33 @@ class ReciboService
             return null;
         }
 
+        // Prorrateo: días a cobrar en el mes (inicio de cobro o corte/suspensión)
+        $inicioCobroMes = $fechaInicioCobro->gt($inicioPeriodo) ? $fechaInicioCobro : $inicioPeriodo->copy();
+        $finCobroMes = $servicio->fecha_corte && $servicio->fecha_corte->format('Y-m') === $periodo
+            ? Carbon::min($servicio->fecha_corte, $finPeriodo)->copy()
+            : $finPeriodo->copy();
+        if ($inicioCobroMes->gt($finCobroMes)) {
+            $this->logDebug("Sin días a cobrar en el período", [
+                'servicio_id' => $servicio->id,
+                'periodo' => $periodo,
+            ]);
+            return null;
+        }
+        $diasEnMes = (int) $mesPeriodo->daysInMonth();
+        $diasACobrar = $inicioCobroMes->diffInDays($finCobroMes) + 1;
+        $montoProrrateado = round((float) $servicio->plan->precio_mensual * $diasACobrar / $diasEnMes, 2);
+
+        // Fechas de emisión y vencimiento desde configuración (control total del ciclo de cobro)
+        $diaEmision = (int) config('isp.comprobantes.dia_emision', 1);
+        $diasVencimiento = (int) config('isp.comprobantes.dias_vencimiento', 15);
+        $mesPeriodo = Carbon::createFromFormat('Y-m', $periodo);
+        $diaEmisionSeguro = min(max(1, $diaEmision), $mesPeriodo->daysInMonth());
+        $fechaEmision = $mesPeriodo->copy()->day($diaEmisionSeguro);
+        $fechaVencimiento = $fechaEmision->copy()->addDays($diasVencimiento);
+        if ($fechaVencimiento->format('Y-m') !== $periodo) {
+            $fechaVencimiento = $mesPeriodo->copy()->endOfMonth();
+        }
+
         // Determinar el estado basándose en la fecha de vencimiento (comparar solo fechas, sin hora)
         $fechaVencimientoComparar = $fechaVencimiento->copy()->startOfDay();
         $estado = $fechaVencimientoComparar->isPast() ? Recibo::ESTADO_VENCIDO : Recibo::ESTADO_PENDIENTE;
@@ -216,8 +266,8 @@ class ReciboService
             'periodo' => $periodo,
             'fecha_emision' => $fechaEmision,
             'fecha_vencimiento' => $fechaVencimiento,
-            'monto' => $servicio->plan->precio_mensual,
-            'saldo' => $servicio->plan->precio_mensual,
+            'monto' => $montoProrrateado,
+            'saldo' => $montoProrrateado,
             'estado' => $estado,
         ]);
 

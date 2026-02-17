@@ -49,25 +49,42 @@
                     </div>
                 </form>
 
-                    <!-- Vista móvil: Cards -->
+                    <!-- Vista móvil: Cards (mismo patrón que Red/Instalaciones: título enlace + badge + dropdown en header) -->
                     <div class="d-md-none">
                         @forelse($users as $user)
-                            <div class="card card-outline card-primary mb-2 mx-2 my-2">
+                            <div class="card card-outline card-primary mb-2">
                                 <div class="card-header">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <h6 class="card-title mb-0">
-                                            <strong>{{ $user->name }}</strong>
+                                            <a href="{{ route('users.show', $user) }}" class="text-dark font-weight-bold text-decoration-none">
+                                                {{ $user->name }}
+                                            </a>
                                         </h6>
-                                        @if($user->relationLoaded('role') && $user->role)
-                                            <x-role-badge :role="$user->role" />
-                                        @else
-                                            <span class="badge badge-secondary">Sin rol</span>
-                                        @endif
+                                        <div class="d-flex align-items-center">
+                                            @if($user->relationLoaded('role') && $user->role)
+                                                <x-role-badge :role="$user->role" />
+                                            @else
+                                                <span class="badge badge-secondary">Sin rol</span>
+                                            @endif
+                                            <div class="ml-2">
+                                                <x-action-buttons
+                                                    :show-route="'users.show'"
+                                                    :show-params="[$user]"
+                                                    :edit-route="'users.edit'"
+                                                    :edit-params="[$user]"
+                                                    :delete-route="'users.destroy'"
+                                                    :delete-params="[$user]"
+                                                    size="sm"
+                                                    layout="dropdown"
+                                                    delete-message="¿Está seguro de eliminar este usuario?"
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="card-body">
-                                    <p class="mb-1"><i class="fas fa-envelope mr-2 text-muted"></i>{{ $user->email }}</p>
-                                    <p class="mb-1">
+                                    <p class="mb-1 small"><i class="fas fa-envelope mr-2 text-muted"></i>{{ $user->email }}</p>
+                                    <p class="mb-0 small">
                                         <i class="fas fa-building mr-2 text-muted"></i>
                                         @if($user->relationLoaded('isp') && $user->isp)
                                             {{ $user->isp->nombre }}
@@ -75,18 +92,6 @@
                                             <span class="text-muted">Super Admin</span>
                                         @endif
                                     </p>
-                                    <div class="btn-group btn-group-sm w-100 mt-2">
-                                        <x-action-buttons
-                                            :show-route="'users.show'"
-                                            :show-params="[$user]"
-                                            :edit-route="'users.edit'"
-                                            :edit-params="[$user]"
-                                            :delete-route="'users.destroy'"
-                                            :delete-params="[$user]"
-                                            size="sm"
-                                            delete-message="¿Está seguro de eliminar este usuario?"
-                                        />
-                                    </div>
                                 </div>
                             </div>
                         @empty

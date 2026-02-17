@@ -11,6 +11,8 @@
 @endsection
 
 @section('content')
+    @include('clientes.tabs')
+
     <div class="row">
         <div class="col-12">
             <x-card title="Importar clientes PPPoE" subtitle="Crea clientes provisionales desde conexiones PPPoE activas" icon="fa-download" variant="primary">

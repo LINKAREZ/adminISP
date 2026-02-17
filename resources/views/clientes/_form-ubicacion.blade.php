@@ -111,16 +111,37 @@
 
     <div class="form-group">
         <label><i class="fas fa-camera mr-1"></i> Fotos de ubicación (hasta 3)</label>
-        <small class="d-block text-muted mb-2">Opcional. Imágenes JPG/PNG, máx. 2 MB cada una.</small>
+        <small class="d-block text-muted mb-3"><span class="text-danger">*</span> Obligatorio al menos 1 foto. JPG/PNG, máx. 2 MB cada una. Asigna un título descriptivo (ej: fachada, puerta, piso).</small>
+        @php
+            $fotoTitulosPorDefecto = [1 => 'Fachada', 2 => 'Puerta', 3 => 'Piso'];
+        @endphp
         <div class="row">
             @foreach([1 => 'foto_1', 2 => 'foto_2', 3 => 'foto_3'] as $num => $name)
-                <div class="col-md-4 mb-2">
-                    <div class="border rounded p-2 text-center" style="min-height: 100px; background: #f8f9fa;">
-                        @if($ubicacion && !empty($ubicacion->$name))
-                            <img src="{{ route('ubicaciones.foto', ['ubicacion' => $ubicacion->id, 'num' => $num]) }}" alt="Foto {{ $num }}" class="img-fluid rounded mb-1" style="max-height: 80px; object-fit: cover;">
-                            <small class="d-block text-muted">Reemplazar:</small>
-                        @endif
-                        <input type="file" name="{{ $name }}" accept="image/jpeg,image/png,image/webp" class="form-control form-control-sm">
+                @php
+                    $tituloKey = 'foto_' . $num . '_titulo';
+                    $tituloVal = old($tituloKey, $ubicacion ? ($ubicacion->$tituloKey ?? $fotoTitulosPorDefecto[$num]) : $fotoTitulosPorDefecto[$num]);
+                @endphp
+                <div class="col-12 col-md-4 mb-3">
+                    <div class="card h-100 shadow-sm border">
+                        <div class="card-body p-3 text-center">
+                            <label class="small font-weight-bold text-secondary mb-1">Foto {{ $num }}</label>
+                            <input type="text"
+                                   name="{{ $tituloKey }}"
+                                   value="{{ $tituloVal }}"
+                                   placeholder="{{ $fotoTitulosPorDefecto[$num] }}"
+                                   class="form-control form-control-sm mb-2 @error($tituloKey) is-invalid @enderror"
+                                   maxlength="80">
+                            <div class="rounded overflow-hidden bg-light mb-2" style="min-height: 100px;">
+                                @if($ubicacion && !empty($ubicacion->$name))
+                                    <img src="{{ route('ubicaciones.foto', ['ubicacion' => $ubicacion->id, 'num' => $num]) }}" alt="Foto {{ $num }}" class="img-fluid w-100" style="max-height: 120px; object-fit: cover;">
+                                @else
+                                    <div class="d-flex align-items-center justify-content-center h-100 text-muted small">
+                                        <i class="fas fa-image fa-2x opacity-50"></i>
+                                    </div>
+                                @endif
+                            </div>
+                            <input type="file" name="{{ $name }}" accept="image/jpeg,image/png,image/webp" capture="environment" class="form-control form-control-sm" style="min-height: 44px;">
+                        </div>
                     </div>
                 </div>
             @endforeach
@@ -132,6 +153,15 @@
             <span class="invalid-feedback d-block" role="alert"><strong>{{ $message }}</strong></span>
         @enderror
         @error('foto_3')
+            <span class="invalid-feedback d-block" role="alert"><strong>{{ $message }}</strong></span>
+        @enderror
+        @error('foto_1_titulo')
+            <span class="invalid-feedback d-block" role="alert"><strong>{{ $message }}</strong></span>
+        @enderror
+        @error('foto_2_titulo')
+            <span class="invalid-feedback d-block" role="alert"><strong>{{ $message }}</strong></span>
+        @enderror
+        @error('foto_3_titulo')
             <span class="invalid-feedback d-block" role="alert"><strong>{{ $message }}</strong></span>
         @enderror
     </div>

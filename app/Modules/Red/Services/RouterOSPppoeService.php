@@ -416,6 +416,59 @@ class RouterOSPppoeService
     }
 
     /**
+     * Obtiene el .id de un secret PPPoE por nombre de usuario
+     */
+    public function getSecretIdByName(Router $router, string $name): ?string
+    {
+        $secrets = $this->getSecrets($router);
+        $nameNorm = trim($name);
+        foreach ($secrets as $s) {
+            if (trim((string) ($s['name'] ?? '')) === $nameNorm) {
+                return $s['.id'] ?? null;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Actualiza un secret PPPoE existente por su .id
+     *
+     * @param Router $router
+     * @param string $secretId .id del secret en RouterOS
+     * @param array $attrs password, profile, disabled (opcionales)
+     * @return bool
+     */
+    public function updateSecret(Router $router, string $secretId, array $attrs): bool
+    {
+        try {
+            $client = $this->connectionService->getClient($router);
+            $query = (new Query('/ppp/secret/set'))->equal('.id', $secretId);
+            if (array_key_exists('password', $attrs) && $attrs['password'] !== null) {
+                $query->equal('password', (string) $attrs['password']);
+            }
+            if (array_key_exists('profile', $attrs) && $attrs['profile'] !== null) {
+                $query->equal('profile', (string) $attrs['profile']);
+            }
+            if (array_key_exists('disabled', $attrs)) {
+                $query->equal('disabled', $attrs['disabled'] ? 'yes' : 'no');
+            }
+            if (array_key_exists('remote-address', $attrs)) {
+                $query->equal('remote-address', (string) $attrs['remote-address']);
+            }
+            $client->query($query)->read();
+            unset($client);
+            return true;
+        } catch (Exception $e) {
+            Log::error('Error al actualizar secret PPPoE', [
+                'router_id' => $router->id,
+                'secret_id' => $secretId,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
      * Crea un secret PPPoE en el router (usuario PPPoE)
      *
      * @param Router $router

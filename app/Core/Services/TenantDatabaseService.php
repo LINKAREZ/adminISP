@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 
 /**
  * Crea la base de datos física del tenant y ejecuta las migraciones tenant.
+ * Usa config/tenant.php para prefijos y rutas (patrón industria).
  */
 class TenantDatabaseService
 {
@@ -18,7 +19,7 @@ class TenantDatabaseService
      */
     public static function generateDatabaseName(Isp $isp): string
     {
-        $base = 'adminisp_isp_' . $isp->id;
+        $base = config('tenant.database_prefix', 'adminisp_isp_') . $isp->id;
         return Str::lower(preg_replace('/[^a-z0-9_]/', '_', $base));
     }
 
@@ -34,7 +35,7 @@ class TenantDatabaseService
         $databaseName = $isp->database_name ?: self::generateDatabaseName($isp);
 
         // Crear la BD física usando la conexión central (sin seleccionar BD para CREATE DATABASE)
-        $connection = DB::connection(TenantConnectionService::CENTRAL_CONNECTION);
+        $connection = DB::connection(TenantConnectionService::centralConnection());
         $connection->statement('CREATE DATABASE IF NOT EXISTS `' . str_replace('`', '``', $databaseName) . '` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
 
         // Actualizar el ISP con el nombre de la BD si no lo tenía
@@ -48,13 +49,13 @@ class TenantDatabaseService
         $tenantConnection = TenantConnectionService::connectionNameForIsp($isp);
         Config::set('database.default', $tenantConnection);
         Artisan::call('migrate', [
-            '--path' => 'database/migrations/tenant',
+            '--path' => config('tenant.migrations_path', 'database/migrations/tenant'),
             '--force' => true,
         ]);
         if ($runSeeders) {
             self::runTenantSeeders();
         }
-        Config::set('database.default', TenantConnectionService::CENTRAL_CONNECTION);
+        Config::set('database.default', TenantConnectionService::centralConnection());
     }
 
     /**

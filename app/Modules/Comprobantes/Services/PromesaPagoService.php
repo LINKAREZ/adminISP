@@ -57,7 +57,7 @@ class PromesaPagoService
         }
 
         try {
-            $servicio->update(['estado' => 'activo']);
+            $servicio->update(['estado' => 'activo', 'fecha_corte' => null]);
 
             // Cargar relaciones necesarias
             if (!$servicio->relationLoaded('router')) {
@@ -148,8 +148,8 @@ class PromesaPagoService
     }
 
     /**
-     * Procesar la eliminación de una promesa de pago
-     * Corta el servicio si tiene recibos vencidos
+     * Procesar la eliminación de una promesa de pago.
+     * Corta el servicio si tiene recibos pasados de fecha de corte (vencimiento + días de gracia).
      */
     public function procesarPromesaEliminada(PromesaPago $promesa): void
     {
@@ -180,27 +180,18 @@ class PromesaPagoService
             return; // No hay servicio asociado
         }
 
-        // Verificar si el servicio tiene recibos vencidos (no solo el de la promesa)
-        $tieneRecibosVencidos = $servicio->recibos()
-            ->where(function ($q) {
-                $q->where('estado', Recibo::ESTADO_VENCIDO)
-                    ->orWhere(function ($q2) {
-                        $q2->where('estado', Recibo::ESTADO_PENDIENTE)
-                            ->whereDate('fecha_vencimiento', '<', now());
-                    });
-            })
-            ->where('saldo', '>', 0)
-            ->exists();
+        // Verificar si el servicio tiene recibos pasados de fecha de corte (vencimiento + días de gracia)
+        $tieneRecibosPasadosFechaCorte = $servicio->recibos()->pasadosFechaCorte()->exists();
 
-        // Si el servicio tiene recibos vencidos y está activo, cortarlo
-        if ($tieneRecibosVencidos && $servicio->estado === 'activo') {
+        // Si tiene recibos pasados de fecha de corte y está activo, cortarlo
+        if ($tieneRecibosPasadosFechaCorte && $servicio->estado === 'activo') {
             $this->cortarServicioSiEsNecesario($recibo, $promesa->id);
         }
     }
 
     /**
-     * Verificar y cortar servicio si tiene recibos vencidos
-     * Útil cuando se elimina una promesa sin recibo asociado
+     * Verificar y cortar servicio si tiene recibos pasados de fecha de corte (vencimiento + días de gracia).
+     * Útil cuando se elimina una promesa sin recibo asociado.
      */
     private function verificarYCortarServicioPorRecibosVencidos(int $servicioId, ?int $promesaId = null): void
     {
@@ -209,43 +200,22 @@ class PromesaPagoService
             return;
         }
 
-        // Verificar si el servicio tiene recibos vencidos
-        $tieneRecibosVencidos = $servicio->recibos()
-            ->where(function ($q) {
-                $q->where('estado', Recibo::ESTADO_VENCIDO)
-                    ->orWhere(function ($q2) {
-                        $q2->where('estado', Recibo::ESTADO_PENDIENTE)
-                            ->whereDate('fecha_vencimiento', '<', now());
-                    });
-            })
-            ->where('saldo', '>', 0)
-            ->exists();
+        // Recibos pasados de fecha de corte (vencimiento + días de gracia)
+        $reciboPasadoCorte = $servicio->recibos()->pasadosFechaCorte()->first();
 
-        if ($tieneRecibosVencidos) {
-            // Obtener el primer recibo vencido para usar en el método de corte
-            $reciboVencido = $servicio->recibos()
-                ->where(function ($q) {
-                    $q->where('estado', Recibo::ESTADO_VENCIDO)
-                        ->orWhere(function ($q2) {
-                            $q2->where('estado', Recibo::ESTADO_PENDIENTE)
-                                ->whereDate('fecha_vencimiento', '<', now());
-                        });
-                })
-                ->where('saldo', '>', 0)
-                ->first();
-
-            if ($reciboVencido) {
-                $this->cortarServicioSiEsNecesario($reciboVencido, $promesaId);
-            }
+        if ($reciboPasadoCorte) {
+            $this->cortarServicioSiEsNecesario($reciboPasadoCorte, $promesaId);
         }
     }
 
     /**
-     * Cortar servicio si el recibo está vencido
-     * Reutiliza la lógica de PagoService::cortarServicioSiEsNecesario
+     * Cortar servicio si el recibo está pasado de la fecha de corte (vencimiento + días de gracia).
      */
     private function cortarServicioSiEsNecesario(Recibo $recibo, ?int $promesaId = null): void
     {
+        if (!$recibo->pasadoFechaCorte()) {
+            return;
+        }
         // Cargar relación servicio si no está cargada
         if (!$recibo->relationLoaded('servicio')) {
             $recibo->load('servicio');
@@ -257,7 +227,7 @@ class PromesaPagoService
         }
 
         try {
-            $servicio->update(['estado' => 'cortado']);
+            $servicio->update(['estado' => 'cortado', 'fecha_corte' => now()->toDateString()]);
 
             // Cargar relaciones necesarias
             if (!$servicio->relationLoaded('router')) {

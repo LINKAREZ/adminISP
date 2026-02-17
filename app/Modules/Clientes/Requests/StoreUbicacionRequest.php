@@ -41,6 +41,9 @@ class StoreUbicacionRequest extends FormRequest
             'foto_1' => ['nullable', 'image', 'max:2048'],
             'foto_2' => ['nullable', 'image', 'max:2048'],
             'foto_3' => ['nullable', 'image', 'max:2048'],
+            'foto_1_titulo' => ['nullable', 'string', 'max:80'],
+            'foto_2_titulo' => ['nullable', 'string', 'max:80'],
+            'foto_3_titulo' => ['nullable', 'string', 'max:80'],
         ];
     }
 
@@ -54,5 +57,18 @@ class StoreUbicacionRequest extends FormRequest
         return [
             'direccion.required' => 'La dirección es obligatoria.',
         ];
+    }
+
+    /**
+     * Validar que se suba al menos una foto de ubicación.
+     */
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            $tieneAlMenosUna = $this->hasFile('foto_1') || $this->hasFile('foto_2') || $this->hasFile('foto_3');
+            if (!$tieneAlMenosUna) {
+                $validator->errors()->add('foto_1', 'Debe subir al menos una foto de la ubicación.');
+            }
+        });
     }
 }

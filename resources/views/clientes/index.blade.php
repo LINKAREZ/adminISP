@@ -10,6 +10,8 @@
 @endsection
 
 @section('content')
+    @include('clientes.tabs')
+
     <div class="row">
         <div class="col-12">
             <x-card title="Clientes" icon="fa-users" variant="primary">
@@ -19,6 +21,9 @@
                     </x-btn>
                     <x-btn :route="route('clientes.pppoe.importar')" variant="secondary" size="sm" icon="fa-download">
                         Importar PPPoE
+                    </x-btn>
+                    <x-btn :route="route('clientes.importar-clientes.index')" variant="outline-secondary" size="sm" icon="fa-file-csv">
+                        Importar clientes CSV
                     </x-btn>
                 </x-slot>
 
@@ -92,13 +97,23 @@
                                     <span class="d-sm-none">Eliminar</span>
                                 </x-btn>
                                 @endhasPermission
-                                <form method="POST" action="{{ route('clientes.cortar-servicios-vencidos') }}" class="d-inline" onsubmit="return confirm('¿Está seguro de cortar todos los servicios con recibos vencidos? Esta acción cortará todos los servicios activos que tengan recibos vencidos.');">
+                                <form method="POST" action="{{ route('clientes.cortar-servicios-vencidos') }}" class="d-inline" onsubmit="return confirm('¿Cortar servicios con recibos pasados de fecha de corte? (vencimiento + días de gracia). Solo se cortarán los que ya superaron esa fecha.');">
                                     @csrf
                                     <x-btn type="submit" variant="warning" icon="fa-ban" size="sm">
                                         <span class="d-none d-sm-inline">Cortar Servicios</span>
                                         <span class="d-sm-none">Cortar</span>
                                     </x-btn>
                                 </form>
+                                @hasPermission('clientes.delete')
+                                <form method="POST" action="{{ route('clientes.eliminar-todos') }}" class="d-inline" onsubmit="return confirm('¿ELIMINAR TODOS LOS CLIENTES Y SERVICIOS de este ISP? Esta acción no se puede deshacer.');" id="form-eliminar-todos-clientes">
+                                    @csrf
+                                    <input type="hidden" name="router_id" value="{{ $routerId }}">
+                                    <x-btn type="submit" variant="danger" icon="fa-trash-alt" size="sm">
+                                        <span class="d-none d-sm-inline">Eliminar todos los clientes</span>
+                                        <span class="d-sm-none">Eliminar todos</span>
+                                    </x-btn>
+                                </form>
+                                @endhasPermission
                             </div>
                         </div>
                     </div>

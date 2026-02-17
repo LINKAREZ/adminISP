@@ -597,6 +597,19 @@
             @enderror
         </div>
 
+        <div id="campos-ip-estatica" class="form-group" style="display: none;">
+            <label>IP asignada</label>
+            <input
+                type="text"
+                name="ip_asignada"
+                id="input-ip-asignada"
+                class="form-control"
+                placeholder="Ej: 192.168.1.50"
+                value="{{ old('ip_asignada', $servicio?->ip_asignada ?? '') }}"
+            >
+            <small class="text-muted">Para planes IP estática. Luego podrá aplicar velocidad (Simple Queue) desde la ficha del servicio.</small>
+        </div>
+
     <div class="form-group">
         <label>Modo PPPoE</label>
         <select name="tipo_pppoe" id="select-tipo-pppoe" class="form-control" required>
@@ -702,6 +715,7 @@
         <input type="hidden" name="usuario_pppoe" id="hidden-usuario-pppoe" value="">
         <input type="hidden" name="password_pppoe" id="hidden-password-pppoe" value="">
         <input type="hidden" name="mac_address" id="hidden-mac-address" value="">
+        <input type="hidden" name="ip_asignada" id="hidden-ip-asignada" value="{{ old('ip_asignada', $servicio?->ip_asignada ?? '') }}">
         <input type="hidden" name="estado" value="activo">
         <input type="hidden" name="fecha_instalacion" id="hidden-fecha-instalacion" value="">
         <input type="hidden" name="notas" id="hidden-notas" value="">
@@ -1173,6 +1187,15 @@
                 if (currentValue) {
                     select.value = currentValue;
                     this.planSeleccionado = currentValue;
+                }
+
+                // Mostrar/ocultar IP asignada para planes IP estática
+                var opt = $(select).find('option:selected');
+                var tipoConexion = opt && opt.length ? opt.data('tipo-conexion') : '';
+                if (tipoConexion === 'estatica') {
+                    $('#campos-ip-estatica').show();
+                } else {
+                    $('#campos-ip-estatica').hide();
                 }
             }, 0);
         },
@@ -2207,6 +2230,11 @@
 
                         if (textareaNotas && textareaNotas.value) {
                             servicioFormData.append('notas', textareaNotas.value);
+                        }
+
+                        const ipAsignadaVal = (document.getElementById('hidden-ip-asignada') || document.getElementById('input-ip-asignada'))?.value?.trim();
+                        if (ipAsignadaVal) {
+                            servicioFormData.append('ip_asignada', ipAsignadaVal);
                         }
 
                         // Enviar el formulario vía AJAX para poder manejar errores
@@ -4272,7 +4300,11 @@
                 $('#hidden-password-pppoe').val($('#input-password-pppoe').val() || '');
             }
 
-            console.log('Valores copiados al paso 3:', { routerId, planId, tipoPppoe, onuId, macAddress });
+            // Copiar IP asignada (planes IP estática)
+            const ipAsignada = $('#input-ip-asignada').length ? $('#input-ip-asignada').val() || '' : '';
+            $('#hidden-ip-asignada').val(ipAsignada);
+
+            console.log('Valores copiados al paso 3:', { routerId, planId, tipoPppoe, onuId, macAddress, ipAsignada });
         }
 
         // Actualizar estado
@@ -4668,6 +4700,13 @@
         // Event listener para cambio de plan
         $(document).on('change', '#select-plan', function() {
             ServicioFormManager.planSeleccionado = $(this).val();
+            var opt = $(this).find('option:selected');
+            var tipoConexion = opt.data('tipo-conexion') || '';
+            if (tipoConexion === 'estatica') {
+                $('#campos-ip-estatica').show();
+            } else {
+                $('#campos-ip-estatica').hide();
+            }
         });
 
         // Event listener para cambio de modo PPPoE (select)

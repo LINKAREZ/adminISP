@@ -98,13 +98,14 @@ class ComprobanteController extends Controller
     /**
      * Formulario para crear comprobante manual
      */
-    public function create()
+    public function create(Request $request)
     {
         Gate::authorize('comprobantes.create');
         $clientes = $this->obtenerClientesParaSelect();
         $series = $this->obtenerSeriesActivas();
+        $clienteId = $request->query('cliente_id');
 
-        return view('comprobantes.comprobantes.create', compact('clientes', 'series'));
+        return view('comprobantes.comprobantes.create', compact('clientes', 'series', 'clienteId'));
     }
 
     /**

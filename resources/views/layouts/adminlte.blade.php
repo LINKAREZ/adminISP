@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -17,8 +17,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="stylesheet" href="{{ asset('css/fonts/source-sans-pro.css') }}" onerror="this.onerror=null;this.href='https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;400i;700&display=swap'">
 
-    {{-- CARGAR CSS AdminLTE --}}
-    @vite(['resources/css/adminlte.css'])
+    {{-- CARGAR CSS AdminLTE (+ mapa en página de infraestructura) --}}
+    @vite(array_filter(['resources/css/adminlte.css', request()->is('infraestructura/mapa*') ? 'resources/css/mapa-infraestructura.css' : null]))
 
     {{-- Font Awesome CDN (cargar DESPUÉS del CSS compilado para que tenga prioridad) --}}
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>

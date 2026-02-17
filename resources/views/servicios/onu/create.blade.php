@@ -5,7 +5,9 @@
 
 @section('breadcrumb')
     <x-breadcrumb :items="[
-        ['label' => 'Servicios', 'route' => 'servicios.index'],
+        ['label' => 'Servicios', 'route' => 'servicios.home'],
+        ['label' => 'Internet Fibra Óptica', 'route' => 'servicios.internet.index'],
+        ['label' => 'Internet Fibra Óptica', 'route' => 'servicios.internet.index'],
         ['label' => 'Agregar ONU']
     ]" />
 @endsection

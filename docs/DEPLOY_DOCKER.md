@@ -105,6 +105,28 @@ docker compose exec app php artisan isp:create-database 7 --force
 
 (Reemplaza `7` por el ID del ISP. `--force` evita la confirmación si ya tiene `database_name`.)
 
+### Migraciones tenant (tablas por ISP: plan_dhcp_config, ip_asignada, etc.)
+
+Cuando añadas o modifiques migraciones en `database/migrations/tenant/`, hay que aplicarlas en la(s) base(s) de datos de cada ISP. **Desde Docker**:
+
+```bash
+# Un solo ISP (ej. ISP id 7)
+docker compose exec app php artisan isp:migrate-tenant --isp=7
+
+# Todos los ISPs con base tenant
+docker compose exec app php artisan isp:migrate-tenant
+```
+
+Si aparece *"Table 'adminisp_isp_7.plan_dhcp_config' doesn't exist"* (o similar), ejecuta el comando anterior con el ID de tu ISP.
+
+Alternativa con el script del proyecto (desde la raíz del repo):
+
+```bash
+chmod +x scripts/migrate-tenant.sh
+./scripts/migrate-tenant.sh 7    # solo ISP 7
+./scripts/migrate-tenant.sh       # todos los ISPs
+```
+
 ## Si el contenedor `adminisp-db` está en "Restarting" (MySQL no arranca)
 
 Suele ser un volumen de datos corrupto o de otra versión. **Borra el volumen y vuelve a levantar** (se pierde la base de datos; si aún no has instalado, no importa):

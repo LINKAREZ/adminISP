@@ -1,11 +1,19 @@
 @include('components.nav-tabs', ['tabs' => [
     [
+        'name' => 'dashboard-finanzas',
+        'label' => 'Dashboard Finanzas',
+        'icon' => 'fas fa-chart-line',
+        'route' => route('comprobantes.dashboard-finanzas'),
+        'permission' => 'comprobantes.read',
+        'active' => request()->routeIs('comprobantes.dashboard-finanzas'),
+    ],
+    [
         'name' => 'comprobantes',
         'label' => 'Comprobantes',
         'icon' => 'fas fa-receipt',
         'route' => route('comprobantes.index'),
         'permission' => 'comprobantes.read',
-        'active' => request()->is('comprobantes*'),
+        'active' => request()->is('comprobantes*') && !request()->routeIs('comprobantes.dashboard-finanzas') && !request()->routeIs('comprobantes.importar-pagos*'),
     ],
     [
         'name' => 'cuadre-caja',
@@ -13,6 +21,30 @@
         'icon' => 'fas fa-cash-register',
         'route' => route('comprobantes.reportes.cuadre-caja'),
         'permission' => 'comprobantes.read',
-        'active' => request()->is('reportes*'),
+        'active' => request()->routeIs('comprobantes.reportes.cuadre-caja'),
+    ],
+    [
+        'name' => 'reporte-ingresos',
+        'label' => 'Reporte de ingresos',
+        'icon' => 'fas fa-chart-bar',
+        'route' => route('comprobantes.reportes.ingresos'),
+        'permission' => 'comprobantes.read',
+        'active' => request()->routeIs('comprobantes.reportes.ingresos*'),
+    ],
+    [
+        'name' => 'gastos',
+        'label' => 'Gastos',
+        'icon' => 'fas fa-money-bill-wave',
+        'route' => route('comprobantes.gastos.index'),
+        'permission' => 'comprobantes.read',
+        'active' => request()->is('finanzas/gastos*') || request()->is('finanzas/categorias-gasto*'),
+    ],
+    [
+        'name' => 'importar-pagos',
+        'label' => 'Importar pagos',
+        'icon' => 'fas fa-file-import',
+        'route' => route('comprobantes.importar-pagos.index'),
+        'permission' => 'comprobantes.create',
+        'active' => request()->routeIs('comprobantes.importar-pagos*'),
     ],
 ]])

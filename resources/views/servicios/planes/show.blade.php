@@ -5,15 +5,15 @@
 
 @section('breadcrumb')
     <x-breadcrumb :items="[
-        ['label' => 'Servicios', 'route' => 'servicios.index'],
+        ['label' => 'Servicios', 'route' => 'servicios.home'],
+        ['label' => 'Internet Fibra Óptica', 'route' => 'servicios.internet.index'],
         ['label' => 'Planes', 'route' => 'servicios.planes.index'],
         ['label' => 'Ver']
     ]" />
 @endsection
 
 @section('content')
-    <!-- Pestañas del Módulo Servicios -->
-    @include('servicios.tabs')
+    @include('servicios.tabs-internet')
 
     <div class="row">
         <div class="col-12">
@@ -112,6 +112,53 @@
                                     </div>
                                 </div>
                             @endif
+                        @endif
+
+                        @if($plan->esDhcp() && $plan->relationLoaded('dhcpConfig') && $plan->dhcpConfig)
+                            <hr>
+                            <h6 class="text-muted">Configuración DHCP (importada)</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Interfaz</label>
+                                        <div class="form-control bg-light" style="pointer-events: none;">{{ $plan->dhcpConfig->interfaz ?? '-' }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Pool</label>
+                                        <div class="form-control bg-light" style="pointer-events: none;">{{ $plan->dhcpConfig->pool_nombre ?? '-' }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Red (CIDR)</label>
+                                        <div class="form-control bg-light font-monospace" style="pointer-events: none;">{{ $plan->dhcpConfig->red_cidr ?? '-' }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Rango IP</label>
+                                        <div class="form-control bg-light font-monospace" style="pointer-events: none;">{{ $plan->dhcpConfig->rango_ip ?? '-' }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Gateway</label>
+                                        <div class="form-control bg-light font-monospace" style="pointer-events: none;">{{ $plan->dhcpConfig->gateway ?? $plan->local_address ?? '-' }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Lease time</label>
+                                        <div class="form-control bg-light" style="pointer-events: none;">{{ $plan->dhcpConfig->lease_time ?? '-' }}</div>
+                                    </div>
+                                </div>
+                            </div>
                         @endif
                     </div>
 

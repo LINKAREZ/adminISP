@@ -57,13 +57,30 @@
                                 <div class="card-header">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <h6 class="card-title mb-0">
-                                            <strong>{{ $router->nombre }}</strong>
+                                            <a href="{{ route('red.routers.show', $router) }}" class="text-dark font-weight-bold text-decoration-none">
+                                                {{ $router->nombre }}
+                                            </a>
                                         </h6>
-                                        @if($router->estado)
-                                            <span class="badge badge-success">Activo</span>
-                                        @else
-                                            <span class="badge badge-danger">Inactivo</span>
-                                        @endif
+                                        <div class="d-flex align-items-center">
+                                            @if($router->estado)
+                                                <span class="badge badge-success">Activo</span>
+                                            @else
+                                                <span class="badge badge-danger">Inactivo</span>
+                                            @endif
+                                            <div class="ml-2">
+                                                <x-action-buttons
+                                                    :show-route="'red.routers.show'"
+                                                    :show-params="[$router]"
+                                                    :edit-route="'red.routers.edit'"
+                                                    :edit-params="[$router]"
+                                                    :delete-route="'red.routers.destroy'"
+                                                    :delete-params="[$router]"
+                                                    size="sm"
+                                                    layout="dropdown"
+                                                    delete-message="¿Está seguro de eliminar este router?"
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="card-body">
@@ -71,18 +88,6 @@
                                     @if($router->nodo)
                                         <p class="mb-2 small"><i class="fas fa-sitemap mr-2 text-muted"></i>{{ $router->nodo->nombre }}</p>
                                     @endif
-                                    <div class="btn-group btn-group-sm w-100 mt-2">
-                                        <x-action-buttons
-                                            :show-route="'red.routers.show'"
-                                            :show-params="[$router]"
-                                            :edit-route="'red.routers.edit'"
-                                            :edit-params="[$router]"
-                                            :delete-route="'red.routers.destroy'"
-                                            :delete-params="[$router]"
-                                            size="sm"
-                                            delete-message="¿Está seguro de eliminar este router?"
-                                        />
-                                    </div>
                                 </div>
                             </div>
                         @empty
@@ -98,51 +103,52 @@
 
                     <!-- Vista desktop: Tabla -->
                     <div class="table-responsive d-none d-md-block">
-                        <table id="tablaRouters" class="table table-hover" data-datatable="true" data-options='{"dom": "<\"row\"<\"col-sm-12 col-md-6\"l>>rt<\"row\"<\"col-sm-12 col-md-5\"i><\"col-sm-12 col-md-7\"p>>"}'>
-                            <thead>
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th>IP/URL</th>
-                                    <th>Nodo</th>
-                                    <th>Estado</th>
-                                    <th width="100"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($routers as $router)
+                        @if($routers->count() > 0)
+                            <table id="tablaRouters" class="table table-hover" data-datatable="true" data-options='{"dom": "<\"row\"<\"col-sm-12 col-md-6\"l>>rt<\"row\"<\"col-sm-12 col-md-5\"i><\"col-sm-12 col-md-7\"p>>"}'>
+                                <thead>
                                     <tr>
-                                        <td><strong>{{ $router->nombre }}</strong></td>
-                                        <td><span class="font-mono">{{ $router->ip_url }}</span></td>
-                                        <td><small class="text-muted">{{ $router->nodo ? $router->nodo->nombre : '-' }}</small></td>
-                                        <td>
-                                            <x-status-badge :status="$router->estado ? 'activo' : 'inactivo'" type="usuario" />
-                                        </td>
-                                        <td class="text-right">
-                                            <x-action-buttons
-                                                :show-route="'red.routers.show'"
-                                                :show-params="[$router]"
-                                                :edit-route="'red.routers.edit'"
-                                                :edit-params="[$router]"
-                                                :delete-route="'red.routers.destroy'"
-                                                :delete-params="[$router]"
-                                                size="sm"
-                                                layout="dropdown"
-                                                delete-message="¿Está seguro de eliminar este router?"
-                                            />
-                                        </td>
+                                        <th>Nombre</th>
+                                        <th>IP/URL</th>
+                                        <th>Nodo</th>
+                                        <th>Estado</th>
+                                        <th width="100"></th>
                                     </tr>
-                                @empty
-                                    <x-empty-state
-                                        icon="fa-network-wired"
-                                        title="No hay routers registrados"
-                                        description="Aún no hay routers en el sistema"
-                                        action-label="Agregar Router"
-                                        action-route="red.routers.create"
-                                        colspan="5"
-                                    />
-                                @endforelse
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @foreach($routers as $router)
+                                        <tr>
+                                            <td><strong>{{ $router->nombre }}</strong></td>
+                                            <td><span class="font-mono">{{ $router->ip_url }}</span></td>
+                                            <td><small class="text-muted">{{ $router->nodo ? $router->nodo->nombre : '-' }}</small></td>
+                                            <td>
+                                                <x-status-badge :status="$router->estado ? 'activo' : 'inactivo'" type="usuario" />
+                                            </td>
+                                            <td class="text-right">
+                                                <x-action-buttons
+                                                    :show-route="'red.routers.show'"
+                                                    :show-params="[$router]"
+                                                    :edit-route="'red.routers.edit'"
+                                                    :edit-params="[$router]"
+                                                    :delete-route="'red.routers.destroy'"
+                                                    :delete-params="[$router]"
+                                                    size="sm"
+                                                    layout="dropdown"
+                                                    delete-message="¿Está seguro de eliminar este router?"
+                                                />
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @else
+                            <x-empty-state
+                                icon="fa-network-wired"
+                                title="No hay routers registrados"
+                                description="Aún no hay routers en el sistema"
+                                action-label="Agregar Router"
+                                action-route="red.routers.create"
+                            />
+                        @endif
                     </div>
             </x-card>
         </div>

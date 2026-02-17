@@ -38,10 +38,30 @@ class GenerarRecibosMensuales extends Command
         $errores = 0;
         $total = 0;
 
+        $diaHoy = (int) now()->day;
+        $diaEmisionDefault = (int) config('isp.comprobantes.dia_emision', 20);
+
         foreach ($isps as $isp) {
             TenantConnectionService::setCurrentIspId($isp->id);
-            $servicios = Servicio::where('estado', 'activo')
-                ->with(['plan', 'ubicacion.cliente'])
+            $inicioPeriodo = \Carbon\Carbon::createFromFormat('Y-m', $periodo)->startOfMonth();
+            $finPeriodo = \Carbon\Carbon::createFromFormat('Y-m', $periodo)->endOfMonth();
+            // Solo servicios cuyo día de facturación es hoy (por servicio o config)
+            $servicios = Servicio::with(['plan', 'ubicacion.cliente'])
+                ->where(function ($q) use ($diaHoy, $diaEmisionDefault) {
+                    $q->where('dia_facturacion', $diaHoy);
+                    if ($diaHoy === $diaEmisionDefault) {
+                        $q->orWhereNull('dia_facturacion');
+                    }
+                })
+                ->where(function ($q) use ($inicioPeriodo, $finPeriodo) {
+                    $q->where('estado', 'activo')
+                        ->orWhere(function ($q2) use ($inicioPeriodo, $finPeriodo) {
+                            $q2->where('estado', 'cortado')
+                                ->whereNotNull('fecha_corte')
+                                ->whereDate('fecha_corte', '>=', $inicioPeriodo)
+                                ->whereDate('fecha_corte', '<=', $finPeriodo);
+                        });
+                })
                 ->get();
             $total += $servicios->count();
 

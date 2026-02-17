@@ -14,12 +14,16 @@
 @include('components.mapa-gps-assets')
 
 @section('content')
+    @include('clientes.tabs')
+
     <div id="cliente-container" data-cliente-id="{{ $cliente->id }}">
         <!-- Header del Cliente -->
         <div class="header-cliente">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="cliente-nombre">{{ $cliente->nombre }}</div>
                 <div>
+                    <a href="{{ route('comprobantes.create', ['cliente_id' => $cliente->id]) }}" class="btn btn-sm btn-outline-light text-white mr-1"><i class="fas fa-file-invoice mr-1"></i>Generar factura</a>
+                    <a href="{{ route('tickets.create') }}?cliente_id={{ $cliente->id }}" class="btn btn-sm btn-outline-light text-white mr-1"><i class="fas fa-ticket-alt mr-1"></i>Crear ticket</a>
                     <x-btn :route="route('clientes.index')" variant="outline-light" size="sm" icon="fa-arrow-left" class="text-white">
                         <span class="d-none d-sm-inline ml-1">Volver</span>
                     </x-btn>
@@ -1239,6 +1243,47 @@
                 });
             });
         })();
+    </script>
+
+    {{-- Modal mobile-first para ver fotos de ubicación sin salir de la página --}}
+    <div class="modal fade" id="modalFotoUbicacion" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered m-0" style="max-width: 100%;">
+            <div class="modal-content bg-transparent border-0">
+                <div class="modal-body p-0 text-center position-relative">
+                    <button type="button" class="close text-white position-absolute" style="top: 0.5rem; right: 0.5rem; z-index: 10; opacity: 1; font-size: 1.5rem;" data-dismiss="modal" aria-label="Cerrar">&times;</button>
+                    <img id="modalFotoImg" src="" alt="" class="img-fluid w-100" style="max-height: 85vh; object-fit: contain;">
+                    <p id="modalFotoTitulo" class="text-white mt-2 mb-0 small" style="text-shadow: 0 1px 2px rgba(0,0,0,0.8);"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    (function() {
+        document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('click', function(e) {
+                var thumb = e.target.closest('.foto-ubicacion-thumb');
+                if (!thumb) return;
+                e.preventDefault();
+                var href = thumb.getAttribute('href');
+                var titulo = thumb.getAttribute('data-foto-modal') || '';
+                var modal = document.getElementById('modalFotoUbicacion');
+                var img = document.getElementById('modalFotoImg');
+                var p = document.getElementById('modalFotoTitulo');
+                if (modal && img && href) {
+                    img.src = href;
+                    img.alt = titulo;
+                    if (p) p.textContent = titulo;
+                    if (typeof $ !== 'undefined' && $.fn && $.fn.modal) {
+                        $('#modalFotoUbicacion').modal('show');
+                    } else if (modal.classList) {
+                        modal.classList.add('show');
+                        modal.style.display = 'block';
+                        document.body.classList.add('modal-open');
+                    }
+                }
+            });
+        });
+    })();
     </script>
 
     @include('components.whatsapp-recordatorio-modal')

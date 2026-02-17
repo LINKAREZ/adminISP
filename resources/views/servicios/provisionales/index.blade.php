@@ -5,14 +5,14 @@
 
 @section('breadcrumb')
     <x-breadcrumb :items="[
-        ['label' => 'Servicios', 'route' => 'servicios.index'],
+        ['label' => 'Servicios', 'route' => 'servicios.home'],
+        ['label' => 'Internet Fibra Óptica', 'route' => 'servicios.internet.index'],
         ['label' => 'Provisionales']
     ]" />
 @endsection
 
 @section('content')
-    <!-- Pestañas del Módulo Servicios -->
-    @include('servicios.tabs')
+    @include('servicios.tabs-internet')
 
     <div class="row">
         <div class="col-12">

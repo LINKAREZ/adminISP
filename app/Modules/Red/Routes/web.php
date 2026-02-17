@@ -9,6 +9,7 @@ Route::middleware(['web', 'auth'])->prefix('red')->name('red.')->group(function 
     Route::resource('routers', RouterController::class);
 
     // Conexiones PPPoE
+    Route::post('routers/{router}/exportar-pppoe', [RouterController::class, 'exportarPppoe'])->name('routers.exportar-pppoe');
     Route::get('routers/{router}/conexiones-pppoe', [RouterController::class, 'conexionesPppoe'])->name('routers.conexiones-pppoe');
     Route::get('routers/{router}/conexiones-pppoe/{sessionId}', [RouterController::class, 'detalleConexionPppoe'])->name('routers.detalle-conexion-pppoe');
     Route::post('routers/{router}/desconectar-pppoe', [RouterController::class, 'desconectarPppoe'])->name('routers.desconectar-pppoe');

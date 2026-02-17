@@ -35,10 +35,13 @@
 <!-- /.navbar -->
 
 <style>
-    /* Mobile-first optimizations para navbar */
+    /* Mobile-first optimizations para navbar (safe area notch/status) */
     @media (max-width: 767.98px) {
         .navbar-mobile {
             padding: 0.5rem 0.75rem;
+            padding-top: calc(0.5rem + env(safe-area-inset-top, 0));
+            padding-left: calc(0.75rem + env(safe-area-inset-left, 0));
+            padding-right: calc(0.75rem + env(safe-area-inset-right, 0));
         }
         
         .nav-link-mobile {

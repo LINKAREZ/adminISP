@@ -1,23 +1,24 @@
 @extends('layouts.adminlte')
 
-@section('title', 'Planes de Internet')
-@section('page-title', 'Planes de Internet')
+@section('title', 'Planes - Internet Fibra Óptica')
+@section('page-title', 'Planes de Internet Fibra Óptica')
 
 @section('breadcrumb')
-    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
-    <li class="breadcrumb-item"><a href="{{ route('servicios.home') }}">Servicios</a></li>
-    <li class="breadcrumb-item active">Planes</li>
+    <x-breadcrumb :items="[
+        ['label' => 'Servicios', 'route' => 'servicios.home'],
+        ['label' => 'Planes']
+    ]" />
 @endsection
 
 @section('content')
-    <!-- Pestañas del Módulo Servicios -->
-    @include('servicios.tabs')
+    @include('servicios.tabs-internet')
 
     <div class="row">
         <div class="col-12">
             <!-- Selector de Router -->
             <x-card title="Seleccionar Router" icon="fa-router" variant="primary" class="mb-3">
-                    <form method="GET" action="{{ route('servicios.planes.index') }}">
+                    <form method="GET" action="{{ route('servicios.planes.index') }}" id="form-router-planes">
+                        <input type="hidden" name="tipo_conexion" value="{{ $tipoConexion ?? 'pppoe' }}">
                         <div class="form-group">
                             <select name="router_id" class="form-control" onchange="this.form.submit()">
                                 <option value="">Seleccione un router...</option>
@@ -32,10 +33,29 @@
             </x-card>
 
             @if($routerSeleccionado)
+                {{-- Segmento: Tipo de conexión (PPPoE, DHCP, IP Estática) --}}
+                <ul class="nav nav-pills nav-fill mb-3" role="tablist">
+                    @php
+                        $tipos = [
+                            'pppoe' => ['label' => 'Planes PPPoE', 'icon' => 'fa-plug'],
+                            'dhcp' => ['label' => 'Planes DHCP', 'icon' => 'fa-network-wired'],
+                            'estatica' => ['label' => 'Planes IP Estática', 'icon' => 'fa-map-marker-alt'],
+                        ];
+                    @endphp
+                    @foreach($tipos as $tipo => $opcion)
+                        <li class="nav-item">
+                            <a href="{{ route('servicios.planes.index', ['router_id' => $routerSeleccionado, 'tipo_conexion' => $tipo]) }}"
+                               class="nav-link {{ ($tipoConexion ?? 'pppoe') === $tipo ? 'active' : '' }}">
+                                <i class="fas {{ $opcion['icon'] }} mr-1"></i> {{ $opcion['label'] }}
+                            </a>
+                        </li>
+                    @endforeach
+                </ul>
                 <div id="planes-container">
-                    <x-card title="Listado de Planes" icon="fa-list" variant="primary">
+                    <x-card title="Listado de Planes {{ $tipoConexion === 'pppoe' ? 'PPPoE' : ($tipoConexion === 'dhcp' ? 'DHCP' : 'IP Estática') }}" icon="fa-list" variant="primary">
                         <x-slot name="actions">
                             <div class="d-flex flex-wrap" style="gap: 0.5rem;">
+                                @if($tipoConexion === 'pppoe')
                                 <button
                                     id="btn-importar-perfiles"
                                     class="btn btn-secondary btn-sm"
@@ -44,7 +64,18 @@
                                     <span id="btn-importar-text"><i class="fas fa-download mr-1"></i> Importar Perfiles</span>
                                     <span id="btn-importar-loading" style="display: none;"><i class="fas fa-spinner fa-spin mr-1"></i> Importando...</span>
                                 </button>
-                                <x-btn :route="route('servicios.planes.create', ['router_id' => $routerSeleccionado])" variant="primary" size="sm" icon="fa-plus">
+                                @endif
+                                @if($tipoConexion === 'dhcp')
+                                <button
+                                    id="btn-importar-dhcp"
+                                    class="btn btn-secondary btn-sm"
+                                    type="button"
+                                >
+                                    <span id="btn-importar-dhcp-text"><i class="fas fa-download mr-1"></i> Importar desde MikroTik</span>
+                                    <span id="btn-importar-dhcp-loading" style="display: none;"><i class="fas fa-spinner fa-spin mr-1"></i> Importando...</span>
+                                </button>
+                                @endif
+                                <x-btn :route="route('servicios.planes.create', ['router_id' => $routerSeleccionado, 'tipo_conexion' => $tipoConexion ?? 'pppoe'])" variant="primary" size="sm" icon="fa-plus">
                                     Agregar Plan
                                 </x-btn>
                             </div>
@@ -406,8 +437,114 @@
             }
         };
 
+        const DhcpImportManager = {
+            importando: false,
+            routerId: {{ $routerSeleccionado ?? 'null' }},
+            init: function() {
+                const self = this;
+                $('#btn-importar-dhcp').on('click', function() { self.importar(); });
+            },
+            importar: function() {
+                if (this.importando || !this.routerId) return;
+                this.importando = true;
+                $('#btn-importar-dhcp').prop('disabled', true);
+                $('#btn-importar-dhcp-text').hide();
+                $('#btn-importar-dhcp-loading').show();
+
+                fetch('{{ url('servicios/internet/planes/servidores-dhcp') }}?router_id=' + this.routerId, {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                })
+                .then(r => r.json())
+                .then(data => {
+                    this.importando = false;
+                    $('#btn-importar-dhcp').prop('disabled', false);
+                    $('#btn-importar-dhcp-text').show();
+                    $('#btn-importar-dhcp-loading').hide();
+                    if (!data.success) {
+                        window.showAlert(data.message || 'Error al listar servidores DHCP', 'error');
+                        return;
+                    }
+                    const servidores = data.servidores || [];
+                    if (servidores.length === 0) {
+                        window.showAlert('No hay servidores DHCP en el router.', 'info');
+                        return;
+                    }
+                    this.mostrarModalSeleccion(servidores);
+                })
+                .catch(e => {
+                    this.importando = false;
+                    $('#btn-importar-dhcp').prop('disabled', false);
+                    $('#btn-importar-dhcp-text').show();
+                    $('#btn-importar-dhcp-loading').hide();
+                    window.showAlert('Error: ' + e.message, 'error');
+                });
+            },
+            mostrarModalSeleccion: function(servidores) {
+                const escape = (v) => (v || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                const html = servidores.map(s => `
+                    <tr>
+                        <td><input type="checkbox" class="dhcp-servidor-cb" value="${escape(s.name)}" data-interface="${escape(s.interface)}"> ${escape(s.name) || '-'}</td>
+                        <td><span class="text-muted small">${escape(s.interface) || '-'}</span></td>
+                        <td><input type="text" class="form-control form-control-sm dhcp-nombre-plan" placeholder="${escape(s.name) || 'Nombre plan'}" value="${escape(s.name) || ''}"></td>
+                        <td><input type="number" step="0.01" min="0" class="form-control form-control-sm dhcp-precio" placeholder="0"></td>
+                    </tr>
+                `).join('');
+                const $modal = $('<div class="modal fade" id="modalImportarDhcp" tabindex="-1">' +
+                    '<div class="modal-dialog"><div class="modal-content">' +
+                    '<div class="modal-header"><h5 class="modal-title">Importar servidores DHCP</h5><button type="button" class="close" data-dismiss="modal">&times;</button></div>' +
+                    '<div class="modal-body"><p class="text-muted small">Seleccione los servidores a importar. Opcional: nombre del plan y precio.</p>' +
+                    '<table class="table table-sm"><thead><tr><th>Servidor</th><th>Interfaz</th><th>Nombre plan</th><th>Precio (S/)</th></tr></thead><tbody>' + html + '</tbody></table></div>' +
+                    '<div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>' +
+                    '<button type="button" class="btn btn-primary" id="btn-confirmar-importar-dhcp"><i class="fas fa-download mr-1"></i> Importar seleccionados</button></div></div></div></div>');
+                $('body').append($modal);
+                $modal.modal('show');
+                $modal.find('#btn-confirmar-importar-dhcp').on('click', () => {
+                    const payload = [];
+                    $modal.find('.dhcp-servidor-cb:checked').each(function() {
+                        const $row = $(this).closest('tr');
+                        payload.push({
+                            nombre_servidor: $(this).val(),
+                            nombre_plan: $row.find('.dhcp-nombre-plan').val() || $(this).val(),
+                            precio_mensual: parseFloat($row.find('.dhcp-precio').val()) || null
+                        });
+                    });
+                    if (payload.length === 0) {
+                        window.showAlert('Seleccione al menos un servidor.', 'warning');
+                        return;
+                    }
+                    $modal.find('.btn-primary').prop('disabled', true);
+                    fetch('{{ route('servicios.planes.importar-dhcp') }}', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                        body: JSON.stringify({ router_id: this.routerId, servidores: payload })
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        $modal.modal('hide');
+                        $modal.remove();
+                        if (data.success) {
+                            window.showAlert(data.message || 'Importación correcta.', 'success');
+                            window.location.reload();
+                        } else {
+                            window.showAlert(data.message || 'Error al importar', 'error');
+                        }
+                    })
+                    .catch(e => {
+                        $modal.find('.btn-primary').prop('disabled', false);
+                        window.showAlert('Error: ' + e.message, 'error');
+                    });
+                });
+                $modal.on('hidden.bs.modal', function() { $modal.remove(); });
+            }
+        };
+
         $(document).ready(function() {
             PlanImportManager.init();
+            @if($tipoConexion === 'dhcp')
+            DhcpImportManager.routerId = {{ $routerSeleccionado ?? 'null' }};
+            DhcpImportManager.init();
+            @endif
 
             window.addEventListener('action-edit', function(e) {
                 const planId = e.detail.id;
@@ -420,7 +557,7 @@
 
             window.addEventListener('action-view', function(e) {
                 const planId = e.detail.id;
-                window.location.href = `/servicios/planes/${planId}`;
+                window.location.href = `/servicios/internet/planes/${planId}`;
             });
 
             window.addEventListener('action-delete', function(e) {
@@ -428,7 +565,7 @@
                 if (confirm('¿Está seguro de eliminar este plan?')) {
                     const form = document.createElement('form');
                     form.method = 'POST';
-                    form.action = `/servicios/planes/${planId}`;
+                    form.action = `/servicios/internet/planes/${planId}`;
 
                     const csrfInput = document.createElement('input');
                     csrfInput.type = 'hidden';

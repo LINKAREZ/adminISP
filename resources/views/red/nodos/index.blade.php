@@ -57,32 +57,36 @@
                                 <div class="card-header">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <h6 class="card-title mb-0">
-                                            <strong>{{ $nodo->nombre }}</strong>
+                                            <a href="{{ route('red.nodos.show', $nodo) }}" class="text-dark font-weight-bold text-decoration-none">
+                                                {{ $nodo->nombre }}
+                                            </a>
                                         </h6>
-                                        @if($nodo->estado)
-                                            <span class="badge badge-success">Activo</span>
-                                        @else
-                                            <span class="badge badge-secondary">Inactivo</span>
-                                        @endif
+                                        <div class="d-flex align-items-center">
+                                            @if($nodo->estado)
+                                                <span class="badge badge-success">Activo</span>
+                                            @else
+                                                <span class="badge badge-secondary">Inactivo</span>
+                                            @endif
+                                            <div class="ml-2">
+                                                <x-action-buttons
+                                                    :show-route="'red.nodos.show'"
+                                                    :show-params="[$nodo]"
+                                                    :edit-route="'red.nodos.edit'"
+                                                    :edit-params="[$nodo]"
+                                                    :delete-route="'red.nodos.destroy'"
+                                                    :delete-params="[$nodo]"
+                                                    size="sm"
+                                                    layout="dropdown"
+                                                    delete-message="¿Está seguro de eliminar este nodo?"
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="card-body">
                                     @if($nodo->ubicacion)
                                         <p class="mb-2 small"><i class="fas fa-map-marker-alt mr-2 text-muted"></i>{{ $nodo->ubicacion }}</p>
                                     @endif
-                                    <div class="btn-group btn-group-sm w-100 mt-2">
-                                        <x-action-buttons
-                                            :show-route="'red.nodos.show'"
-                                            :show-params="[$nodo]"
-                                            :edit-route="'red.nodos.edit'"
-                                            :edit-params="[$nodo]"
-                                            :delete-route="'red.nodos.destroy'"
-                                            :delete-params="[$nodo]"
-                                            size="sm"
-                                            layout="dropdown"
-                                            delete-message="¿Está seguro de eliminar este nodo?"
-                                        />
-                                    </div>
                                 </div>
                             </div>
                         @empty

@@ -49,20 +49,37 @@
                         </div>
                     </div>
                 </form>
-                <!-- Vista móvil: Cards -->
+                <!-- Vista móvil: Cards (mismo patrón que Red/Instalaciones: título enlace + badge + dropdown en header) -->
                     <div class="d-md-none">
                         @forelse($mediosPago as $medio)
                             <div class="card card-outline card-primary mb-2">
                                 <div class="card-header">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <h6 class="card-title mb-0">
-                                            <strong>{{ $medio->nombre }}</strong>
+                                            <a href="{{ route('sistema.medios-pago.show', $medio) }}" class="text-dark font-weight-bold text-decoration-none">
+                                                {{ $medio->nombre }}
+                                            </a>
                                         </h6>
-                                        @if($medio->activo)
-                                            <span class="badge badge-success">Activo</span>
-                                        @else
-                                            <span class="badge badge-danger">Inactivo</span>
-                                        @endif
+                                        <div class="d-flex align-items-center">
+                                            @if($medio->activo)
+                                                <span class="badge badge-success">Activo</span>
+                                            @else
+                                                <span class="badge badge-danger">Inactivo</span>
+                                            @endif
+                                            <div class="ml-2">
+                                                <x-action-buttons
+                                                    :show-route="'sistema.medios-pago.show'"
+                                                    :show-params="[$medio]"
+                                                    :edit-route="'sistema.medios-pago.edit'"
+                                                    :edit-params="[$medio]"
+                                                    :delete-route="'sistema.medios-pago.destroy'"
+                                                    :delete-params="[$medio]"
+                                                    size="sm"
+                                                    layout="dropdown"
+                                                    delete-message="¿Está seguro de eliminar este medio de pago?"
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="card-body">
@@ -71,20 +88,8 @@
                                         <p class="mb-1 small"><i class="fas fa-credit-card mr-2 text-muted"></i>{{ $medio->numero_cuenta }}</p>
                                     @endif
                                     @if($medio->banco)
-                                        <p class="mb-2 small"><i class="fas fa-university mr-2 text-muted"></i>{{ $medio->banco }}</p>
+                                        <p class="mb-0 small"><i class="fas fa-university mr-2 text-muted"></i>{{ $medio->banco }}</p>
                                     @endif
-                                    <div class="btn-group btn-group-sm w-100 mt-2">
-                                        <x-action-buttons
-                                            :show-route="'sistema.medios-pago.show'"
-                                            :show-params="[$medio]"
-                                            :edit-route="'sistema.medios-pago.edit'"
-                                            :edit-params="[$medio]"
-                                            :delete-route="'sistema.medios-pago.destroy'"
-                                            :delete-params="[$medio]"
-                                            size="sm"
-                                            delete-message="¿Está seguro de eliminar este medio de pago?"
-                                        />
-                                    </div>
                                 </div>
                             </div>
                         @empty

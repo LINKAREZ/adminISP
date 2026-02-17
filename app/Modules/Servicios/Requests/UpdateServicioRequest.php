@@ -31,6 +31,15 @@ class UpdateServicioRequest extends FormRequest
         return auth()->check() && auth()->user()->hasPermission('servicios.update');
     }
 
+    protected function prepareForValidation(): void
+    {
+        foreach (['dia_facturacion', 'dia_corte', 'dias_gracia'] as $key) {
+            if ($this->has($key) && $this->input($key) === '') {
+                $this->merge([$key => null]);
+            }
+        }
+    }
+
     public function rules(): array
     {
         $data = $this->all();
@@ -68,6 +77,9 @@ class UpdateServicioRequest extends FormRequest
         $rules['ubicacion_foto_1'] = ['nullable', 'image', 'max:2048'];
         $rules['ubicacion_foto_2'] = ['nullable', 'image', 'max:2048'];
         $rules['ubicacion_foto_3'] = ['nullable', 'image', 'max:2048'];
+        $rules['ubicacion_foto_1_titulo'] = ['nullable', 'string', 'max:80'];
+        $rules['ubicacion_foto_2_titulo'] = ['nullable', 'string', 'max:80'];
+        $rules['ubicacion_foto_3_titulo'] = ['nullable', 'string', 'max:80'];
 
         return $rules;
     }
@@ -100,6 +112,16 @@ class UpdateServicioRequest extends FormRequest
                             'ubicacion_id',
                             'La ubicación seleccionada no pertenece al cliente del servicio.'
                         );
+                    }
+                }
+
+                // La ubicación debe tener al menos una foto (existente o nueva)
+                $ubicacion = $servicio->ubicacion;
+                if ($ubicacion) {
+                    $yaTieneFoto = $ubicacion->foto_1 || $ubicacion->foto_2 || $ubicacion->foto_3;
+                    $subeNueva = $this->hasFile('ubicacion_foto_1') || $this->hasFile('ubicacion_foto_2') || $this->hasFile('ubicacion_foto_3');
+                    if (!$yaTieneFoto && !$subeNueva) {
+                        $validator->errors()->add('ubicacion_foto_1', 'Debe subir al menos una foto de la ubicación.');
                     }
                 }
             }

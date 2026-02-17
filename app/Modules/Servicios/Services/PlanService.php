@@ -3,6 +3,7 @@
 namespace App\Modules\Servicios\Services;
 
 use App\Modules\Servicios\Models\Plan;
+use App\Modules\Servicios\Models\PlanDhcpConfig;
 use App\Modules\Red\Models\Router;
 use Illuminate\Support\Facades\Log;
 
@@ -154,5 +155,102 @@ class PlanService
             'errores' => $errores,
             'total' => count($perfiles),
         ];
+    }
+
+    /**
+     * Guarda planes DHCP importados desde RouterOS (Plan + PlanDhcpConfig).
+     */
+    public function guardarServidoresDhcpImportados(int $routerId, array $servidores): array
+    {
+        $guardados = 0;
+        $actualizados = 0;
+        $errores = 0;
+
+        foreach ($servidores as $item) {
+            try {
+                $detalle = $item['detalle'] ?? [];
+                $servidor = $detalle['servidor'] ?? [];
+                $nombreServidor = trim((string) ($servidor['name'] ?? $item['nombre_servidor'] ?? ''));
+                if ($nombreServidor === '') {
+                    $errores++;
+                    continue;
+                }
+
+                $planExistente = Plan::where('router_id', $routerId)
+                    ->where('tipo_conexion', 'dhcp')
+                    ->where('perfil_mikrotik', $nombreServidor)
+                    ->first();
+
+                $nombrePlan = $item['nombre_plan'] ?? $nombreServidor;
+                $precio = isset($item['precio_mensual']) ? (float) $item['precio_mensual'] : ($planExistente?->precio_mensual ?? 0);
+                $rateLimit = $this->rateLimitDesdeVelocidades(
+                    (int) ($item['velocidad_bajada_mbps'] ?? $planExistente?->velocidad_bajada_mbps ?? 0),
+                    (int) ($item['velocidad_subida_mbps'] ?? $planExistente?->velocidad_subida_mbps ?? 0)
+                );
+
+                $datosPlan = [
+                    'router_id' => $routerId,
+                    'nombre' => $nombrePlan,
+                    'perfil_mikrotik' => $nombreServidor,
+                    'tipo_conexion' => 'dhcp',
+                    'estado' => true,
+                    'local_address' => $detalle['gateway'] ?? null,
+                    'dns' => $detalle['dns'] ?? null,
+                    'rate_limit' => $rateLimit,
+                    'precio_mensual' => $precio,
+                    'velocidad_bajada_mbps' => (int) ($item['velocidad_bajada_mbps'] ?? 0),
+                    'velocidad_subida_mbps' => (int) ($item['velocidad_subida_mbps'] ?? 0),
+                ];
+
+                if ($planExistente) {
+                    $planExistente->update($datosPlan);
+                    $plan = $planExistente;
+                    $actualizados++;
+                } else {
+                    $plan = Plan::create($datosPlan);
+                    $guardados++;
+                }
+
+                $configDatos = [
+                    'plan_id' => $plan->id,
+                    'isp_id' => $plan->isp_id,
+                    'nombre_servidor_routeros' => $nombreServidor,
+                    'interfaz' => trim((string) ($servidor['interface'] ?? '')),
+                    'pool_nombre' => trim((string) ($servidor['address-pool'] ?? '')),
+                    'red_cidr' => $detalle['red_cidr'] ?? null,
+                    'rango_ip' => $detalle['pool_ranges'] ?? null,
+                    'gateway' => $detalle['gateway'] ?? null,
+                    'dns' => $detalle['dns'] ?? null,
+                    'domain' => $detalle['domain'] ?? null,
+                    'lease_time' => trim((string) ($servidor['lease-time'] ?? '')),
+                ];
+                PlanDhcpConfig::updateOrCreate(
+                    ['plan_id' => $plan->id],
+                    $configDatos
+                );
+            } catch (\Exception $e) {
+                Log::error('Error al guardar plan DHCP importado', [
+                    'router_id' => $routerId,
+                    'item' => $item,
+                    'error' => $e->getMessage(),
+                ]);
+                $errores++;
+            }
+        }
+
+        return [
+            'guardados' => $guardados,
+            'actualizados' => $actualizados,
+            'errores' => $errores,
+            'total' => count($servidores),
+        ];
+    }
+
+    private function rateLimitDesdeVelocidades(int $bajadaMbps, int $subidaMbps): string
+    {
+        if ($bajadaMbps <= 0 && $subidaMbps <= 0) {
+            return '';
+        }
+        return $bajadaMbps . 'M/' . $subidaMbps . 'M';
     }
 }

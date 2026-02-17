@@ -6,6 +6,7 @@ use App\Modules\Sistema\Controllers\OnuModeloController;
 use App\Modules\Sistema\Controllers\ApiController;
 use App\Modules\Sistema\Controllers\OnuMarcaController;
 use App\Modules\Sistema\Controllers\IspController;
+use App\Modules\Sistema\Controllers\AvisoController;
 use App\Modules\Sistema\Controllers\SuperAdminController;
 use App\Modules\Notificaciones\Controllers\PlantillaWhatsAppController;
 use Illuminate\Support\Facades\Route;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['web', 'auth'])->prefix('sistema')->name('sistema.')->group(function () {
     // Ruta principal del módulo Sistema
     Route::get('/', [SistemaController::class, 'index'])->name('index');
+    Route::resource('avisos', AvisoController::class)->parameters(['avisos' => 'aviso']);
 
     Route::resource('medios-pago', MedioPagoController::class)->parameters(['medios-pago' => 'mediosPago']);
     Route::post('apis/init', [ApiController::class, 'initDefaults'])->name('apis.init');

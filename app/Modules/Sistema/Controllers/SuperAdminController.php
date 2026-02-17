@@ -2,18 +2,19 @@
 
 namespace App\Modules\Sistema\Controllers;
 
+use App\Core\Scopes\IspScope;
+use App\Core\Services\TenantConnectionService;
 use App\Http\Controllers\Controller;
-use App\Modules\Sistema\Models\Isp;
-use App\Modules\Sistema\Services\IspExportService;
+use App\Modules\Clientes\Models\Cliente;
 use App\Modules\ControlAcceso\Models\User;
 use App\Modules\ControlAcceso\Models\Role;
+use App\Modules\Sistema\Models\Isp;
 use App\Modules\Sistema\Requests\StoreSuperAdminUserRequest;
+use App\Modules\Sistema\Services\IspExportService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
-use App\Core\Scopes\IspScope;
 
 class SuperAdminController extends Controller
 {
@@ -52,13 +53,30 @@ class SuperAdminController extends Controller
         $ispsInactivos = $totalIsps - $ispsActivos;
         $totalUsuarios = User::withoutGlobalScope(IspScope::class)->count();
         $totalAdminsDefault = User::withoutGlobalScope(IspScope::class)->where('is_default_admin', true)->count();
-        $totalClientes = DB::table('clientes')->count();
+
+        // Total clientes: suma en todas las BD tenant (clientes no está en la BD central)
+        $totalClientes = 0;
+        $ispsConBd = Isp::withoutGlobalScope(IspScope::class)->whereNotNull('database_name')->get();
+        foreach ($ispsConBd as $isp) {
+            TenantConnectionService::setCurrentIspId($isp->id);
+            $totalClientes += Cliente::count();
+        }
 
         $recentIsps = Isp::withoutGlobalScope(IspScope::class)
-            ->withCount(['users', 'clientes'])
+            ->withCount('users')
             ->orderByDesc('id')
             ->limit(5)
             ->get();
+
+        // Conteo de clientes por ISP (cada uno en su BD tenant)
+        foreach ($recentIsps as $isp) {
+            if ($isp->database_name) {
+                TenantConnectionService::setCurrentIspId($isp->id);
+                $isp->clientes_count = Cliente::count();
+            } else {
+                $isp->clientes_count = 0;
+            }
+        }
 
         $basesDeDatos = Isp::withoutGlobalScope(IspScope::class)
             ->whereNotNull('database_name')

@@ -19,3 +19,6 @@ yarn-error.log
 
 
 docker/nginx/ssl/*.pem
+
+# Carpeta duplicada desde VPS (no versionar)
+adminisp/

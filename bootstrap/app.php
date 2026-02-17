@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -36,6 +37,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \App\Core\Middleware\CheckPermission::class,
             'superadmin' => \App\Core\Middleware\EnsureSuperAdmin::class,
             'installer' => \App\Http\Middleware\EnsureNotInstalled::class,
+            'portal.cliente' => \App\Http\Middleware\EnsurePortalCliente::class,
+            'portal.guest' => \App\Http\Middleware\RedirectIfPortalCliente::class,
+            'tenant.aviso' => \App\Http\Middleware\SetTenantFromQueryForAviso::class,
         ]);
     })
     ->withProviders([
@@ -52,8 +56,35 @@ return Application::configure(basePath: dirname(__DIR__))
         \App\Modules\Auth\ModuleServiceProvider::class,
         \App\Modules\Notificaciones\ModuleServiceProvider::class,
         \App\Modules\Auditoria\ModuleServiceProvider::class,
+        \App\Modules\Instalaciones\ModuleServiceProvider::class,
+        \App\Modules\Infraestructura\ModuleServiceProvider::class,
+        \App\Modules\Almacen\ModuleServiceProvider::class,
+        \App\Modules\MapaRed\ModuleServiceProvider::class,
     ])
     ->withExceptions(function (Exceptions $exceptions) {
+        // Redirigir cuando falten tablas FTTH (OLT/ODF/splitters) en el tenant
+        $exceptions->render(function (QueryException $exception, \Illuminate\Http\Request $request) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return null;
+            }
+            $msg = $exception->getMessage();
+            $tablasFtth = ['olts', 'odfs', 'olt_puertos_pon', 'odf_puertos', 'enlace_olt_odf', 'recorrido_hilo_origen', 'splitters', 'splitter_salidas'];
+            $esTablaFaltante = str_contains($msg, 'Base table or view not found')
+                && str_contains($msg, "doesn't exist")
+                && collect($tablasFtth)->contains(fn ($t) => str_contains($msg, $t));
+            if (!$esTablaFaltante) {
+                return null;
+            }
+            $ruta = $request->route();
+            $nombreRuta = $ruta ? $ruta->getName() : null;
+            if ($nombreRuta && str_starts_with($nombreRuta, 'infraestructura.')) {
+                $ispId = request()->user()?->isp_id;
+                return redirect()->route('infraestructura.mapa.index')
+                    ->with('warning', 'Las tablas FTTH (OLT/ODF) no existen en este ISP. Vaya a Infraestructura → Detalle PON y pulse «Crear tablas FTTH ahora», o ejecute en el servidor: php artisan isp:migrate-tenant' . ($ispId ? ' --isp=' . $ispId : ''));
+            }
+            return null;
+        });
+
         // Manejo de excepciones para respuestas AJAX/JSON
         $exceptions->render(function (\Throwable $exception, \Illuminate\Http\Request $request) {
             if ($request->expectsJson() || $request->ajax()) {

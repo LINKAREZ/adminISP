@@ -18,9 +18,15 @@ use App\Modules\Red\Models\Router;
 use App\Modules\Servicios\Models\Plan;
 use App\Modules\Clientes\Models\Ubicacion;
 use App\Modules\Servicios\Models\Servicio;
+use App\Modules\Comprobantes\Models\Comprobante;
+use App\Modules\Comprobantes\Models\ComprobanteItem;
+use App\Modules\Comprobantes\Models\Pago;
+use App\Modules\Comprobantes\Models\PromesaPago;
 use App\Modules\Comprobantes\Models\Recibo;
+use App\Modules\Servicios\Models\Onu;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
@@ -1091,7 +1097,7 @@ class ClienteController extends Controller
     }
 
     /**
-     * Cortar servicios vencidos (servicios activos con deudas vencidas)
+     * Cortar servicios con recibos pasados de fecha de corte (vencimiento + días de gracia).
      */
     public function cortarServiciosVencidos(Request $request, RouterOSScriptService $scriptService)
     {
@@ -1102,22 +1108,16 @@ class ClienteController extends Controller
         }
 
         try {
-            // Buscar servicios activos que tienen recibos vencidos
+            // Buscar servicios activos con recibos pasados de fecha de corte (vencimiento + días de gracia)
             $serviciosQuery = Servicio::where('estado', 'activo')
-                ->whereHas('recibos', function ($query) {
-                    $query->where('estado', 'vencido')
-                        ->where('saldo', '>', 0);
-                })
-                ->with(['router', 'recibos' => function ($q) {
-                    $q->where('estado', 'vencido')
-                        ->where('saldo', '>', 0);
-                }])
+                ->whereHas('recibos', fn ($query) => $query->pasadosFechaCorte())
+                ->with(['router', 'recibos' => fn ($q) => $q->pasadosFechaCorte()])
                 ->orderBy('id');
 
             if (!$serviciosQuery->exists()) {
                 return redirect()
                     ->route('clientes.index')
-                    ->with('info', 'No se encontraron servicios activos con recibos vencidos.');
+                    ->with('info', 'No se encontraron servicios activos con recibos pasados de fecha de corte.');
             }
 
             $cortados = 0;
@@ -1130,8 +1130,8 @@ class ClienteController extends Controller
                     try {
                         foreach ($serviciosVencidos as $servicio) {
                             try {
-                                // Actualizar estado del servicio
-                                $servicio->update(['estado' => 'cortado']);
+                                // Actualizar estado del servicio y fecha_corte (prorrateo al suspender)
+                                $servicio->update(['estado' => 'cortado', 'fecha_corte' => now()->toDateString()]);
 
                                 // Crear script y scheduler en MikroTik si tiene router y MAC
                                 if ($servicio->router && $servicio->mac_address) {
@@ -1181,7 +1181,7 @@ class ClienteController extends Controller
                     }
                 });
 
-                $mensaje = "Se cortaron {$cortados} servicio(s) con recibos vencidos.";
+                $mensaje = "Se cortaron {$cortados} servicio(s) con recibos pasados de fecha de corte.";
                 if ($errores > 0) {
                     $mensaje .= " Hubo {$errores} error(es).";
                 }
@@ -1201,6 +1201,46 @@ class ClienteController extends Controller
             return redirect()
                 ->route('clientes.index')
                 ->with('error', 'Error al cortar servicios vencidos: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Eliminar todos los clientes (y servicios, recibos, pagos, etc.) del tenant actual.
+     */
+    public function eliminarTodos(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user || !$user->hasPermission('clientes.delete')) {
+            abort(403, 'No autorizado para eliminar clientes.');
+        }
+
+        try {
+            DB::transaction(function () {
+                ComprobanteItem::query()->delete();
+                Comprobante::query()->delete();
+                Pago::query()->delete();
+                PromesaPago::query()->delete();
+                Recibo::query()->delete();
+                Onu::query()->delete();
+                Servicio::query()->delete();
+                Ubicacion::query()->delete();
+                Cliente::query()->delete();
+            });
+
+            $ispId = session('current_isp_id') ?? (app()->has('current_isp_id') ? app('current_isp_id') : null);
+            Cache::forget('dashboard_stats_' . ($ispId ?? 'global'));
+
+            return redirect()
+                ->route('clientes.index', $request->only('router_id'))
+                ->with('success', 'Se eliminaron todos los clientes y servicios de este ISP.');
+        } catch (\Throwable $e) {
+            Log::error('Error al eliminar todos los clientes', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return redirect()
+                ->route('clientes.index', $request->only('router_id'))
+                ->with('error', 'Error al eliminar: ' . $e->getMessage());
         }
     }
 }

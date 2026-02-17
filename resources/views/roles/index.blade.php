@@ -49,37 +49,42 @@
                     </div>
                 </form>
 
-                    <!-- Vista móvil: Cards -->
+                    <!-- Vista móvil: Cards (mismo patrón que Red/Instalaciones: título enlace + badge + dropdown en header) -->
                     <div class="d-md-none">
                         @forelse($roles as $role)
-                            <div class="card card-outline card-primary mb-2 mx-2 my-2">
+                            <div class="card card-outline card-primary mb-2">
                                 <div class="card-header">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <h6 class="card-title mb-0">
-                                            <strong>{{ $role->name }}</strong>
+                                            <a href="{{ route('roles.show', $role) }}" class="text-dark font-weight-bold text-decoration-none">
+                                                {{ $role->name }}
+                                            </a>
                                         </h6>
-                                        @if($role->is_active)
-                                            <span class="badge badge-success">Activo</span>
-                                        @else
-                                            <span class="badge badge-secondary">Inactivo</span>
-                                        @endif
+                                        <div class="d-flex align-items-center">
+                                            @if($role->is_active)
+                                                <span class="badge badge-success">Activo</span>
+                                            @else
+                                                <span class="badge badge-secondary">Inactivo</span>
+                                            @endif
+                                            <div class="ml-2">
+                                                <x-action-buttons
+                                                    :show-route="'roles.show'"
+                                                    :show-params="[$role]"
+                                                    :edit-route="'roles.edit'"
+                                                    :edit-params="[$role]"
+                                                    :delete-route="'roles.destroy'"
+                                                    :delete-params="[$role]"
+                                                    size="sm"
+                                                    layout="dropdown"
+                                                    delete-message="¿Está seguro de eliminar este rol?"
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="card-body">
                                     <p class="mb-1 small text-muted">{{ $role->description ?: 'Sin descripción' }}</p>
-                                    <p class="mb-2"><span class="badge badge-info">{{ $role->users_count ?? 0 }} usuario(s)</span></p>
-                                    <div class="btn-group btn-group-sm w-100 mt-2">
-                                        <x-action-buttons
-                                            :show-route="'roles.show'"
-                                            :show-params="[$role]"
-                                            :edit-route="'roles.edit'"
-                                            :edit-params="[$role]"
-                                            :delete-route="'roles.destroy'"
-                                            :delete-params="[$role]"
-                                            size="sm"
-                                            delete-message="¿Está seguro de eliminar este rol?"
-                                        />
-                                    </div>
+                                    <p class="mb-0"><span class="badge badge-info">{{ $role->users_count ?? 0 }} usuario(s)</span></p>
                                 </div>
                             </div>
                         @empty

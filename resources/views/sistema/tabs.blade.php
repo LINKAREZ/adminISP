@@ -1,5 +1,13 @@
 @include('components.nav-tabs', ['tabs' => [
     [
+        'name' => 'configuracion',
+        'label' => 'Configuración',
+        'icon' => 'fas fa-cog',
+        'route' => route('sistema.index'),
+        'permission' => 'sistema.read',
+        'active' => request()->routeIs('sistema.index') || (request()->is('sistema') && !request()->is('sistema/*')),
+    ],
+    [
         'name' => 'medios-pago',
         'label' => 'Medios de Pago',
         'icon' => 'fas fa-credit-card',
@@ -30,5 +38,13 @@
         'route' => route('sistema.plantillas-whatsapp.index'),
         'permission' => 'sistema.read',
         'active' => request()->is('sistema/plantillas/whatsapp*'),
+    ],
+    [
+        'name' => 'avisos',
+        'label' => 'Avisos',
+        'icon' => 'fas fa-bullhorn',
+        'route' => route('sistema.avisos.index'),
+        'permission' => 'sistema.read',
+        'active' => request()->is('sistema/avisos*'),
     ],
 ]])

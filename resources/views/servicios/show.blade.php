@@ -5,7 +5,8 @@
 
 @section('breadcrumb')
     <x-breadcrumb :items="[
-        ['label' => 'Servicios', 'route' => 'servicios.index'],
+        ['label' => 'Servicios', 'route' => 'servicios.home'],
+        ['label' => 'Internet Fibra Óptica', 'route' => 'servicios.internet.index'],
         ['label' => 'Ver']
     ]" />
 @endsection
@@ -15,7 +16,7 @@
 @section('content')
     <!-- Pestañas del Módulo Servicios (solo si no viene del contexto de cliente) -->
     @if(!isset($fromCliente) || !$fromCliente)
-        @include('servicios.tabs')
+        @include('servicios.tabs-internet')
     @endif
 
     <div class="row">
@@ -31,12 +32,12 @@
                         @endif
                     </h3>
                     <div class="card-tools card-tools-mobile">
-                        @if(isset($fromCliente) && $fromCliente && isset($clienteId))
-                            <x-btn :route="route('clientes.show', $clienteId)" variant="secondary" size="sm" icon="fa-arrow-left">
+                        @if(isset($cliente) && $cliente)
+                            <x-btn :route="route('clientes.show', $cliente)" variant="secondary" size="sm" icon="fa-arrow-left">
                                 Volver
                             </x-btn>
                         @else
-                            <x-btn :route="route('servicios.index')" variant="secondary" size="sm" icon="fa-arrow-left">
+                            <x-btn :route="route('servicios.internet.index')" variant="secondary" size="sm" icon="fa-arrow-left">
                                 Volver
                             </x-btn>
                         @endif
@@ -104,6 +105,50 @@
                                             @endif
                                         </div>
                                     </div>
+
+                                    @if($servicio->plan && in_array($servicio->plan->tipo_conexion, ['dhcp', 'estatica']))
+                                    <div class="card card-outline card-secondary mt-3">
+                                        <div class="card-header">
+                                            <h3 class="card-title">
+                                                @if($servicio->plan->tipo_conexion === 'dhcp')
+                                                    DHCP – IP y velocidad
+                                                @else
+                                                    IP estática – IP y velocidad
+                                                @endif
+                                            </h3>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="form-group">
+                                                <label>IP asignada</label>
+                                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                                    <div class="form-control bg-light font-monospace" style="pointer-events: none; flex: 1; min-width: 120px;" id="servicio-ip-asignada">{{ $servicio->ip_asignada ?? '-' }}</div>
+                                                    @if($servicio->plan->tipo_conexion === 'dhcp')
+                                                    <button type="button" class="btn btn-sm btn-outline-primary" id="btn-obtener-ip-dhcp" title="Obtener IP actual del router (por MAC)">
+                                                        <i class="fas fa-sync-alt mr-1"></i> Obtener IP
+                                                    </button>
+                                                    @endif
+                                                </div>
+                                                @if($servicio->plan->tipo_conexion === 'estatica')
+                                                <small class="text-muted">Edite el servicio para cambiar la IP asignada.</small>
+                                                @endif
+                                            </div>
+                                            <div class="btn-group flex-wrap" role="group">
+                                                @if($servicio->plan->tipo_conexion === 'dhcp')
+                                                <button type="button" class="btn btn-sm btn-outline-success" id="btn-make-static-dhcp" title="Fijar IP (lease estático)">
+                                                    <i class="fas fa-lock mr-1"></i> Make static
+                                                </button>
+                                                @endif
+                                                <button type="button" class="btn btn-sm btn-outline-info" id="btn-aplicar-simple-queue" title="Aplicar límite de velocidad (Simple Queue)">
+                                                    <i class="fas fa-tachometer-alt mr-1"></i> Aplicar velocidad
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-outline-warning" id="btn-quitar-simple-queue" title="Quitar Simple Queue">
+                                                    <i class="fas fa-ban mr-1"></i> Quitar velocidad
+                                                </button>
+                                            </div>
+                                            <div id="dhcp-actions-message" class="mt-2 small"></div>
+                                        </div>
+                                    </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -411,8 +456,8 @@
                                                 <div class="alert alert-light border mb-0">
                                                     <small class="text-muted">No hay coordenadas guardadas.</small>
                                                     <span class="d-block mt-1">Edita el servicio y en la pestaña <strong>Ubicación</strong> haz clic en el mapa o usa «Usar mi ubicación» y guarda.</span>
-                                                    @php $idCliente = $clienteId ?? ($cliente->id ?? $servicio->ubicacion->cliente_id ?? null); @endphp
-                                                    @if(isset($fromCliente) && $fromCliente && $idCliente)
+                                                    @php $idCliente = (isset($cliente) && $cliente ? $cliente->id : null) ?? $servicio->ubicacion->cliente_id ?? null; @endphp
+                                                    @if($idCliente)
                                                         <a href="{{ route('clientes.servicios.edit', ['cliente' => $idCliente, 'servicio' => $servicio]) }}" class="btn btn-sm btn-outline-primary mt-2">Editar servicio</a>
                                                     @else
                                                         <a href="{{ route('servicios.edit', $servicio) }}" class="btn btn-sm btn-outline-primary mt-2">Editar servicio</a>
@@ -423,17 +468,32 @@
                                         @if($servicio->ubicacion->foto_1 || $servicio->ubicacion->foto_2 || $servicio->ubicacion->foto_3)
                                             <div class="form-group mt-3">
                                                 <label><i class="fas fa-camera mr-1"></i> Fotos de ubicación</label>
-                                                <div class="row">
+                                                <div class="d-flex flex-wrap gap-2">
                                                     @foreach([1 => 'foto_1', 2 => 'foto_2', 3 => 'foto_3'] as $num => $fKey)
                                                         @if(!empty($servicio->ubicacion->$fKey))
-                                                            @php $fotoUrl = route('ubicaciones.foto', ['ubicacion' => $servicio->ubicacion->id, 'num' => $num]); @endphp
-                                                            <div class="col-md-4 mb-2">
-                                                                <a href="{{ $fotoUrl }}" target="_blank" rel="noopener">
-                                                                    <img src="{{ $fotoUrl }}" alt="Foto ubicación" class="img-fluid rounded border" style="max-height: 150px; object-fit: cover;">
-                                                                </a>
-                                                            </div>
+                                                            @php
+                                                                $fotoUrl = route('ubicaciones.foto', ['ubicacion' => $servicio->ubicacion->id, 'num' => $num]);
+                                                                $tituloKey = 'foto_' . $num . '_titulo';
+                                                                $titulosDefecto = [1 => 'Fachada', 2 => 'Puerta', 3 => 'Piso'];
+                                                                $titulo = $servicio->ubicacion->$tituloKey ?? $titulosDefecto[$num] ?? 'Foto ' . $num;
+                                                            @endphp
+                                                            <a href="{{ $fotoUrl }}" data-foto-modal="{{ $titulo }}" class="foto-ubicacion-thumb btn btn-outline-secondary btn-sm" role="button">
+                                                                <i class="fas fa-image mr-1"></i> Ver {{ $titulo }}
+                                                            </a>
                                                         @endif
                                                     @endforeach
+                                                </div>
+                                                {{-- Modal móvil para ver foto ampliada sin salir de la página --}}
+                                                <div class="modal fade" id="modalFotoUbicacion" tabindex="-1" role="dialog" aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-centered m-0" style="max-width: 100%;">
+                                                        <div class="modal-content bg-transparent border-0">
+                                                            <div class="modal-body p-0 text-center position-relative">
+                                                                <button type="button" class="close text-white position-absolute" style="top: 0.5rem; right: 0.5rem; z-index: 10; opacity: 1; font-size: 1.5rem;" data-dismiss="modal" aria-label="Cerrar">&times;</button>
+                                                                <img id="modalFotoImg" src="" alt="" class="img-fluid w-100" style="max-height: 85vh; object-fit: contain;">
+                                                                <p id="modalFotoTitulo" class="text-white mt-2 mb-0 small" style="text-shadow: 0 1px 2px rgba(0,0,0,0.8);"></p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         @endif
@@ -451,8 +511,8 @@
                 
                 <div class="card-footer card-footer-mobile">
                     <div class="d-flex flex-wrap justify-content-end" style="gap: 0.5rem;">
-                        @if(isset($fromCliente) && $fromCliente && isset($clienteId))
-                            <x-btn :route="route('clientes.servicios.edit', ['cliente' => $clienteId, 'servicio' => $servicio])" variant="primary" icon="fa-edit">
+                        @if(isset($cliente) && $cliente)
+                            <x-btn :route="route('clientes.servicios.edit', ['cliente' => $cliente, 'servicio' => $servicio])" variant="primary" icon="fa-edit">
                                 Editar
                             </x-btn>
                         @else
@@ -460,10 +520,11 @@
                                 Editar
                             </x-btn>
                         @endif
+                        <a href="{{ route('servicios.migrar-router', $servicio) }}" class="btn btn-outline-secondary"><i class="fas fa-exchange-alt mr-1"></i>Migrar a otro router</a>
                         <form method="POST" action="{{ route('servicios.cambiar-estado', $servicio) }}" class="d-inline">
                             @csrf
-                            @if(isset($fromCliente) && $fromCliente && isset($clienteId))
-                                <input type="hidden" name="cliente_id" value="{{ $clienteId }}">
+                            @if(isset($cliente) && $cliente)
+                                <input type="hidden" name="cliente_id" value="{{ $cliente->id }}">
                             @endif
                             <input type="hidden" name="estado" value="{{ $servicio->estado === 'activo' ? 'cortado' : 'activo' }}">
                             <x-btn 
@@ -591,6 +652,16 @@
                     initMapaUbicacionShow();
                 });
 
+                // Fotos: abrir en modal (mobile-first, sin salir de la página)
+                $(document).on('click', '.foto-ubicacion-thumb', function(e) {
+                    e.preventDefault();
+                    var href = $(this).attr('href');
+                    var titulo = $(this).data('foto-modal') || '';
+                    $('#modalFotoImg').attr('src', href).attr('alt', titulo);
+                    $('#modalFotoTitulo').text(titulo);
+                    $('#modalFotoUbicacion').modal('show');
+                });
+
                 // Toggle password visibility
                 let mostrarPassword = true;
                 $('#toggle-password-btn').on('click', function() {
@@ -608,6 +679,54 @@
                         $('#password-icon-hide').show();
                         $(this).attr('title', 'Mostrar contraseña');
                     }
+                });
+
+                // DHCP: Obtener IP, Make static, Simple Queue
+                var servicioId = {{ $servicio->id }};
+                var baseUrl = '{{ url('servicios') }}/' + servicioId;
+                function dhcpMsg(msg, type) {
+                    var el = document.getElementById('dhcp-actions-message');
+                    if (el) { el.innerHTML = msg ? '<span class="text-' + (type || 'info') + '">' + msg + '</span>' : ''; }
+                }
+                $('#btn-obtener-ip-dhcp').on('click', function() {
+                    var $btn = $(this).prop('disabled', true);
+                    $.get(baseUrl + '/obtener-ip-dhcp').done(function(data) {
+                        if (data.success && data.ip) {
+                            $('#servicio-ip-asignada').text(data.ip);
+                            dhcpMsg('IP obtenida: ' + data.ip, 'success');
+                        } else {
+                            dhcpMsg(data.message || 'No hay lease para esta MAC.', 'danger');
+                        }
+                    }).fail(function(xhr) {
+                        dhcpMsg((xhr.responseJSON && xhr.responseJSON.message) || 'Error al obtener IP', 'danger');
+                    }).always(function() { $btn.prop('disabled', false); });
+                });
+                $('#btn-make-static-dhcp').on('click', function() {
+                    var $btn = $(this).prop('disabled', true);
+                    dhcpMsg('Procesando...', 'info');
+                    $.ajax({ url: baseUrl + '/make-static-dhcp', method: 'POST', data: { _token: '{{ csrf_token() }}' } })
+                        .done(function(data) {
+                            if (data.success && data.ip) $('#servicio-ip-asignada').text(data.ip);
+                            dhcpMsg(data.message || 'Listo.', data.success ? 'success' : 'danger');
+                        }).fail(function(xhr) {
+                            dhcpMsg((xhr.responseJSON && xhr.responseJSON.message) || 'Error', 'danger');
+                        }).always(function() { $btn.prop('disabled', false); });
+                });
+                $('#btn-aplicar-simple-queue').on('click', function() {
+                    var $btn = $(this).prop('disabled', true);
+                    dhcpMsg('Aplicando velocidad...', 'info');
+                    $.ajax({ url: baseUrl + '/aplicar-simple-queue', method: 'POST', data: { _token: '{{ csrf_token() }}' } })
+                        .done(function(data) { dhcpMsg(data.message || 'Listo.', data.success ? 'success' : 'danger'); })
+                        .fail(function(xhr) { dhcpMsg((xhr.responseJSON && xhr.responseJSON.message) || 'Error', 'danger'); })
+                        .always(function() { $btn.prop('disabled', false); });
+                });
+                $('#btn-quitar-simple-queue').on('click', function() {
+                    var $btn = $(this).prop('disabled', true);
+                    dhcpMsg('Quitando cola...', 'info');
+                    $.ajax({ url: baseUrl + '/quitar-simple-queue', method: 'POST', data: { _token: '{{ csrf_token() }}' } })
+                        .done(function(data) { dhcpMsg(data.message || 'Listo.', data.success ? 'success' : 'danger'); })
+                        .fail(function(xhr) { dhcpMsg((xhr.responseJSON && xhr.responseJSON.message) || 'Error', 'danger'); })
+                        .always(function() { $btn.prop('disabled', false); });
                 });
 
             });

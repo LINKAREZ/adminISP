@@ -56,4 +56,14 @@ class Plan extends Model
     {
         return $this->hasMany(\App\Modules\Servicios\Models\Servicio::class);
     }
+
+    public function dhcpConfig(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(PlanDhcpConfig::class, 'plan_id', 'id');
+    }
+
+    public function esDhcp(): bool
+    {
+        return $this->tipo_conexion === 'dhcp';
+    }
 }

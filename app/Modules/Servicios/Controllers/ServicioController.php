@@ -15,9 +15,12 @@ use App\Core\Traits\NormalizesMacAddress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use App\Modules\Red\Models\Router;
+use App\Modules\Red\Services\RouterOSExportService;
 use App\Modules\Red\Services\RouterOSPppoeService;
 use App\Modules\Red\Services\RouterOSScriptService;
 use App\Modules\Red\Services\RouterOSNatService;
+use App\Modules\Red\Services\RouterOSDhcpService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
@@ -67,7 +70,7 @@ class ServicioController extends Controller
             ->latest()
             ->paginate(15);
 
-        return view('servicios.index', compact('servicios'));
+        return view('servicios.pppoe.index', compact('servicios'));
     }
 
     public function create(Cliente $cliente)
@@ -271,7 +274,11 @@ class ServicioController extends Controller
             abort(404, 'El servicio no pertenece al cliente especificado.');
         }
 
-        return view('servicios.show', compact('servicio', 'fromCliente', 'cliente'));
+        return view('servicios.show', [
+            'servicio' => $servicio,
+            'fromCliente' => $fromCliente,
+            'cliente' => $clienteResolved,
+        ]);
     }
 
     public function edit($clienteOrServicio = null, $servicioOrNull = null)
@@ -425,22 +432,30 @@ class ServicioController extends Controller
                 $validated['onu_id'] ?? null
             );
 
-            // Extraer datos de ubicación (notas, GPS, fotos) para no enviarlos al modelo Servicio
+            // Extraer datos de ubicación (notas, GPS, fotos, títulos) para no enviarlos al modelo Servicio
             $ubicacionNotas = $validated['ubicacion_notas'] ?? null;
             $ubicacionLatitud = isset($validated['ubicacion_latitud']) && $validated['ubicacion_latitud'] !== '' ? $validated['ubicacion_latitud'] : null;
             $ubicacionLongitud = isset($validated['ubicacion_longitud']) && $validated['ubicacion_longitud'] !== '' ? $validated['ubicacion_longitud'] : null;
+            $ubicacionFotoTitulos = [
+                'foto_1_titulo' => $validated['ubicacion_foto_1_titulo'] ?? null,
+                'foto_2_titulo' => $validated['ubicacion_foto_2_titulo'] ?? null,
+                'foto_3_titulo' => $validated['ubicacion_foto_3_titulo'] ?? null,
+            ];
             unset(
                 $validated['ubicacion_notas'],
                 $validated['ubicacion_latitud'],
                 $validated['ubicacion_longitud'],
                 $validated['ubicacion_foto_1'],
                 $validated['ubicacion_foto_2'],
-                $validated['ubicacion_foto_3']
+                $validated['ubicacion_foto_3'],
+                $validated['ubicacion_foto_1_titulo'],
+                $validated['ubicacion_foto_2_titulo'],
+                $validated['ubicacion_foto_3_titulo']
             );
 
             $servicio->update($validated);
 
-            // Actualizar notas, GPS y fotos de la ubicación del servicio
+            // Actualizar notas, GPS, fotos y títulos de la ubicación del servicio
             $ubicacion = $servicio->ubicacion;
             if ($ubicacion) {
                 $ubicacionUpdates = [];
@@ -452,6 +467,9 @@ class ServicioController extends Controller
                 }
                 if ($ubicacionLongitud !== null) {
                     $ubicacionUpdates['longitud'] = $ubicacionLongitud;
+                }
+                foreach ($ubicacionFotoTitulos as $key => $val) {
+                    $ubicacionUpdates[$key] = $val !== null && $val !== '' ? $val : null;
                 }
                 if (!empty($ubicacionUpdates)) {
                     $ubicacion->update($ubicacionUpdates);
@@ -695,12 +713,12 @@ class ServicioController extends Controller
     {
         $this->authorize('viewAny', Servicio::class);
         // ✅ Cargar cliente a través de ubicación
-        $servicios = Servicio::provisionales()
+        $serviciosProvisionales = Servicio::provisionales()
             ->with(['ubicacion.cliente', 'router', 'plan'])
             ->latest()
             ->paginate(15);
 
-        return view('servicios.provisionales.index', compact('servicios'));
+        return view('servicios.provisionales.index', compact('serviciosProvisionales'));
     }
 
     public function cambiarEstado(
@@ -764,8 +782,11 @@ class ServicioController extends Controller
             }
         }
 
-        // Actualizar estado del servicio
-        $servicio->update(['estado' => $nuevoEstado]);
+        // Actualizar estado del servicio y fecha_corte (para prorrateo al suspender)
+        $servicio->update([
+            'estado' => $nuevoEstado,
+            'fecha_corte' => $nuevoEstado === 'cortado' ? now()->toDateString() : null,
+        ]);
         $this->servicioService->invalidarCache($servicio);
 
         $mensaje = 'Estado del servicio actualizado correctamente.';
@@ -905,6 +926,107 @@ class ServicioController extends Controller
         ]);
     }
 
+    /** Obtener IP actual del servicio DHCP desde el lease en el router (por MAC). */
+    public function obtenerIpDhcp(Servicio $servicio, RouterOSDhcpService $dhcpService)
+    {
+        $this->authorize('view', $servicio);
+        $servicio->load('router', 'plan.dhcpConfig');
+        if (!$servicio->router || empty($servicio->mac_address)) {
+            return response()->json(['success' => false, 'message' => 'Servicio sin router o MAC'], 400);
+        }
+        if (!$servicio->plan || $servicio->plan->tipo_conexion !== 'dhcp') {
+            return response()->json(['success' => false, 'message' => 'El plan no es DHCP'], 400);
+        }
+        $serverName = $servicio->plan->perfil_mikrotik ?? $servicio->plan->dhcpConfig?->nombre_servidor_routeros ?? '';
+        if ($serverName === '') {
+            return response()->json(['success' => false, 'message' => 'Plan DHCP sin servidor configurado'], 400);
+        }
+        $mac = $this->normalizarMacAddress($servicio->mac_address);
+        $leases = $dhcpService->getLeases($servicio->router, $serverName, $mac);
+        $lease = $leases[0] ?? null;
+        if (!$lease || empty($lease['address'])) {
+            return response()->json(['success' => false, 'message' => 'No hay lease para esta MAC. Conecte el equipo.'], 404);
+        }
+        $ip = $lease['address'];
+        $servicio->update(['ip_asignada' => $ip]);
+        return response()->json(['success' => true, 'ip' => $ip, 'ip_asignada' => $ip]);
+    }
+
+    /** Convertir lease DHCP a estático para que el cliente mantenga la IP. */
+    public function makeStaticDhcp(Servicio $servicio, RouterOSDhcpService $dhcpService)
+    {
+        $this->authorize('update', $servicio);
+        $servicio->load('router', 'plan.dhcpConfig');
+        if (!$servicio->router || empty($servicio->mac_address)) {
+            return response()->json(['success' => false, 'message' => 'Servicio sin router o MAC'], 400);
+        }
+        if (!$servicio->plan || $servicio->plan->tipo_conexion !== 'dhcp') {
+            return response()->json(['success' => false, 'message' => 'El plan no es DHCP'], 400);
+        }
+        $serverName = $servicio->plan->perfil_mikrotik ?? $servicio->plan->dhcpConfig?->nombre_servidor_routeros ?? '';
+        if ($serverName === '') {
+            return response()->json(['success' => false, 'message' => 'Plan DHCP sin servidor configurado'], 400);
+        }
+        $mac = $this->normalizarMacAddress($servicio->mac_address);
+        $comment = 'Servicio #' . $servicio->id;
+        $result = $dhcpService->makeStaticLease($servicio->router, $serverName, $mac, $servicio->ip_asignada, $comment);
+        if ($result['success'] && $result['ip']) {
+            $servicio->update(['ip_asignada' => $result['ip']]);
+        }
+        return response()->json([
+            'success' => $result['success'],
+            'message' => $result['message'],
+            'ip' => $result['ip'] ?? $servicio->ip_asignada,
+        ]);
+    }
+
+    /** Aplicar Simple Queue al servicio (control de velocidad por IP). Soporta plan DHCP o IP estática. */
+    public function aplicarSimpleQueue(Servicio $servicio, RouterOSDhcpService $dhcpService)
+    {
+        $this->authorize('update', $servicio);
+        $servicio->load('router', 'plan');
+        if (!$servicio->router) {
+            return response()->json(['success' => false, 'message' => 'Servicio sin router'], 400);
+        }
+        if (!$servicio->plan || !in_array($servicio->plan->tipo_conexion, ['dhcp', 'estatica'], true)) {
+            return response()->json(['success' => false, 'message' => 'El plan debe ser DHCP o IP estática'], 400);
+        }
+        $ip = $servicio->ip_asignada;
+        if (!$ip || $ip === '') {
+            $msg = $servicio->plan->tipo_conexion === 'dhcp'
+                ? 'No hay IP asignada. Obtenga la IP o haga Make Static primero.'
+                : 'Indique la IP asignada en el servicio (editar servicio).';
+            return response()->json(['success' => false, 'message' => $msg], 400);
+        }
+        $maxLimit = $servicio->plan->rate_limit ?? '';
+        if ($maxLimit === '') {
+            $bajada = (int) ($servicio->plan->velocidad_bajada_mbps ?? 0);
+            $subida = (int) ($servicio->plan->velocidad_subida_mbps ?? 0);
+            $maxLimit = $bajada > 0 || $subida > 0 ? $bajada . 'M/' . $subida . 'M' : '0/0';
+        }
+        $queueName = 'ISP_servicio_' . $servicio->id;
+        $existing = $dhcpService->getSimpleQueueByTarget($servicio->router, $ip);
+        if ($existing) {
+            $res = $dhcpService->setSimpleQueueLimit($servicio->router, $existing['name'] ?? $queueName, $maxLimit);
+        } else {
+            $res = $dhcpService->addSimpleQueue($servicio->router, $ip, $maxLimit, $queueName);
+        }
+        return response()->json(['success' => $res['success'], 'message' => $res['message']]);
+    }
+
+    /** Quitar Simple Queue del servicio. Soporta plan DHCP o IP estática. */
+    public function quitarSimpleQueue(Servicio $servicio, RouterOSDhcpService $dhcpService)
+    {
+        $this->authorize('update', $servicio);
+        $servicio->load('router');
+        if (!$servicio->router) {
+            return response()->json(['success' => false, 'message' => 'Servicio sin router'], 400);
+        }
+        $queueName = 'ISP_servicio_' . $servicio->id;
+        $res = $dhcpService->removeSimpleQueue($servicio->router, $queueName);
+        return response()->json(['success' => $res['success'], 'message' => $res['message']]);
+    }
+
     private function abrirInterfazOnuError(string $message)
     {
         if (request()->wantsJson()) {
@@ -951,7 +1073,7 @@ class ServicioController extends Controller
         $planes = \App\Modules\Servicios\Models\Plan::where('router_id', $routerId)
             ->where('estado', true)
             ->orderBy('nombre')
-            ->get(['id', 'nombre', 'precio_mensual', 'velocidad_bajada_mbps', 'velocidad_subida_mbps']);
+            ->get(['id', 'nombre', 'precio_mensual', 'velocidad_bajada_mbps', 'velocidad_subida_mbps', 'tipo_conexion']);
 
         return response()->json([
             'success' => true,
@@ -1307,5 +1429,31 @@ class ServicioController extends Controller
                 'message' => 'Error al obtener el servicio'
             ], 500);
         }
+    }
+
+    public function migrarRouterForm(Servicio $servicio)
+    {
+        $this->authorize('update', $servicio);
+        $routers = Router::where('estado', true)->where('id', '!=', $servicio->router_id)->orderBy('nombre')->get();
+        return view('servicios.migrar-router', compact('servicio', 'routers'));
+    }
+
+    public function migrarRouterStore(Request $request, Servicio $servicio, RouterOSExportService $exportService)
+    {
+        $this->authorize('update', $servicio);
+        $request->validate(['router_id' => 'required|exists:routers,id', 'exportar' => 'nullable|boolean']);
+        $nuevoRouter = Router::findOrFail($request->router_id);
+        if ($nuevoRouter->id == $servicio->router_id) {
+            return back()->with('error', 'El servicio ya está en ese router.');
+        }
+        $servicio->update(['router_id' => $nuevoRouter->id]);
+        if ($request->boolean('exportar')) {
+            try {
+                $exportService->syncServiciosToRouter($nuevoRouter);
+            } catch (\Throwable $e) {
+                Log::warning('Migrar servicio: export al nuevo router falló', ['servicio_id' => $servicio->id, 'error' => $e->getMessage()]);
+            }
+        }
+        return redirect()->route('servicios.show', $servicio)->with('success', 'Servicio migrado al router ' . $nuevoRouter->nombre . '.');
     }
 }

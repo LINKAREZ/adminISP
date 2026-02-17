@@ -8,8 +8,6 @@
 
     <!-- Sidebar -->
     <div class="sidebar">
-        <!-- Sidebar user panel (optional) - Ocultado -->
-
         <!-- ISP Selector (solo super admin) -->
         @php
             $user = auth()->user();
@@ -34,10 +32,10 @@
             </div>
         @endif
 
-        <!-- Sidebar Menu -->
+        <!-- Sidebar Menu: un solo nivel por módulo (estándar CRM empresarial) -->
         <nav class="mt-2 sidebar-nav-mobile">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                <!-- Dashboard -->
+                <!-- 1. Dashboard -->
                 <li class="nav-item nav-item-mobile">
                     <a href="{{ route('dashboard') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('dashboard') || request()->is('/') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
@@ -45,33 +43,25 @@
                     </a>
                 </li>
 
-                <!-- Control de Acceso -->
-                @hasPermission('control-acceso.read')
+                <!-- 2. Clientes -->
                 <li class="nav-item nav-item-mobile">
-                    <a href="{{ route('users.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('users*') || request()->is('roles*') || request()->is('permissions*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-users-cog"></i>
-                        <p>Control de Acceso</p>
-                    </a>
-                </li>
-                @endhasPermission
-
-                <!-- Red -->
-                <li class="nav-item nav-item-mobile">
-                    <a href="{{ route('red.nodos.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('red*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-network-wired"></i>
-                        <p>Red</p>
-                    </a>
-                </li>
-
-                <!-- Clientes -->
-                <li class="nav-item nav-item-mobile">
-                    <a href="{{ route('clientes.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('clientes*') ? 'active' : '' }}">
+                    <a href="{{ route('clientes.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('clientes*') && !request()->is('tickets*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-users"></i>
                         <p>Clientes</p>
                     </a>
                 </li>
 
-                <!-- Servicios -->
+                <!-- 3. Tickets -->
+                @hasPermission('tickets.read')
+                <li class="nav-item nav-item-mobile">
+                    <a href="{{ route('tickets.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('tickets*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-ticket-alt"></i>
+                        <p>Tickets</p>
+                    </a>
+                </li>
+                @endhasPermission
+
+                <!-- 4. Servicios -->
                 <li class="nav-item nav-item-mobile">
                     <a href="{{ route('servicios.home') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('servicios*') && !request()->is('clientes*/servicios*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-wifi"></i>
@@ -79,26 +69,55 @@
                     </a>
                 </li>
 
-                <!-- Sistema -->
-                @hasPermission('sistema.read')
+                <!-- 5. Instalaciones -->
+                @hasPermission('instalaciones.read')
                 <li class="nav-item nav-item-mobile">
-                    <a href="{{ route('sistema.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('sistema*') || request()->is('medios-pago*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-cog"></i>
-                        <p>Sistema</p>
+                    <a href="{{ route('instalaciones.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('instalaciones*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-tools"></i>
+                        <p>Instalaciones</p>
                     </a>
                 </li>
                 @endhasPermission
 
-                @hasPermission('auditoria.read')
+                <!-- 5b. Almacén -->
+                @hasPermission('almacen.read')
                 <li class="nav-item nav-item-mobile">
-                    <a href="{{ route('auditoria.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('auditoria*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-history"></i>
-                        <p>Auditoría</p>
+                    <a href="{{ route('almacen.articulos.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('almacen*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-warehouse"></i>
+                        <p>Almacén</p>
                     </a>
                 </li>
                 @endhasPermission
 
-                <!-- Comprobantes -->
+                <!-- 6. Red -->
+                <li class="nav-item nav-item-mobile">
+                    <a href="{{ route('red.nodos.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('red*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-network-wired"></i>
+                        <p>Red</p>
+                    </a>
+                </li>
+
+                <!-- 7. Infraestructura -->
+                @if(Route::has('infraestructura.mapa.index') && auth()->user()->hasPermission('infraestructura.read'))
+                <li class="nav-item nav-item-mobile">
+                    <a href="{{ route('infraestructura.mapa.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('infraestructura*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-map"></i>
+                        <p>Infraestructura</p>
+                    </a>
+                </li>
+                @endif
+
+                <!-- 7b. Mapa de Red -->
+                @if(Route::has('mapa-red.index') && (auth()->user()->hasPermission('mapa-red.read') || auth()->user()->hasPermission('infraestructura.read')))
+                <li class="nav-item nav-item-mobile">
+                    <a href="{{ route('mapa-red.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('mapa-red*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-project-diagram"></i>
+                        <p>Mapa de Red</p>
+                    </a>
+                </li>
+                @endif
+
+                <!-- 8. Finanzas -->
                 @php
                     $user = auth()->user();
                     $isAdmin = false;
@@ -115,19 +134,46 @@
                         }
                     }
                     $hasComprobantesPermission = $isAdmin || ($user && $user->hasPermission('comprobantes.read'));
-                    $isComprobantesActive = request()->is('comprobantes*') || request()->is('reportes*');
                 @endphp
                 @if($hasComprobantesPermission || $isAdmin)
                 <li class="nav-item nav-item-mobile">
-                    <a href="{{ route('comprobantes.index') }}" class="nav-link nav-link-sidebar-mobile {{ $isComprobantesActive ? 'active' : '' }}">
+                    <a href="{{ route('comprobantes.dashboard-finanzas') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('comprobantes*') || request()->is('reportes*') || request()->is('finanzas*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-file-invoice-dollar"></i>
-                        <p>Comprobantes</p>
+                        <p>Finanzas</p>
                     </a>
                 </li>
                 @endif
+
+                <!-- 9. Sistema -->
+                @hasPermission('sistema.read')
+                <li class="nav-item nav-item-mobile">
+                    <a href="{{ route('sistema.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('sistema*') || request()->is('medios-pago*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-cog"></i>
+                        <p>Sistema</p>
+                    </a>
+                </li>
+                @endhasPermission
+
+                <!-- 10. Control de Acceso -->
+                @hasPermission('control-acceso.read')
+                <li class="nav-item nav-item-mobile">
+                    <a href="{{ route('users.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('users*') || request()->is('roles*') || request()->is('permissions*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-users-cog"></i>
+                        <p>Control de Acceso</p>
+                    </a>
+                </li>
+                @endhasPermission
+
+                <!-- 11. Auditoría -->
+                @hasPermission('auditoria.read')
+                <li class="nav-item nav-item-mobile">
+                    <a href="{{ route('auditoria.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('auditoria*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-history"></i>
+                        <p>Auditoría</p>
+                    </a>
+                </li>
+                @endhasPermission
             </ul>
         </nav>
-        <!-- /.sidebar-menu -->
     </div>
-    <!-- /.sidebar -->
 </aside>

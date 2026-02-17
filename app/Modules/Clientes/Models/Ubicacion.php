@@ -26,8 +26,11 @@ class Ubicacion extends Model
         'longitud',
         'notas',
         'foto_1',
+        'foto_1_titulo',
         'foto_2',
+        'foto_2_titulo',
         'foto_3',
+        'foto_3_titulo',
         'isp_id',
     ];
 

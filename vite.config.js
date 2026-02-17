@@ -39,6 +39,7 @@ export default defineConfig({
     laravel({
       input: [
         'resources/css/adminlte.css',
+        'resources/css/mapa-infraestructura.css',
         'resources/js/app.js',
         'resources/js/adminlte.js',
         'resources/js/logger.js',

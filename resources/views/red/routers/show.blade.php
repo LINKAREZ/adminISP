@@ -118,6 +118,24 @@
                                     </div>
                                 </div>
 
+                                @if($conexionExitosa)
+                                    <div class="form-group">
+                                        <label>Exportar / Importar MikroTik</label>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <form action="{{ route('red.routers.exportar-pppoe', $router) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Exportar clientes del panel a este router?');">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-upload mr-1"></i> Exportar clientes al MikroTik
+                                                </button>
+                                            </form>
+                                            <a href="{{ route('clientes.pppoe.importar') }}?router_id={{ $router->id }}" class="btn btn-sm btn-outline-secondary">
+                                                <i class="fas fa-download mr-1"></i> Importar desde MikroTik
+                                            </a>
+                                        </div>
+                                        <small class="text-muted d-block mt-1">Exportar: crea/actualiza usuarios PPPoE en el router. Importar: trae usuarios del router al panel.</small>
+                                    </div>
+                                @endif
+
                                 <!-- Estado en Base de Datos -->
                                 <div class="form-group">
                                     <label>Estado en Base de Datos</label>
@@ -171,6 +189,25 @@
                                                     <label>Carga CPU</label>
                                                     <div class="form-control bg-light" style="pointer-events: none;">
                                                         {{ $infoSistema['cpu-load'] }}%
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
+                                        @if(isset($infoSistema['total-memory']) || isset($infoSistema['free-memory']))
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>Memoria RAM</label>
+                                                    <div class="form-control bg-light" style="pointer-events: none;">
+                                                        @php
+                                                            $total = (int)($infoSistema['total-memory'] ?? 0);
+                                                            $free = (int)($infoSistema['free-memory'] ?? 0);
+                                                            $used = $total - $free;
+                                                        @endphp
+                                                        @if($total > 0)
+                                                            {{ number_format($used / 1024 / 1024, 1) }} MB usados / {{ number_format($total / 1024 / 1024, 1) }} MB total
+                                                        @else
+                                                            —
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </div>

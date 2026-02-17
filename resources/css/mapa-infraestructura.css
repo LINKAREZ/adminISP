@@ -1,0 +1,419 @@
+/**
+ * Mapa de Infraestructura - Estilos Mobile-First
+ * Admin ISP - Panel de red
+ */
+
+/* === BASE (Mobile-first) === */
+.mapa-page .mapa-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 0;
+}
+
+/* Mapa: ocupa la mayor parte de la pantalla en móvil */
+#mapa-infraestructura {
+  width: 100%;
+  min-height: min(50vh, 400px);
+  height: calc(100vh - 280px);
+  max-height: 600px;
+  border-radius: 8px;
+  background: #eaeaea;
+  flex: 1;
+}
+
+.mapa-map-container {
+  position: relative;
+  min-height: min(50vh, 400px);
+  flex: 1;
+}
+
+/* Toolbar: base móvil - compacto, apilado */
+.mapa-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.mapa-toolbar .btn {
+  min-height: 44px;
+  flex-shrink: 0;
+}
+
+/* Vista tabs: en móvil se convierte en dropdown visual */
+#mapa-vista-tabs .btn {
+  min-height: 38px;
+}
+
+/* Panel lateral: en móvil es drawer desde abajo */
+.mapa-sidebar {
+  background: white;
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease;
+}
+
+/* Listas con scroll táctil */
+.postes-list,
+.recorridos-list {
+  max-height: 180px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.recorrido-nombre.cursor-pointer { cursor: pointer; }
+.recorrido-nombre input.form-control-sm { width: 100%; font-size: 0.875rem; }
+#recorridos-list .list-group-item .flex-shrink-0 { min-width: 70px; }
+
+/* Markers Leaflet */
+.leaflet-marker-draggable { cursor: move !important; }
+.marker-poste .icon-wrap,
+.marker-nap .icon-wrap,
+.marker-mufa .icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+}
+.marker-poste i,
+.marker-nap i,
+.marker-mufa i {
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.9);
+}
+
+/* Panel detalle */
+#panel-detalle-nodo { display: none; }
+#panel-detalle-nodo.visible { display: block; }
+.panel-detalle-hilos-table { font-size: 0.8rem; }
+.leaflet-popup-content { min-width: 180px; margin: 8px 12px; }
+.cursor-pointer { cursor: pointer; }
+
+/* === FAB y ACCIONES MÓVILES === */
+.mapa-fab-container {
+  display: none;
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom, 0) + 1rem);
+  right: 1rem;
+  z-index: 1050;
+}
+
+.mapa-fab-main {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mapa-fab-main:hover,
+.mapa-fab-main:focus {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
+}
+
+.mapa-fab-main:active {
+  transform: scale(0.98);
+}
+
+.mapa-fab-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.2);
+  padding: 1.5rem;
+  z-index: 1051;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+  max-height: 70vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mapa-fab-sheet.open {
+  transform: translateY(0);
+}
+
+.mapa-fab-sheet-handle {
+  width: 40px;
+  height: 4px;
+  background: #d1d5db;
+  border-radius: 2px;
+  margin: 0 auto 1rem;
+}
+
+.mapa-fab-sheet h6 {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  color: #374151;
+}
+
+.mapa-fab-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mapa-fab-actions .btn {
+  justify-content: flex-start;
+  padding: 0.75rem 1rem;
+  min-height: 48px;
+  font-size: 0.9375rem;
+}
+
+.mapa-fab-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1050;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s, visibility 0.2s;
+}
+
+.mapa-fab-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Botón para abrir panel lateral en móvil */
+.mapa-panel-toggle {
+  display: none;
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 450;
+  padding: 0.5rem 1.25rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  min-height: 44px;
+  align-items: center;
+  gap: 0.5rem;
+  transition: box-shadow 0.2s;
+}
+
+.mapa-panel-toggle:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.mapa-panel-toggle i {
+  font-size: 0.875rem;
+  transition: transform 0.2s;
+}
+
+.mapa-sidebar-drawer.open .mapa-panel-toggle i {
+  transform: rotate(180deg);
+}
+
+/* === MODALES FULLSCREEN EN MÓVIL === */
+@media (max-width: 767.98px) {
+  .modal-dialog.modal-fullscreen-mobile {
+    max-width: 100% !important;
+    margin: 0.5rem auto !important;
+    min-height: calc(100vh - 1rem);
+  }
+
+  .modal.show .modal-dialog.modal-fullscreen-mobile {
+    margin: 0 auto !important;
+    min-height: 100vh;
+  }
+
+  .modal-fullscreen-mobile .modal-content {
+    min-height: calc(100vh - 1rem);
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.5);
+  }
+
+  .modal.show .modal-fullscreen-mobile .modal-content {
+    min-height: 100vh;
+  }
+
+  .modal-fullscreen-mobile .modal-body {
+    padding: 1rem;
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal-fullscreen-mobile .modal-footer {
+    padding: 1rem;
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0));
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .modal-fullscreen-mobile .modal-footer .btn {
+    min-height: 48px;
+    flex: 1;
+    min-width: 120px;
+  }
+}
+
+/* === TABLET Y SUPERIOR === */
+@media (min-width: 768px) {
+  #mapa-infraestructura {
+    height: 600px;
+    min-height: 500px;
+    max-height: none;
+  }
+
+  .mapa-map-container {
+    min-height: 600px;
+  }
+
+  .postes-list,
+  .recorridos-list {
+    max-height: 220px;
+  }
+}
+
+/* === DESKTOP (lg) === */
+@media (min-width: 992px) {
+  .mapa-page .mapa-wrapper {
+    flex-direction: row;
+  }
+
+  .mapa-page .mapa-map-col {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .mapa-page .mapa-sidebar-col {
+    flex: 0 0 320px;
+  }
+}
+
+/* === MOBILE: ocultar toolbar, mostrar FAB y drawer === */
+@media (max-width: 767.98px) {
+  .mapa-toolbar-desktop {
+    display: none !important;
+  }
+
+  .mapa-fab-container {
+    display: block;
+  }
+
+  .mapa-card-header-subtitle {
+    display: none;
+  }
+
+  .mapa-card-header h5 {
+    font-size: 1rem;
+  }
+
+  /* Panel lateral como drawer desde abajo */
+  .mapa-sidebar-drawer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 60vh;
+    transform: translateY(calc(100% - 56px));
+    transition: transform 0.3s ease;
+    z-index: 440;
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.2);
+    background: white;
+    overflow: hidden;
+  }
+
+  .mapa-sidebar-drawer.open {
+    transform: translateY(0);
+  }
+
+  .mapa-sidebar-drawer .mapa-sidebar-handle {
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+    cursor: grab;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mapa-sidebar-drawer .mapa-sidebar-handle::before {
+    content: '';
+    width: 40px;
+    height: 4px;
+    background: #d1d5db;
+    border-radius: 2px;
+  }
+
+  .mapa-sidebar-drawer .mapa-sidebar-content {
+    max-height: calc(60vh - 24px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 1rem;
+  }
+
+  /* Drawer cerrado por defecto - completamente oculto */
+  .mapa-sidebar-drawer {
+    transform: translateY(100%);
+  }
+
+  .mapa-sidebar-drawer.open {
+    transform: translateY(0);
+  }
+
+  .mapa-panel-toggle {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .mapa-panel-toggle {
+    display: none !important;
+  }
+}
+
+/* Vista tabs: en móvil dentro del FAB sheet */
+.mapa-vista-dropdown-mobile {
+  display: none;
+}
+
+@media (max-width: 767.98px) {
+  .mapa-vista-dropdown-mobile {
+    display: block;
+  }
+
+  #mapa-vista-tabs {
+    display: none;
+  }
+}
+
+/* Hint de recorrido en móvil */
+#recorrido-mode-hint {
+  flex-basis: 100%;
+  margin-top: 0.25rem;
+}
+
+@media (min-width: 768px) {
+  #recorrido-mode-hint {
+    flex-basis: auto;
+    margin-top: 0;
+  }
+}

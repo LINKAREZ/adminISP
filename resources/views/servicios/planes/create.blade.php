@@ -6,14 +6,14 @@
 @section('breadcrumb')
     <x-breadcrumb :items="[
         ['label' => 'Servicios', 'route' => 'servicios.home'],
+        ['label' => 'Internet Fibra Óptica', 'route' => 'servicios.internet.index'],
         ['label' => 'Planes', 'route' => 'servicios.planes.index'],
         ['label' => 'Crear']
     ]" />
 @endsection
 
 @section('content')
-    <!-- Pestañas del Módulo Servicios -->
-    @include('servicios.tabs')
+    @include('servicios.tabs-internet')
 
     <div class="row">
         <div class="col-12">
@@ -146,9 +146,9 @@
                             <label>Tipo de Conexión</label>
                             <select name="tipo_conexion" id="tipo_conexion" class="form-control @error('tipo_conexion') is-invalid @enderror" required>
                                 <option value="">Seleccione un tipo...</option>
-                                <option value="pppoe" {{ old('tipo_conexion') == 'pppoe' ? 'selected' : '' }}>PPPoE</option>
-                                <option value="dhcp" {{ old('tipo_conexion') == 'dhcp' ? 'selected' : '' }}>DHCP</option>
-                                <option value="estatica" {{ old('tipo_conexion') == 'estatica' ? 'selected' : '' }}>IP Estática</option>
+                                <option value="pppoe" {{ old('tipo_conexion', $tipoConexion ?? 'pppoe') == 'pppoe' ? 'selected' : '' }}>PPPoE</option>
+                                <option value="dhcp" {{ old('tipo_conexion', $tipoConexion ?? 'pppoe') == 'dhcp' ? 'selected' : '' }}>DHCP</option>
+                                <option value="estatica" {{ old('tipo_conexion', $tipoConexion ?? 'pppoe') == 'estatica' ? 'selected' : '' }}>IP Estática</option>
                             </select>
                             @error('tipo_conexion')
                                 <span class="invalid-feedback" role="alert">

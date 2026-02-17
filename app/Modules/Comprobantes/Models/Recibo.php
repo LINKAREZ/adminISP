@@ -155,4 +155,40 @@ class Recibo extends Model
     {
         return $this->estado === self::ESTADO_PAGADO || $this->saldo <= 0;
     }
+
+    /**
+     * Fecha a partir de la cual se puede cortar el servicio (vencimiento + días de gracia).
+     * Usa dias_gracia del servicio si existe, sino config.
+     */
+    public function getFechaCorteServicioAttribute(): Carbon
+    {
+        $dias = $this->servicio?->dias_gracia_efectivo ?? (int) config('isp.comprobantes.dias_gracia', 7);
+
+        return $this->fecha_vencimiento->copy()->addDays($dias);
+    }
+
+    /**
+     * Indica si ya pasó la fecha de corte (se puede efectuar el corte).
+     */
+    public function pasadoFechaCorte(): bool
+    {
+        return $this->saldo > 0 && $this->fecha_corte_servicio->startOfDay()->isPast();
+    }
+
+    /**
+     * Scope: recibos que ya pasaron la fecha de corte (saldo > 0 y vencimiento + gracia <= hoy).
+     * Usa dias_gracia del servicio cuando existe (join servicios), sino valor por defecto.
+     */
+    public function scopePasadosFechaCorte($query): \Illuminate\Database\Eloquent\Builder
+    {
+        $diasDefault = (int) config('isp.comprobantes.dias_gracia', 7);
+
+        return $query->select('recibos.*')
+            ->leftJoin('servicios', 'recibos.servicio_id', '=', 'servicios.id')
+            ->where('recibos.saldo', '>', 0)
+            ->whereRaw(
+                'DATE_ADD(recibos.fecha_vencimiento, INTERVAL COALESCE(servicios.dias_gracia, ?) DAY) <= ?',
+                [$diasDefault, now()->toDateString()]
+            );
+    }
 }

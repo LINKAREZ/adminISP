@@ -25,7 +25,7 @@
         <button type="button" class="btn {{ $btnClass }} btn-light dropdown-toggle btn-mobile-touch" data-toggle="dropdown" aria-expanded="false" aria-label="Acciones" title="Ver, Editar, Eliminar">
             <i class="fas fa-ellipsis-v"></i>
         </button>
-        <div class="dropdown-menu dropdown-menu-right dropdown-menu-mobile dropdown-actions-fix" style="min-width: 140px;">
+        <div class="dropdown-menu dropdown-menu-right dropdown-menu-mobile dropdown-actions-fix dropdown-menu-scroll" style="min-width: 140px;">
             @if($showRoute && (!$showPermission || auth()->user()->can($showPermission)))
                 <a class="dropdown-item dropdown-item-mobile" href="{{ route($showRoute, $showParams) }}">
                     <i class="fas fa-eye mr-2"></i> Ver

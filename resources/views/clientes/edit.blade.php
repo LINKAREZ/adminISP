@@ -11,6 +11,8 @@
 @endsection
 
 @section('content')
+    @include('clientes.tabs')
+
     <div class="row">
         <div class="col-md-8 offset-md-2">
             <x-card title="Editar Cliente" subtitle="{{ $cliente->nombre }}" icon="fa-user-edit" variant="primary">

@@ -4,10 +4,21 @@
 @section('page-title', 'Editar Servicio PPPoE')
 
 @section('breadcrumb')
-    <x-breadcrumb :items="[
-        ['label' => 'Servicios', 'route' => 'servicios.index'],
-        ['label' => 'Editar']
-    ]" />
+    @php $clienteBreadcrumb = $cliente ?? $servicio->ubicacion->cliente ?? null; @endphp
+    @if(isset($fromCliente) && $fromCliente && $clienteBreadcrumb)
+        <x-breadcrumb :items="[
+            ['label' => 'Clientes', 'route' => 'clientes.index'],
+            ['label' => $clienteBreadcrumb->nombre, 'route' => 'clientes.show', 'params' => [$clienteBreadcrumb]],
+            ['label' => 'Servicio', 'route' => 'clientes.servicios.show', 'params' => [$clienteBreadcrumb, $servicio]],
+            ['label' => 'Editar']
+        ]" />
+    @else
+        <x-breadcrumb :items="[
+            ['label' => 'Servicios', 'route' => 'servicios.home'],
+            ['label' => 'Internet Fibra Óptica', 'route' => 'servicios.internet.index'],
+            ['label' => 'Editar']
+        ]" />
+    @endif
 @endsection
 
 @include('components.mapa-gps-assets')
@@ -15,7 +26,7 @@
 @section('content')
     <!-- Pestañas del Módulo Servicios (solo si no viene del contexto de cliente) -->
     @if(!isset($fromCliente) || !$fromCliente)
-        @include('servicios.tabs')
+        @include('servicios.tabs-internet')
     @endif
 
     @include('servicios._form-edit')

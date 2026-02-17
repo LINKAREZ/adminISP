@@ -79,9 +79,9 @@
       confirmDelete: '¿Está seguro de eliminar este permiso?',
     },
     planes: {
-      edit: id => `/servicios/planes/${id}/edit`,
-      view: id => `/servicios/planes/${id}`,
-      delete: id => `/servicios/planes/${id}`,
+      edit: id => `/servicios/internet/planes/${id}/edit`,
+      view: id => `/servicios/internet/planes/${id}`,
+      delete: id => `/servicios/internet/planes/${id}`,
       confirmDelete: '¿Está seguro de eliminar este plan?',
     },
     servicios: {
@@ -117,7 +117,7 @@
     if (path.includes('/users')) return 'users';
     if (path.includes('/roles')) return 'roles';
     if (path.includes('/permissions')) return 'permissions';
-    if (path.includes('/servicios/planes')) return 'planes';
+    if (path.includes('/servicios/internet/planes')) return 'planes';
     if (path.includes('/servicios')) return 'servicios';
     if (path.includes('/red/nodos')) return 'nodos';
     if (path.includes('/red/routers')) return 'routers';

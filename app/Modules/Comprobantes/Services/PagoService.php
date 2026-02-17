@@ -137,7 +137,7 @@ class PagoService
         }
 
         try {
-            $servicio->update(['estado' => 'activo']);
+            $servicio->update(['estado' => 'activo', 'fecha_corte' => null]);
 
             // Cargar relaciones necesarias
             if (!$servicio->relationLoaded('router')) {
@@ -255,20 +255,11 @@ class PagoService
             return; // No hay servicio asociado
         }
 
-        // Verificar si el servicio tiene recibos vencidos (no solo el del pago eliminado)
-        $tieneRecibosVencidos = $servicio->recibos()
-            ->where(function ($q) {
-                $q->where('estado', Recibo::ESTADO_VENCIDO)
-                    ->orWhere(function ($q2) {
-                        $q2->where('estado', Recibo::ESTADO_PENDIENTE)
-                            ->whereDate('fecha_vencimiento', '<', now());
-                    });
-            })
-            ->where('saldo', '>', 0)
-            ->exists();
+        // Verificar si el servicio tiene recibos pasados de fecha de corte (vencimiento + días de gracia)
+        $tieneRecibosPasadosFechaCorte = $servicio->recibos()->pasadosFechaCorte()->exists();
 
-        // Si el servicio tiene recibos vencidos y está activo, cortarlo
-        if ($tieneRecibosVencidos && $servicio->estado === 'activo') {
+        // Si tiene recibos pasados de fecha de corte y está activo, cortarlo
+        if ($tieneRecibosPasadosFechaCorte && $servicio->estado === 'activo') {
             $this->cortarServicioSiEsNecesario($recibo);
         }
         // Verificar si el recibo quedó pagado y el servicio está cortado
@@ -295,8 +286,8 @@ class PagoService
     }
 
     /**
-     * Verificar y cortar servicio si tiene recibos vencidos
-     * Útil cuando se elimina un pago sin recibo asociado
+     * Verificar y cortar servicio si tiene recibos pasados de fecha de corte (vencimiento + días de gracia).
+     * Útil cuando se elimina un pago sin recibo asociado.
      */
     public function verificarYCortarServicioPorRecibosVencidos(int $servicioId): void
     {
@@ -305,49 +296,29 @@ class PagoService
             return;
         }
 
-        // Verificar si el servicio tiene recibos vencidos
-        $tieneRecibosVencidos = $servicio->recibos()
-            ->where(function ($q) {
-                $q->where('estado', Recibo::ESTADO_VENCIDO)
-                    ->orWhere(function ($q2) {
-                        $q2->where('estado', Recibo::ESTADO_PENDIENTE)
-                            ->whereDate('fecha_vencimiento', '<', now());
-                    });
-            })
-            ->where('saldo', '>', 0)
-            ->exists();
+        // Recibos pasados de fecha de corte (vencimiento + días de gracia)
+        $reciboPasadoCorte = $servicio->recibos()->pasadosFechaCorte()->first();
 
-        if ($tieneRecibosVencidos) {
-            // Obtener el primer recibo vencido para usar en el método de corte
-            $reciboVencido = $servicio->recibos()
-                ->where(function ($q) {
-                    $q->where('estado', Recibo::ESTADO_VENCIDO)
-                        ->orWhere(function ($q2) {
-                            $q2->where('estado', Recibo::ESTADO_PENDIENTE)
-                                ->whereDate('fecha_vencimiento', '<', now());
-                        });
-                })
-                ->where('saldo', '>', 0)
-                ->first();
-
-            if ($reciboVencido) {
-                $this->cortarServicioSiEsNecesario($reciboVencido);
-            }
+        if ($reciboPasadoCorte) {
+            $this->cortarServicioSiEsNecesario($reciboPasadoCorte);
         }
     }
 
     /**
-     * Cortar servicio si el recibo está vencido
+     * Cortar servicio si el recibo está pasado de la fecha de corte (vencimiento + días de gracia).
      */
     private function cortarServicioSiEsNecesario(Recibo $recibo): void
     {
+        if (!$recibo->pasadoFechaCorte()) {
+            return;
+        }
         $servicio = $recibo->servicio;
         if (!$servicio || $servicio->estado !== 'activo') {
             return;
         }
 
         try {
-            $servicio->update(['estado' => 'cortado']);
+            $servicio->update(['estado' => 'cortado', 'fecha_corte' => now()->toDateString()]);
 
             // Cargar relaciones necesarias
             if (!$servicio->relationLoaded('router')) {

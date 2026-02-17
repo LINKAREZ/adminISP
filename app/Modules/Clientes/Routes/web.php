@@ -1,6 +1,7 @@
 <?php
 
 use App\Modules\Clientes\Controllers\ClienteController;
+use App\Modules\Clientes\Controllers\TicketController;
 use App\Modules\Clientes\Controllers\UbicacionController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,12 +20,25 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('clientes/consultar-ruc', [ClienteController::class, 'consultarRuc']);
     Route::get('clientes/pppoe/importar', [ClienteController::class, 'importarPppoeForm'])->name('clientes.pppoe.importar');
     Route::post('clientes/pppoe/importar', [ClienteController::class, 'importarPppoe'])->name('clientes.pppoe.importar.store');
+    Route::get('clientes/importar-clientes', [\App\Modules\Clientes\Controllers\ImportarClientesController::class, 'index'])->name('clientes.importar-clientes.index');
+    Route::post('clientes/importar-clientes', [\App\Modules\Clientes\Controllers\ImportarClientesController::class, 'store'])->name('clientes.importar-clientes.store');
+    Route::get('clientes/importar-clientes/plantilla', [\App\Modules\Clientes\Controllers\ImportarClientesController::class, 'plantilla'])->name('clientes.importar-clientes.plantilla');
     // API movida a routes/api.php: api.clientes.servicios.credenciales
     Route::post('clientes/servicios/vencidos/cortar', [ClienteController::class, 'cortarServiciosVencidos'])->name('clientes.cortar-servicios-vencidos');
     Route::post('clientes/cortar-servicios-vencidos', [ClienteController::class, 'cortarServiciosVencidos']);
+    Route::post('clientes/eliminar-todos', [ClienteController::class, 'eliminarTodos'])->name('clientes.eliminar-todos');
     Route::get('clientes/{cliente}/crear-usuario-pppoe', [ClienteController::class, 'crearUsuarioPppoeForm'])->name('clientes.crear-usuario-pppoe');
     Route::post('clientes/{cliente}/crear-usuario-pppoe', [ClienteController::class, 'storeCrearUsuarioPppoe'])->name('clientes.crear-usuario-pppoe.store');
     Route::resource('clientes', ClienteController::class);
+
+    // Tickets de soporte
+    Route::get('tickets', [TicketController::class, 'index'])->name('tickets.index');
+    Route::get('tickets/create', [TicketController::class, 'create'])->name('tickets.create');
+    Route::post('tickets', [TicketController::class, 'store'])->name('tickets.store');
+    Route::get('tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
+    Route::post('tickets/{ticket}/responder', [TicketController::class, 'responder'])->name('tickets.responder');
+    Route::post('tickets/{ticket}/reasignar', [TicketController::class, 'reasignar'])->name('tickets.reasignar');
+    Route::post('tickets/{ticket}/cerrar', [TicketController::class, 'cerrar'])->name('tickets.cerrar');
 });
 
 // Rutas anidadas de clientes - SOLO ubicaciones

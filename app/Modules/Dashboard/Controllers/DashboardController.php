@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Core\Traits\LogsContext;
 use App\Modules\Dashboard\Services\DashboardService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 
 class DashboardController extends Controller
@@ -16,9 +17,16 @@ class DashboardController extends Controller
         private DashboardService $dashboardService
     ) {}
 
-    public function index()
+    public function index(Request $request)
     {
         Gate::authorize('dashboard.read');
+
+        if ($request->query('actualizar')) {
+            $ispId = session('current_isp_id') ?? (app()->has('current_isp_id') ? app('current_isp_id') : null);
+            Cache::forget('dashboard_stats_' . ($ispId ?? 'global'));
+            return redirect()->route('dashboard');
+        }
+
         try {
             $estadisticas = $this->dashboardService->getEstadisticas();
             return view('dashboard', $estadisticas);

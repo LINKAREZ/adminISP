@@ -33,9 +33,12 @@ return [
         'moneda' => env('ISP_MONEDA', 'PEN'),
         'simbolo_moneda' => env('ISP_SIMBOLO_MONEDA', 'S/.'),
         'igv' => env('ISP_IGV', 18),
-        'dia_emision' => env('ISP_DIA_EMISION', 1),
-        'dias_gracia' => env('ISP_DIAS_GRACIA', 5),
-        'dias_vencimiento' => env('ISP_DIAS_VENCIMIENTO', 15),
+        // Día del mes en que se genera/emite el recibo (ej. 20 = día 20; el cron puede correr ese día)
+        'dia_emision' => env('ISP_DIA_EMISION', 20),
+        // Días de gracia después del vencimiento para efectuar el corte (ej. 7 = corte el día 7 del mes siguiente si vence 31)
+        'dias_gracia' => env('ISP_DIAS_GRACIA', 7),
+        // Días desde fecha_emision hasta fecha_vencimiento (ej. 11 con emisión 20 → vence día 31)
+        'dias_vencimiento' => env('ISP_DIAS_VENCIMIENTO', 11),
         'generar_recibos_automaticos' => env('ISP_GENERAR_RECIBOS_AUTO', true),
         'serie_boleta' => env('ISP_SERIE_BOLETA', 'B001'),
         'serie_factura' => env('ISP_SERIE_FACTURA', 'F001'),
@@ -73,6 +76,11 @@ return [
     | Configuración de Notificaciones
     |--------------------------------------------------------------------------
     */
+    'recordatorio_pago' => [
+        'dias_antes' => (int) (env('ISP_RECORDATORIO_DIAS_ANTES') ?: 3),
+        'enabled' => env('ISP_RECORDATORIO_CORREO_ENABLED', true),
+    ],
+
     'notificaciones' => [
         'whatsapp_habilitado' => env('ISP_WHATSAPP_ENABLED', false),
         'email_habilitado' => env('ISP_EMAIL_ENABLED', false),

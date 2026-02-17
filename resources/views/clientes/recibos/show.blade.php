@@ -98,6 +98,19 @@
                                     @endif
                                 </dd>
 
+                                @if($recibo->saldo > 0)
+                                <dt class="col-sm-4">Fecha de corte (servicio):</dt>
+                                <dd class="col-sm-8">
+                                    {{ formato_fecha($recibo->fecha_corte_servicio) }}
+                                    <span class="text-muted small">(vencimiento + {{ config('isp.comprobantes.dias_gracia', 7) }} días)</span>
+                                    @if($recibo->pasadoFechaCorte())
+                                        <span class="badge badge-danger ml-2">Pasado fecha de corte</span>
+                                    @else
+                                        <span class="badge badge-secondary ml-2">Aún no aplica corte</span>
+                                    @endif
+                                </dd>
+                                @endif
+
                                 @if($recibo->servicio)
                                 <dt class="col-sm-4">Servicio:</dt>
                                 <dd class="col-sm-8">

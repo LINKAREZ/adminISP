@@ -17,6 +17,7 @@ use App\Modules\Red\Models\Router;
 use App\Modules\Red\Models\Nodo;
 use App\Modules\Red\Models\Regla;
 use App\Modules\Red\Services\RouterOSConnectionService;
+use App\Modules\Red\Services\RouterOSExportService;
 use App\Modules\Red\Services\RouterOSPppoeService;
 use App\Modules\Red\Services\RouterOSFirewallService;
 use App\Modules\Red\Services\RouterOSNatService;
@@ -213,6 +214,33 @@ class RouterController extends Controller
                 'success' => false,
                 'message' => 'Error al obtener detalles: ' . $e->getMessage(),
             ], 500);
+        }
+    }
+
+    public function exportarPppoe(Router $router, RouterOSExportService $exportService)
+    {
+        $this->authorize('update', $router);
+        try {
+            $result = $exportService->syncServiciosToRouter($router);
+            $msg = sprintf(
+                'Exportación completada: %d creados, %d actualizados.',
+                $result['created'],
+                $result['updated']
+            );
+            if ($result['skipped'] > 0) {
+                $msg .= ' ' . $result['skipped'] . ' omitidos (sin contraseña u otro motivo).';
+            }
+            if (!empty($result['errors'])) {
+                $msg .= ' Errores: ' . count($result['errors']) . ' servicio(s).';
+            }
+            return redirect()->route('red.routers.show', $router)->with('success', $msg);
+        } catch (\Throwable $e) {
+            Log::error('Error al exportar PPPoE al router', [
+                'router_id' => $router->id,
+                'error' => $e->getMessage(),
+            ]);
+            return redirect()->route('red.routers.show', $router)
+                ->with('error', 'No se pudo exportar: ' . $e->getMessage());
         }
     }
 

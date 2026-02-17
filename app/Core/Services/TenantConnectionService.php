@@ -8,18 +8,24 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Registra y resuelve la conexión de base de datos del tenant (ISP).
- * La conexión central es "mysql"; las tenant se registran como "isp_{id}".
+ * Configuración en config/tenant.php (central_connection, connection_prefix).
  */
 class TenantConnectionService
 {
+    /** @deprecated Usar centralConnection() */
     public const CENTRAL_CONNECTION = 'mysql';
+
+    public static function centralConnection(): string
+    {
+        return config('tenant.central_connection', self::CENTRAL_CONNECTION);
+    }
 
     /**
      * Nombre de la conexión tenant para un ISP.
      */
     public static function connectionNameForIsp(Isp $isp): string
     {
-        return 'isp_' . $isp->id;
+        return config('tenant.connection_prefix', 'isp_') . $isp->id;
     }
 
     /**
@@ -27,7 +33,7 @@ class TenantConnectionService
      */
     public static function connectionNameForId(int $ispId): string
     {
-        return 'isp_' . $ispId;
+        return config('tenant.connection_prefix', 'isp_') . $ispId;
     }
 
     /**
@@ -41,7 +47,7 @@ class TenantConnectionService
         }
 
         $name = static::connectionNameForIsp($isp);
-        $base = Config::get('database.connections.' . self::CENTRAL_CONNECTION, []);
+        $base = Config::get('database.connections.' . self::centralConnection(), []);
         $config = array_merge($base, ['database' => $databaseName]);
         Config::set("database.connections.{$name}", $config);
         DB::purge($name);
@@ -52,7 +58,7 @@ class TenantConnectionService
      */
     public static function registerConnectionForIspId(int $ispId): void
     {
-        $isp = Isp::on(self::CENTRAL_CONNECTION)->find($ispId);
+        $isp = Isp::on(self::centralConnection())->find($ispId);
         if ($isp) {
             static::registerConnection($isp);
         }

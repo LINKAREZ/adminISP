@@ -10,6 +10,11 @@
 @endsection
 
 @section('content')
+    <div class="d-flex justify-content-end mb-2">
+        <a href="{{ route('dashboard', ['actualizar' => 1]) }}" class="btn btn-sm btn-outline-secondary" title="Recargar estadísticas (limpiar caché)">
+            <i class="fas fa-sync-alt mr-1"></i>Actualizar datos
+        </a>
+    </div>
     <!-- Estadísticas Principales -->
     <div class="row mb-4">
         <!-- Clientes Totales -->

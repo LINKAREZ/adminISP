@@ -4,6 +4,10 @@ use App\Modules\Comprobantes\Controllers\ReciboController;
 use App\Modules\Comprobantes\Controllers\PagoController;
 use App\Modules\Comprobantes\Controllers\PromesaPagoController;
 use App\Modules\Comprobantes\Controllers\ComprobanteController;
+use App\Modules\Comprobantes\Controllers\CategoriaGastoController;
+use App\Modules\Comprobantes\Controllers\DashboardFinanzasController;
+use App\Modules\Comprobantes\Controllers\GastoController;
+use App\Modules\Comprobantes\Controllers\ImportarPagosController;
 use App\Modules\Comprobantes\Controllers\ReporteController;
 use Illuminate\Support\Facades\Route;
 
@@ -75,6 +79,13 @@ Route::middleware(['web', 'auth'])->group(function () {
         ->middleware('permission:comprobantes.read');
 });
 
+// Dashboard Finanzas y Gastos
+Route::middleware(['web', 'auth'])->prefix('finanzas')->name('comprobantes.')->group(function () {
+    Route::get('dashboard', [DashboardFinanzasController::class, 'index'])->middleware('permission:comprobantes.read')->name('dashboard-finanzas'); // comprobantes.dashboard-finanzas
+    Route::resource('gastos', GastoController::class)->names('gastos')->parameters(['gastos' => 'gasto']);
+    Route::resource('categorias-gasto', CategoriaGastoController::class)->names('categorias-gasto')->parameters(['categorias-gasto' => 'categoriaGasto']);
+});
+
 // Rutas de reportes (módulo Comprobantes)
 Route::middleware(['web', 'auth', 'permission:comprobantes.read'])
     ->prefix('reportes')
@@ -82,7 +93,16 @@ Route::middleware(['web', 'auth', 'permission:comprobantes.read'])
     ->group(function () {
         Route::get('cuadre-caja', [ReporteController::class, 'cuadreCaja'])->name('cuadre-caja');
         Route::get('detalle-medio-pago', [ReporteController::class, 'detalleMedioPago'])->name('detalle-medio-pago');
+        Route::get('ingresos', [ReporteController::class, 'ingresos'])->name('ingresos');
+        Route::get('ingresos/exportar', [ReporteController::class, 'ingresosExportar'])->name('ingresos.exportar');
     });
+
+// Importar pagos desde CSV/Excel
+Route::middleware(['web', 'auth'])->prefix('comprobantes')->name('comprobantes.')->group(function () {
+    Route::get('importar-pagos', [ImportarPagosController::class, 'index'])->middleware('permission:comprobantes.create')->name('importar-pagos.index');
+    Route::post('importar-pagos', [ImportarPagosController::class, 'store'])->middleware('permission:comprobantes.create')->name('importar-pagos.store');
+    Route::get('importar-pagos/plantilla', [ImportarPagosController::class, 'plantilla'])->middleware('permission:comprobantes.read')->name('importar-pagos.plantilla');
+});
 
 // Rutas anidadas de recibos, pagos y promesas bajo clientes
 Route::middleware(['web', 'auth'])

@@ -28,7 +28,7 @@
                                     <option value="{{ $cliente->id }}"
                                             data-tipo-documento="{{ $cliente->tipo_documento }}"
                                             data-documento="{{ $cliente->documento }}"
-                                            {{ old('cliente_id') == $cliente->id ? 'selected' : '' }}>
+                                            {{ old('cliente_id', $clienteId ?? '') == $cliente->id ? 'selected' : '' }}>
                                         {{ $cliente->nombre }} - {{ strtoupper($cliente->tipo_documento) }}: {{ $cliente->documento }}
                                     </option>
                                 @endforeach

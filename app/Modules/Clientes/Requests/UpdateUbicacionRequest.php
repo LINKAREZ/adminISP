@@ -41,6 +41,24 @@ class UpdateUbicacionRequest extends FormRequest
             'foto_1' => ['nullable', 'image', 'max:2048'],
             'foto_2' => ['nullable', 'image', 'max:2048'],
             'foto_3' => ['nullable', 'image', 'max:2048'],
+            'foto_1_titulo' => ['nullable', 'string', 'max:80'],
+            'foto_2_titulo' => ['nullable', 'string', 'max:80'],
+            'foto_3_titulo' => ['nullable', 'string', 'max:80'],
         ];
+    }
+
+    /**
+     * Validar que la ubicación tenga al menos una foto (existente o nueva).
+     */
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            $ubicacion = $this->route('ubicacion');
+            $yaTieneFoto = $ubicacion && ($ubicacion->foto_1 || $ubicacion->foto_2 || $ubicacion->foto_3);
+            $subeNueva = $this->hasFile('foto_1') || $this->hasFile('foto_2') || $this->hasFile('foto_3');
+            if (!$yaTieneFoto && !$subeNueva) {
+                $validator->errors()->add('foto_1', 'Debe subir al menos una foto de la ubicación.');
+            }
+        });
     }
 }

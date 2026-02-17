@@ -74,6 +74,22 @@ class Cliente extends Model
     }
 
     /**
+     * Credencial para acceso al portal del cliente (login documento/email + contraseña)
+     */
+    public function credencialPortal(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(ClienteCredencial::class, 'cliente_id');
+    }
+
+    /**
+     * Tickets de soporte
+     */
+    public function tickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class, 'cliente_id');
+    }
+
+    /**
      * Relación con pagos
      */
     public function pagos(): HasMany

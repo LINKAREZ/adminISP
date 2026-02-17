@@ -43,8 +43,13 @@ window.GOOGLE_MAPS_API_KEY = {{ json_encode($googleMapsKey) }};
             if (!mapEl) return;
             mapEl.innerHTML = '';
             var center = { lat: lat, lng: lng };
-            var map = new google.maps.Map(mapEl, { center: center, zoom: 15, mapTypeId: 'roadmap' });
-            var marker = new google.maps.Marker({ position: center, map: map });
+            var map = new google.maps.Map(mapEl, { center: center, zoom: 15, mapTypeId: 'hybrid' });
+            var marker = new google.maps.Marker({ position: center, map: map, draggable: true });
+            marker.addListener('dragend', function() {
+                var pos = marker.getPosition();
+                if (latInput) latInput.value = pos.lat().toFixed(6);
+                if (lngInput) lngInput.value = pos.lng().toFixed(6);
+            });
             map.addListener('click', function(e) {
                 var pos = e.latLng;
                 marker.setPosition(pos);
@@ -108,7 +113,12 @@ window.GOOGLE_MAPS_API_KEY = {{ json_encode($googleMapsKey) }};
                 center: [lng, lat],
                 zoom: 15
             });
-            var marker = new maplibregl.Marker().setLngLat([lng, lat]).addTo(map);
+            var marker = new maplibregl.Marker({ draggable: true }).setLngLat([lng, lat]).addTo(map);
+            marker.on('dragend', function() {
+                var pos = marker.getLngLat();
+                if (latInput) latInput.value = pos.lat.toFixed(6);
+                if (lngInput) lngInput.value = pos.lng.toFixed(6);
+            });
             map.on('click', function(e) {
                 var pos = e.lngLat;
                 marker.setLngLat(pos);
@@ -140,6 +150,12 @@ window.GOOGLE_MAPS_API_KEY = {{ json_encode($googleMapsKey) }};
 @endpush
 @push('styles')
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
+<style>
+.mapa-gps-wrapper .leaflet-marker-icon { cursor: move !important; pointer-events: auto !important; }
+.mapa-gps-wrapper .leaflet-marker-draggable { cursor: move !important; }
+.mapa-gps-wrapper .leaflet-grab { cursor: grab !important; }
+.mapa-gps-wrapper .leaflet-dragging .leaflet-marker-icon { cursor: grabbing !important; }
+</style>
 @endpush
 @push('scripts')
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>
@@ -152,27 +168,25 @@ window.GOOGLE_MAPS_API_KEY = {{ json_encode($googleMapsKey) }};
         wrappers.forEach(function(wrapper) {
             var mapId = wrapper.getAttribute('data-map-id');
             if (window.mapaGpsInstances[mapId]) return;
+            var tabPane = wrapper.closest('.tab-pane');
+            if (!container && tabPane && !tabPane.classList.contains('show')) return;
             var nameLat = wrapper.getAttribute('data-name-lat');
             var nameLng = wrapper.getAttribute('data-name-lng');
             var latInput = document.getElementById(nameLat + '-input') || wrapper.querySelector('input[name="' + nameLat + '"]');
             var lngInput = document.getElementById(nameLng + '-input') || wrapper.querySelector('input[name="' + nameLng + '"]');
             var lat = parseFloat(latInput && latInput.value) || -12.046374;
             var lng = parseFloat(lngInput && lngInput.value) || -77.042793;
+            var mapEl = document.getElementById(mapId);
+            if (!mapEl) return;
+            mapEl.innerHTML = '';
             var map = L.map(mapId).setView([lat, lng], 15);
-            var calle = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' });
-            var satelite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: '&copy; Esri' });
-            var topo = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', { attribution: '&copy; Esri' });
-            var claro = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; CARTO' });
-            var oscuro = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; CARTO' });
-            calle.addTo(map);
-            L.control.layers({
-                'Calle (OSM)': calle,
-                'Satélite': satelite,
-                'Topográfico': topo,
-                'Claro': claro,
-                'Oscuro': oscuro
-            }, null, { collapsed: true }).addTo(map);
-            var marker = L.marker([lat, lng]).addTo(map);
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: '&copy; Esri' }).addTo(map);
+            var marker = L.marker([lat, lng], { draggable: true, title: 'Arrastra para mover el punto' }).addTo(map);
+            marker.on('dragend', function() {
+                var ll = marker.getLatLng();
+                if (latInput) latInput.value = ll.lat.toFixed(6);
+                if (lngInput) lngInput.value = ll.lng.toFixed(6);
+            });
             map.on('click', function(e) {
                 marker.setLatLng(e.latlng);
                 if (latInput) latInput.value = e.latlng.lat.toFixed(6);

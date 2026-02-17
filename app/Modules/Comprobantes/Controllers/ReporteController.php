@@ -3,9 +3,11 @@
 namespace App\Modules\Comprobantes\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Clientes\Models\Cliente;
 use App\Modules\Comprobantes\Models\Pago;
 use App\Modules\Sistema\Models\MedioPago;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
@@ -154,6 +156,78 @@ class ReporteController extends Controller
             'medio_pago' => $medioPago ? $medioPago->nombreCompleto : ($medioPagoNombre ? ucfirst($medioPagoNombre) : 'N/A'),
             'total' => $pagos->sum('monto'),
             'cantidad' => $pagos->count(),
+        ]);
+    }
+
+    /**
+     * Reporte de ingresos por cliente y período
+     */
+    public function ingresos(Request $request)
+    {
+        Gate::authorize('comprobantes.read');
+        $fechaInicio = $request->input('fecha_inicio', Carbon::now()->startOfMonth()->format('Y-m-d'));
+        $fechaFin = $request->input('fecha_fin', Carbon::now()->format('Y-m-d'));
+        $clienteId = $request->input('cliente_id');
+
+        $fechaInicioCarbon = Carbon::parse($fechaInicio)->startOfDay();
+        $fechaFinCarbon = Carbon::parse($fechaFin)->endOfDay();
+
+        $query = Pago::with(['cliente', 'recibo'])
+            ->whereBetween('fecha_pago', [$fechaInicioCarbon, $fechaFinCarbon]);
+        if ($clienteId) {
+            $query->where('cliente_id', $clienteId);
+        }
+        $pagos = $query->orderBy('fecha_pago', 'desc')->paginate(50);
+        $clientes = Cliente::orderBy('nombre')->get(['id', 'nombre']);
+
+        return view('comprobantes.reportes.ingresos', compact(
+            'pagos',
+            'clientes',
+            'fechaInicio',
+            'fechaFin',
+            'clienteId'
+        ));
+    }
+
+    /**
+     * Exportar reporte de ingresos a CSV (Excel)
+     */
+    public function ingresosExportar(Request $request): StreamedResponse
+    {
+        Gate::authorize('comprobantes.read');
+        $fechaInicio = $request->input('fecha_inicio', Carbon::now()->startOfMonth()->format('Y-m-d'));
+        $fechaFin = $request->input('fecha_fin', Carbon::now()->format('Y-m-d'));
+        $clienteId = $request->input('cliente_id');
+
+        $fechaInicioCarbon = Carbon::parse($fechaInicio)->startOfDay();
+        $fechaFinCarbon = Carbon::parse($fechaFin)->endOfDay();
+
+        $query = Pago::with(['cliente', 'recibo'])
+            ->whereBetween('fecha_pago', [$fechaInicioCarbon, $fechaFinCarbon]);
+        if ($clienteId) {
+            $query->where('cliente_id', $clienteId);
+        }
+        $pagos = $query->orderBy('fecha_pago', 'desc')->get();
+
+        $filename = 'ingresos_' . $fechaInicio . '_' . $fechaFin . '.csv';
+
+        return new StreamedResponse(function () use ($pagos) {
+            $out = fopen('php://output', 'w');
+            fputcsv($out, ['Fecha', 'Cliente', 'Monto', 'Nº Operación', 'Medio', 'Recibo/Periodo']);
+            foreach ($pagos as $p) {
+                fputcsv($out, [
+                    $p->fecha_pago ? $p->fecha_pago->format('Y-m-d') : '',
+                    $p->cliente ? $p->cliente->nombre : '',
+                    $p->monto,
+                    $p->numero_operacion ?? '',
+                    $p->medio_pago ?? '',
+                    $p->recibo ? $p->recibo->periodo ?? $p->recibo->codigo : '',
+                ]);
+            }
+            fclose($out);
+        }, 200, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ]);
     }
 }

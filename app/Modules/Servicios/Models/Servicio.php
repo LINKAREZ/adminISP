@@ -23,17 +23,23 @@ class Servicio extends Model
     protected $fillable = [
         // ❌ ELIMINADO: 'cliente_id' - El cliente se obtiene a través de ubicación
         'ubicacion_id', // ✅ REQUIRED - Fuente única de verdad
+        'hilo_id', // Infraestructura: caja NAP + número de hilo
         'router_id',
         'plan_id',
         'tipo_pppoe',
         'usuario_pppoe',
         'password_pppoe',
         'mac_address',
+        'ip_asignada',
         'estado',
         'fecha_instalacion',
         'notas',
         'es_provisional',
         'fecha_activacion_definitiva',
+        'fecha_corte',
+        'dia_facturacion',
+        'dia_corte',
+        'dias_gracia',
         'isp_id',
     ];
 
@@ -41,6 +47,7 @@ class Servicio extends Model
         'fecha_instalacion' => 'date',
         'es_provisional' => 'boolean',
         'fecha_activacion_definitiva' => 'datetime',
+        'fecha_corte' => 'date',
     ];
 
     /**
@@ -56,6 +63,14 @@ class Servicio extends Model
     public function ubicacion(): BelongsTo
     {
         return $this->belongsTo(\App\Modules\Clientes\Models\Ubicacion::class);
+    }
+
+    /**
+     * Hilo asignado (caja NAP + puerto) - módulo Infraestructura.
+     */
+    public function hilo(): BelongsTo
+    {
+        return $this->belongsTo(\App\Modules\Infraestructura\Models\Hilo::class);
     }
 
     /**
@@ -135,6 +150,10 @@ class Servicio extends Model
             'estado' => 'required|in:activo,cortado',
             'fecha_instalacion' => 'nullable|date',
             'notas' => 'nullable|string|max:1000',
+            'ip_asignada' => 'nullable|string|max:45',
+            'dia_facturacion' => 'nullable|integer|min:1|max:28',
+            'dia_corte' => 'nullable|integer|min:1|max:28',
+            'dias_gracia' => 'nullable|integer|min:0|max:31',
         ];
 
         if ($tipoPppoe === 'usuario_unico') {
@@ -186,6 +205,18 @@ class Servicio extends Model
     public function scopeDefinitivos($query)
     {
         return $query->where('es_provisional', false);
+    }
+
+    /** Día del mes (1-28) para facturación; si null usa config isp.comprobantes.dia_emision */
+    public function getDiaFacturacionEfectivoAttribute(): int
+    {
+        return $this->dia_facturacion ?? (int) config('isp.comprobantes.dia_emision', 20);
+    }
+
+    /** Días de gracia tras vencimiento; si null usa config isp.comprobantes.dias_gracia */
+    public function getDiasGraciaEfectivoAttribute(): int
+    {
+        return $this->dias_gracia ?? (int) config('isp.comprobantes.dias_gracia', 7);
     }
 
     public function esProvisional(): bool
