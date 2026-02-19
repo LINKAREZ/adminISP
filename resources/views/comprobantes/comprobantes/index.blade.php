@@ -95,6 +95,9 @@
     <!-- Tabla de comprobantes -->
     <x-card title="Lista de Comprobantes" icon="fa-file-invoice" variant="primary" :actionsOverlay="true" :hideTitle="true">
         <x-slot name="actions">
+            <a href="{{ route('comprobantes.dashboard-finanzas') }}" class="btn btn-success btn-sm mr-1" title="Registrar pago para activar plan (recibos vencidos)">
+                <i class="fas fa-dollar-sign mr-1"></i>Registrar pago
+            </a>
             <x-btn :route="route('comprobantes.series')" variant="light" size="sm" icon="fa-list-ol" title="Series"></x-btn>
             <x-btn :route="route('comprobantes.create')" variant="light" size="sm" icon="fa-plus" title="Nuevo Comprobante" class="btn-add-icon"></x-btn>
         </x-slot>

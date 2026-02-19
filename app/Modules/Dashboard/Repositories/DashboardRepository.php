@@ -89,7 +89,7 @@ class DashboardRepository implements DashboardRepositoryInterface
                 'pagadas' => Recibo::where('estado', 'pagado')->count(),
                 'saldoTotalPendiente' => Recibo::where('estado', 'pendiente')->where('saldo', '>', 0)->sum('saldo'),
                 'montoTotalVencido' => Recibo::where('estado', 'vencido')->where('saldo', '>', 0)->sum('saldo'),
-                'vencidasRecientes' => Recibo::with(['servicio.ubicacion.cliente', 'servicio.plan'])
+                'vencidasRecientes' => Recibo::with(['cliente', 'servicio.ubicacion.cliente', 'servicio.plan'])
                     ->where('estado', 'vencido')
                     ->where('saldo', '>', 0)
                     ->orderBy('fecha_vencimiento', 'asc')

@@ -95,6 +95,7 @@
                                 <th>Cliente</th>
                                 <th>Vencimiento</th>
                                 <th>Saldo</th>
+                                <th class="text-right">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -103,9 +104,18 @@
                                     <td>{{ $recibo->cliente?->nombre ?? '-' }}</td>
                                     <td>{{ $recibo->fecha_vencimiento?->format('d/m/Y') }}</td>
                                     <td>{{ function_exists('formato_soles') ? formato_soles($recibo->saldo) : 'S/ ' . number_format($recibo->saldo, 2) }}</td>
+                                    <td class="text-right">
+                                        @if($recibo->cliente_id)
+                                            <a href="{{ route('clientes.pagos.create', [$recibo->cliente, 'recibo_id' => $recibo->id]) }}" class="btn btn-sm btn-success" title="Registrar pago (activar plan 1 mes más)">
+                                                <i class="fas fa-dollar-sign mr-1"></i>Registrar pago
+                                            </a>
+                                        @else
+                                            <span class="text-muted small">Sin cliente</span>
+                                        @endif
+                                    </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="3" class="text-muted">Sin recibos vencidos</td></tr>
+                                <tr><td colspan="4" class="text-muted">Sin recibos vencidos</td></tr>
                             @endforelse
                         </tbody>
                     </table>

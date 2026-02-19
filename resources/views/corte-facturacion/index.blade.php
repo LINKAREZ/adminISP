@@ -9,6 +9,9 @@
 @section('content')
     <x-card title="Corte y facturación automática" subtitle="Ejecutar manualmente las tareas programadas" icon="fa-calendar-check" variant="primary" :actionsOverlay="true" :hideTitle="true">
         <p class="text-muted">Las tareas de facturación y corte se ejecutan automáticamente cada día según la configuración del servidor. Aquí puede ejecutarlas ahora para este ISP.</p>
+        <p class="mb-3">
+            <a href="{{ route('comprobantes.dashboard-finanzas') }}" class="btn btn-sm btn-success"><i class="fas fa-dollar-sign mr-1"></i>Registrar pago (recibos vencidos)</a>
+        </p>
         <div class="row">
             <div class="col-md-6">
                 <div class="card card-outline card-info">
