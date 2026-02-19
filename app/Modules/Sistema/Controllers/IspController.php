@@ -82,11 +82,17 @@ class IspController extends Controller
         // Conteos de clientes y nodos por ISP (cada uno en su BD tenant)
         $previousIspId = session('current_isp_id');
         foreach ($isps->getCollection() as $isp) {
-            if (!empty($isp->database_name)) {
+            if (empty($isp->database_name)) {
+                $isp->setAttribute('clientes_count', 0);
+                $isp->setAttribute('nodos_count', 0);
+                continue;
+            }
+            try {
                 TenantConnectionService::setCurrentIspId($isp->id);
                 $isp->setAttribute('clientes_count', \App\Modules\Clientes\Models\Cliente::count());
                 $isp->setAttribute('nodos_count', \App\Modules\Red\Models\Nodo::count());
-            } else {
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning('No se pudo obtener conteos del tenant del ISP ' . $isp->id . ': ' . $e->getMessage());
                 $isp->setAttribute('clientes_count', 0);
                 $isp->setAttribute('nodos_count', 0);
             }
