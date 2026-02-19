@@ -27,6 +27,13 @@ class StoreRouterRequest extends FormRequest
             'nodo_id' => ['nullable', 'integer', new ExistsInTenant('nodos')],
             'notas' => ['nullable', 'string', 'max:1000'],
             'estado' => ['nullable', 'boolean'],
+            'plan_id' => ['nullable', 'integer', function ($attr, $value, $fail) {
+                if ($value && !\App\Modules\Sistema\Models\Plan::on('mysql')->where('id', $value)->exists()) {
+                    $fail(__('Plan no válido.'));
+                }
+            }],
+            'license_starts_at' => ['nullable', 'date'],
+            'license_expires_at' => ['nullable', 'date', 'after_or_equal:license_starts_at'],
         ];
     }
 }

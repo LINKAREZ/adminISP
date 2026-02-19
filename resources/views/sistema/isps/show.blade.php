@@ -233,6 +233,82 @@
         </div>
     </div>
 
+    <!-- Licencias por router -->
+    <div class="row mt-3">
+        <div class="col-12">
+            <x-card title="Licencias (por router)" icon="fa-id-card" variant="info" :outline="true">
+                @if(isset($licenseRouters) && $licenseRouters->isNotEmpty())
+                    <p class="text-muted small mb-3">Routers del ISP con plan y vigencia de licencia.</p>
+                    <div class="table-responsive d-none d-md-block">
+                        <table class="table table-hover table-sm mb-0">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Router</th>
+                                    <th>Plan</th>
+                                    <th>Vigencia desde</th>
+                                    <th>Vigencia hasta</th>
+                                    <th class="text-center">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($licenseRouters as $r)
+                                    @php
+                                        $planName = $r->plan_id && isset($planNamesById[$r->plan_id]) ? $planNamesById[$r->plan_id] : '—';
+                                        $vigente = !$r->license_expires_at || $r->license_expires_at->isFuture() || $r->license_expires_at->isToday();
+                                    @endphp
+                                    <tr>
+                                        <td><strong>{{ $r->nombre }}</strong></td>
+                                        <td>{{ $planName }}</td>
+                                        <td>{{ $r->license_starts_at ? $r->license_starts_at->format('d/m/Y') : '—' }}</td>
+                                        <td>{{ $r->license_expires_at ? $r->license_expires_at->format('d/m/Y') : 'Sin vencimiento' }}</td>
+                                        <td class="text-center">
+                                            @if($r->plan_id)
+                                                @if($vigente)
+                                                    <span class="badge badge-success">Vigente</span>
+                                                @else
+                                                    <span class="badge badge-danger">Vencida</span>
+                                                @endif
+                                            @else
+                                                <span class="badge badge-secondary">Sin plan</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="d-md-none">
+                        @foreach($licenseRouters as $r)
+                            @php
+                                $planName = $r->plan_id && isset($planNamesById[$r->plan_id]) ? $planNamesById[$r->plan_id] : '—';
+                                $vigente = !$r->license_expires_at || $r->license_expires_at->isFuture() || $r->license_expires_at->isToday();
+                            @endphp
+                            <div class="card card-outline card-info mb-2">
+                                <div class="card-body py-2">
+                                    <strong>{{ $r->nombre }}</strong> · {{ $planName }}
+                                    <div class="small text-muted mt-1">
+                                        {{ $r->license_starts_at ? $r->license_starts_at->format('d/m/Y') : '—' }} – {{ $r->license_expires_at ? $r->license_expires_at->format('d/m/Y') : 'Sin vencimiento' }}
+                                    </div>
+                                    @if($r->plan_id)
+                                        @if($vigente)
+                                            <span class="badge badge-success">Vigente</span>
+                                        @else
+                                            <span class="badge badge-danger">Vencida</span>
+                                        @endif
+                                    @else
+                                        <span class="badge badge-secondary">Sin plan</span>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <p class="text-muted mb-0">Este ISP no tiene routers con licencia registrada o aún no tiene base de datos. Los routers se gestionan desde el panel del ISP (menú Red).</p>
+                @endif
+            </x-card>
+        </div>
+    </div>
+
 @push('styles')
 <style>
     .badge-lg {

@@ -8,6 +8,7 @@ use App\Modules\Clientes\Requests\UpdateUbicacionRequest;
 use App\Modules\Clientes\Models\Ubicacion;
 use App\Modules\Clientes\Models\Cliente;
 use App\Modules\Red\Models\Router;
+use App\Modules\Sistema\Services\PlanLimitService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -65,12 +66,22 @@ class UbicacionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreUbicacionRequest $request, Cliente $cliente)
+    public function store(StoreUbicacionRequest $request, Cliente $cliente, PlanLimitService $planLimitService)
     {
         $this->authorize('update', $cliente);
 
+        $validated = $request->validated();
+        if (!empty($validated['router_id'])) {
+            $router = Router::find($validated['router_id']);
+            if ($router && !$planLimitService->canAddClientToRouter($router)) {
+                if ($request->wantsJson() || $request->ajax()) {
+                    return response()->json(['success' => false, 'message' => 'Límite de clientes de este router alcanzado.'], 422);
+                }
+                return redirect()->back()->withInput()->withErrors(['router_id' => 'Límite de clientes de este router alcanzado.']);
+            }
+        }
+
         try {
-            $validated = $request->validated();
             $validated['cliente_id'] = $cliente->id;
 
             $files = [];

@@ -88,7 +88,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [\App\Modules\Sistema\Controllers\SuperAdminController::class, 'dashboard'])->name('dashboard');
         Route::get('/export', [\App\Modules\Sistema\Controllers\SuperAdminController::class, 'export'])->name('export');
         Route::get('/audit', [\App\Modules\Sistema\Controllers\SuperAdminAuditController::class, 'index'])->name('audit');
-        Route::get('/plans', [\App\Modules\Sistema\Controllers\SuperAdminController::class, 'plans'])->name('plans.index');
+        Route::resource('plans', \App\Modules\Sistema\Controllers\SuperAdminPlanController::class)->except(['destroy']);
         Route::get('/solicitudes', [\App\Modules\Sistema\Controllers\SuperAdminController::class, 'solicitudes'])->name('solicitudes.index');
 
         // ISPs (solo super admin)

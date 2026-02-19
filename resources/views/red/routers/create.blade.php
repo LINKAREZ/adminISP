@@ -179,6 +179,45 @@
                             @enderror
                         </div>
 
+                        @if(isset($saasPlans) && $saasPlans->isNotEmpty())
+                        <!-- Licencia (plan de capacidad por router) -->
+                        <div class="card card-outline card-secondary mb-3">
+                            <div class="card-header py-2">
+                                <h6 class="card-title mb-0"><i class="fas fa-id-card mr-1"></i> Licencia</h6>
+                            </div>
+                            <div class="card-body py-2">
+                                <div class="row">
+                                    <div class="col-12 col-md-4">
+                                        <div class="form-group mb-2 mb-md-0">
+                                            <label for="plan_id">Plan de capacidad</label>
+                                            <select id="plan_id" name="plan_id" class="form-control @error('plan_id') is-invalid @enderror">
+                                                <option value="">Sin licencia</option>
+                                                @foreach($saasPlans as $p)
+                                                    <option value="{{ $p->id }}" {{ old('plan_id') == $p->id ? 'selected' : '' }}>{{ $p->name }} ({{ $p->max_clientes ?? '—' }} clientes)</option>
+                                                @endforeach
+                                            </select>
+                                            @error('plan_id')<span class="invalid-feedback">{{ $message }}</span>@enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                        <div class="form-group mb-2 mb-md-0">
+                                            <label for="license_starts_at">Vigencia desde</label>
+                                            <input type="date" id="license_starts_at" name="license_starts_at" class="form-control @error('license_starts_at') is-invalid @enderror" value="{{ old('license_starts_at') }}">
+                                            @error('license_starts_at')<span class="invalid-feedback">{{ $message }}</span>@enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                        <div class="form-group mb-0">
+                                            <label for="license_expires_at">Vigencia hasta</label>
+                                            <input type="date" id="license_expires_at" name="license_expires_at" class="form-control @error('license_expires_at') is-invalid @enderror" value="{{ old('license_expires_at') }}">
+                                            @error('license_expires_at')<span class="invalid-feedback">{{ $message }}</span>@enderror
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+
                         <!-- Estado -->
                         <div class="form-group">
                             <label>Estado</label>

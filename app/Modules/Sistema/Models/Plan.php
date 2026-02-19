@@ -18,6 +18,7 @@ class Plan extends Model
     protected $fillable = [
         'name',
         'slug',
+        'max_routers',
         'max_clientes',
         'max_usuarios',
         'max_storage_mb',

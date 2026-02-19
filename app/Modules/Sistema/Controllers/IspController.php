@@ -194,17 +194,24 @@ class IspController extends Controller
 
         // Estadísticas del ISP (desde BD tenant de este ISP, no la sesión)
         $stats = ['usuarios' => $defaultAdmins->count(), 'clientes' => 0, 'nodos' => 0];
+        $licenseRouters = collect();
+        $planNamesById = [];
         $previousIspId = session('current_isp_id');
         if ($isp->database_name) {
             TenantConnectionService::setCurrentIspId($isp->id);
             $stats['clientes'] = \App\Modules\Clientes\Models\Cliente::count();
             $stats['nodos'] = \App\Modules\Red\Models\Nodo::count();
+            $licenseRouters = \App\Modules\Red\Models\Router::select('id', 'nombre', 'plan_id', 'license_starts_at', 'license_expires_at')->get();
+            $planIds = $licenseRouters->pluck('plan_id')->filter()->unique()->values();
+            if ($planIds->isNotEmpty()) {
+                $planNamesById = Plan::on('mysql')->whereIn('id', $planIds)->pluck('name', 'id')->all();
+            }
             if ($previousIspId !== null) {
                 TenantConnectionService::setCurrentIspId((int) $previousIspId);
             }
         }
 
-        return view('sistema.isps.show', compact('isp', 'defaultAdmins', 'stats'));
+        return view('sistema.isps.show', compact('isp', 'defaultAdmins', 'stats', 'licenseRouters', 'planNamesById'));
     }
 
     /**

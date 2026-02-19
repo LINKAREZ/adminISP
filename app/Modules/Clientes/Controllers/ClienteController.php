@@ -11,6 +11,7 @@ use App\Core\Services\RucService;
 use App\Core\Rules\ExistsInTenant;
 use App\Core\Services\TenantConnectionService;
 use App\Modules\Clientes\Services\ClienteService;
+use App\Modules\Sistema\Services\PlanLimitService;
 use App\Core\Traits\RespondsWithJson;
 use App\Core\Traits\NormalizesMacAddress;
 use App\Modules\Red\Services\RouterOSScriptService;
@@ -761,9 +762,14 @@ class ClienteController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreClienteRequest $request)
+    public function store(StoreClienteRequest $request, PlanLimitService $planLimitService)
     {
         $this->authorize('create', Cliente::class);
+
+        $isp = auth()->user()?->isp;
+        if ($isp && !$planLimitService->canAddClient($isp)) {
+            return redirect()->back()->withInput()->withErrors(['msg' => 'Límite de clientes del plan alcanzado.']);
+        }
 
         $validated = $request->validated();
 

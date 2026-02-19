@@ -14,6 +14,8 @@ use App\Modules\Red\Requests\CrearReglaBloqueoRequest;
 use App\Modules\Red\Requests\StoreReglaRequest;
 use App\Modules\Red\Requests\UpdateReglaRequest;
 use App\Core\Services\TenantConnectionService;
+use App\Modules\Sistema\Services\PlanLimitService;
+use App\Modules\Sistema\Models\Plan;
 use App\Modules\Red\Models\Router;
 use App\Modules\Red\Models\Nodo;
 use App\Modules\Red\Models\Regla;
@@ -59,15 +61,21 @@ class RouterController extends Controller
         $nodos = Nodo::on($conn)->withoutGlobalScopes()->where('estado', true)
             ->orderBy('nombre')
             ->get(['id', 'nombre']);
-        return view('red.routers.create', compact('nodos'));
+        $saasPlans = Plan::on('mysql')->where('is_active', true)->where('slug', '!=', 'gratuito')->orderBy('sort_order')->orderBy('max_clientes')->get();
+        return view('red.routers.create', compact('nodos', 'saasPlans'));
     }
 
-    public function store(StoreRouterRequest $request)
+    public function store(StoreRouterRequest $request, PlanLimitService $planLimitService)
     {
         $conn = TenantConnectionService::currentTenantConnectionName();
         if (!$conn) {
             return redirect()->route('red.routers.index')
                 ->with('error', 'No hay ISP seleccionado. Seleccione un ISP para crear routers.');
+        }
+        $isp = auth()->user()?->isp;
+        if ($isp && !$planLimitService->canAddRouter($isp)) {
+            return redirect()->route('red.routers.index')
+                ->with('error', 'Límite de routers alcanzado (plan Gratuito: máximo 1 router). Pase a un plan de pago para añadir más.');
         }
         Router::on($conn)->create($request->validated());
 
@@ -388,7 +396,8 @@ class RouterController extends Controller
         $nodos = Nodo::on($conn)->withoutGlobalScopes()->where('estado', true)
             ->orderBy('nombre')
             ->get(['id', 'nombre']);
-        return view('red.routers.edit', compact('router', 'nodos'));
+        $saasPlans = Plan::on('mysql')->where('is_active', true)->where('slug', '!=', 'gratuito')->orderBy('sort_order')->orderBy('max_clientes')->get();
+        return view('red.routers.edit', compact('router', 'nodos', 'saasPlans'));
     }
 
     public function update(UpdateRouterRequest $request, Router $router)
