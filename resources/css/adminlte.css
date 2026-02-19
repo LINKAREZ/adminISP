@@ -845,6 +845,8 @@ body.sidebar-mini.sidebar-collapse .main-header {
     body.sidebar-open .main-sidebar::before {
         margin-left: 0 !important;
         width: 280px !important;
+        /* Por encima del overlay para que los clics en enlaces del menú no cierren el sidebar antes de navegar */
+        z-index: 1040 !important;
     }
     .content-wrapper,
     .main-footer,
@@ -853,7 +855,7 @@ body.sidebar-mini.sidebar-collapse .main-header {
         width: 100% !important;
         max-width: 100% !important;
     }
-    /* Overlay: encima del contenido, debajo del sidebar (z-index 1037 en AdminLTE) */
+    /* Overlay: encima del contenido, debajo del sidebar (1037 < 1040 del sidebar abierto) */
     #sidebar-overlay {
         z-index: 1037;
     }
