@@ -2,6 +2,7 @@
 
 namespace App\Modules\Sistema\Controllers;
 
+use App\Core\Services\TenantConnectionService;
 use App\Http\Controllers\Controller;
 use App\Modules\Sistema\Models\MedioPago;
 use App\Modules\Sistema\Models\OnuMarca;
@@ -18,9 +19,18 @@ class SistemaController extends Controller
     public function index()
     {
         Gate::authorize('sistema.read');
-        $user = auth()->user();
 
-        // Estadísticas para cada sección
+        $conn = TenantConnectionService::currentTenantConnectionName();
+        if (!$conn) {
+            $estadisticas = [
+                'medios_pago' => ['total' => 0, 'activos' => 0],
+                'equipo' => ['marcas' => 0, 'modelos' => 0],
+                'apis' => ['total' => 0, 'activas' => 0],
+                'plantillas_whatsapp' => ['total' => 0, 'activas' => 0],
+            ];
+            return view('sistema.index', compact('estadisticas'));
+        }
+
         $estadisticas = [
             'medios_pago' => [
                 'total' => MedioPago::count(),
