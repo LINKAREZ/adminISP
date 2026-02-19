@@ -2,6 +2,7 @@
 
 namespace App\Modules\Sistema\Controllers;
 
+use App\Core\Services\TenantConnectionService;
 use App\Http\Controllers\Controller;
 use App\Modules\Sistema\Models\ApiConfig;
 use App\Modules\Sistema\Requests\UpdateApiConfigRequest;
@@ -12,7 +13,12 @@ class ApiController extends Controller
     public function index()
     {
         Gate::authorize('sistema.read');
-        $apis = \App\Modules\Sistema\Models\ApiConfig::orderBy('nombre')->get();
+
+        if (! TenantConnectionService::currentTenantConnectionName()) {
+            return view('sistema.apis.index', ['apis' => collect()]);
+        }
+
+        $apis = ApiConfig::orderBy('nombre')->get();
 
         return view('sistema.apis.index', compact('apis'));
     }
@@ -20,7 +26,11 @@ class ApiController extends Controller
     public function initDefaults()
     {
         Gate::authorize('sistema.read');
-        \App\Modules\Sistema\Models\ApiConfig::firstOrCreate(
+        if (! TenantConnectionService::currentTenantConnectionName()) {
+            return redirect()->route('sistema.apis.index')
+                ->with('error', 'Debe seleccionar un ISP para configurar APIs.');
+        }
+        ApiConfig::firstOrCreate(
             ['nombre' => 'apisperu'],
             [
                 'descripcion' => 'API APISPERU para consulta de DNI y RUC',

@@ -2,11 +2,14 @@
 
 namespace App\Modules\Sistema\Controllers;
 
+use App\Core\Services\TenantConnectionService;
 use App\Http\Controllers\Controller;
+use App\Modules\Servicios\Models\OnuModelo;
+use App\Modules\Sistema\Models\OnuMarca;
 use App\Modules\Sistema\Requests\StoreOnuModeloRequest;
 use App\Modules\Sistema\Requests\UpdateOnuModeloRequest;
-use App\Modules\Servicios\Models\OnuModelo;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Schema;
 
 class OnuModeloController extends Controller
@@ -18,7 +21,13 @@ class OnuModeloController extends Controller
 
     public function index(Request $request)
     {
-        $query = \App\Modules\Servicios\Models\OnuModelo::with('marca');
+        if (! TenantConnectionService::currentTenantConnectionName()) {
+            $modelos = new LengthAwarePaginator([], 0, 20);
+            $marcas = collect();
+            return view('sistema.modelos-onu.index', compact('modelos', 'marcas'));
+        }
+
+        $query = OnuModelo::with('marca');
 
         // Filtro por marca
         $marcaId = $request->input('marca_id');
@@ -29,20 +38,13 @@ class OnuModeloController extends Controller
         $modelos = $query->orderBy('marca_id')
             ->orderBy('nombre')
             ->paginate(20)
-            ->withQueryString(); // Usar withQueryString() en lugar de appends()
+            ->withQueryString();
 
-        // Obtener todas las marcas para el filtro
-        $marcas = \App\Modules\Sistema\Models\OnuMarca::where('estado', true)
+        $marcas = OnuMarca::where('estado', true)
             ->orderBy('orden')
             ->orderBy('nombre')
             ->get();
 
-        // Si la ruta es la nueva (equipo/modelos), usar la vista con sub-pestañas
-        if (request()->is('sistema/equipo/modelos*')) {
-            return view('sistema.modelos-onu.index', compact('modelos', 'marcas'));
-        }
-
-        // Mantener compatibilidad con ruta antigua
         return view('sistema.modelos-onu.index', compact('modelos', 'marcas'));
     }
 

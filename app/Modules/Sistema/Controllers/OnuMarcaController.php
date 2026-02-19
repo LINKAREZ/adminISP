@@ -2,6 +2,7 @@
 
 namespace App\Modules\Sistema\Controllers;
 
+use App\Core\Services\TenantConnectionService;
 use App\Http\Controllers\Controller;
 use App\Modules\Sistema\Models\OnuMarca;
 use App\Modules\Sistema\Requests\StoreOnuMarcaRequest;
@@ -16,6 +17,10 @@ class OnuMarcaController extends Controller
 
     public function index()
     {
+        if (! TenantConnectionService::currentTenantConnectionName()) {
+            return view('sistema.equipo.marcas.index', ['marcas' => collect()]);
+        }
+
         $marcas = OnuMarca::with('modelosActivos')
             ->orderBy('orden')
             ->orderBy('nombre')

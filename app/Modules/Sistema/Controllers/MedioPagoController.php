@@ -2,17 +2,20 @@
 
 namespace App\Modules\Sistema\Controllers;
 
+use App\Core\Services\TenantConnectionService;
 use App\Core\Traits\FillsIspIdInData;
 use App\Http\Controllers\Controller;
+use App\Modules\Sistema\Models\MedioPago;
 use App\Modules\Sistema\Requests\StoreMedioPagoRequest;
 use App\Modules\Sistema\Requests\UpdateMedioPagoRequest;
-use App\Modules\Sistema\Models\MedioPago;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 
 class MedioPagoController extends Controller
 {
     use FillsIspIdInData;
+
     public function __construct()
     {
         $this->authorizeResource(MedioPago::class, 'mediosPago');
@@ -20,7 +23,12 @@ class MedioPagoController extends Controller
 
     public function index()
     {
-        $mediosPago = \App\Modules\Sistema\Models\MedioPago::orderBy('tipo')->orderBy('nombre')->paginate(15);
+        if (! TenantConnectionService::currentTenantConnectionName()) {
+            $mediosPago = new LengthAwarePaginator([], 0, 15);
+            return view('medios-pago.index', compact('mediosPago'));
+        }
+
+        $mediosPago = MedioPago::orderBy('tipo')->orderBy('nombre')->paginate(15);
 
         return view('medios-pago.index', compact('mediosPago'));
     }

@@ -2,6 +2,7 @@
 
 namespace App\Modules\Notificaciones\Controllers;
 
+use App\Core\Services\TenantConnectionService;
 use App\Http\Controllers\Controller;
 use App\Modules\Notificaciones\Models\PlantillaWhatsApp;
 use App\Modules\Notificaciones\Requests\UpdatePlantillaWhatsAppRequest;
@@ -18,11 +19,14 @@ class PlantillaWhatsAppController extends Controller
      */
     public function index()
     {
-        $plantillas = PlantillaWhatsApp::orderBy('tipo')->get();
-
-        // Determinar si estamos en el contexto de Sistema o Notificaciones
         $isSistema = request()->is('sistema/plantillas/whatsapp*');
         $viewPath = $isSistema ? 'sistema.plantillas-whatsapp.index' : 'notificaciones.plantillas.index';
+
+        if (! TenantConnectionService::currentTenantConnectionName()) {
+            return view($viewPath, ['plantillas' => collect()]);
+        }
+
+        $plantillas = PlantillaWhatsApp::orderBy('tipo')->get();
 
         return view($viewPath, compact('plantillas'));
     }

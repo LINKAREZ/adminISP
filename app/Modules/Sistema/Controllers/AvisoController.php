@@ -2,14 +2,21 @@
 
 namespace App\Modules\Sistema\Controllers;
 
+use App\Core\Services\TenantConnectionService;
 use App\Http\Controllers\Controller;
 use App\Modules\Sistema\Models\Aviso;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class AvisoController extends Controller
 {
     public function index()
     {
+        if (! TenantConnectionService::currentTenantConnectionName()) {
+            $avisos = new LengthAwarePaginator([], 0, 20);
+            return view('sistema.avisos.index', compact('avisos'));
+        }
+
         $avisos = Aviso::orderBy('vigencia_inicio', 'desc')->orderBy('id', 'desc')->paginate(20);
         return view('sistema.avisos.index', compact('avisos'));
     }
