@@ -11,7 +11,7 @@
 
     <div class="row">
         <div class="col-12">
-            <x-card title="Gastos" icon="fa-money-bill-wave" variant="primary">
+            <x-card title="Gastos" icon="fa-money-bill-wave" variant="primary" :actionsOverlay="true" :hideTitle="true">
                 <x-slot name="actions">
                     <x-btn :route="route('comprobantes.gastos.create')" variant="light" size="sm" icon="fa-plus" title="Nuevo gasto" class="btn-add-icon"></x-btn>
                     <x-btn :route="route('comprobantes.categorias-gasto.index')" variant="light" size="sm" icon="fa-tags" title="Categorías"></x-btn>

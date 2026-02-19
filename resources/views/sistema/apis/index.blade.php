@@ -11,7 +11,7 @@
 
     <div class="row">
         <div class="col-12">
-            <x-card title="Configuración de APIs" subtitle="Gestiona los tokens y configuraciones de las APIs externas" icon="fa-plug" variant="primary">
+            <x-card title="Configuración de APIs" subtitle="Gestiona los tokens y configuraciones de las APIs externas" icon="fa-plug" variant="primary" :actionsOverlay="true" :hideTitle="true">
                     @php $apisperu = $apis->firstWhere('nombre', 'apisperu'); @endphp
                     @if($apisperu && empty($apisperu->token) && empty(config('services.dni.apisperu.api_key')))
                         <div class="alert alert-warning mb-3">

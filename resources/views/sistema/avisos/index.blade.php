@@ -11,7 +11,7 @@
 
     <div class="row">
         <div class="col-12">
-            <x-card title="Avisos" subtitle="Mensajes para mostrar en pantalla" icon="fa-bullhorn" variant="primary">
+            <x-card title="Avisos" subtitle="Mensajes para mostrar en pantalla" icon="fa-bullhorn" variant="primary" :actionsOverlay="true" :hideTitle="true">
                 <x-slot name="actions">
                     <x-btn :route="route('sistema.avisos.create')" variant="light" size="sm" icon="fa-plus" title="Nuevo aviso" class="btn-add-icon"></x-btn>
                 </x-slot>

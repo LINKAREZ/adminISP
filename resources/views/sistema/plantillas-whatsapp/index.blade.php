@@ -11,7 +11,7 @@
 
     <div class="row">
         <div class="col-12">
-            <x-card title="Plantillas de Mensajes" subtitle="Gestiona las plantillas de mensajes de WhatsApp" icon="fa-whatsapp" variant="primary">
+            <x-card title="Plantillas de Mensajes" subtitle="Gestiona las plantillas de mensajes de WhatsApp" icon="fa-whatsapp" variant="primary" :actionsOverlay="true" :hideTitle="true">
                     <!-- Vista móvil: Lista compacta -->
                     <div class="d-block d-md-none">
                         @forelse($plantillas as $plantilla)

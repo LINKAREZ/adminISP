@@ -11,38 +11,23 @@
 
     <div class="row">
         <div class="col-12">
-            <x-card title="Routers" icon="fa-network-wired" variant="primary">
+            <x-card title="Routers" icon="fa-network-wired" variant="primary" :actionsOverlay="true" :hideTitle="true">
+                <x-slot name="headerPrefix">
+                    <form method="GET" action="{{ route('red.routers.index') }}" id="form-buscar-routers" class="w-100" style="max-width: 280px;">
+                        <div class="input-group input-group-sm">
+                            <input type="text" name="buscar" id="buscar-routers" value="{{ request('buscar') }}" placeholder="Buscar por nombre o IP..." class="form-control form-control-sm" />
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-light"><i class="fas fa-search"></i></button>
+                                @if(request('buscar'))
+                                    <a href="{{ route('red.routers.index') }}" class="btn btn-light"><i class="fas fa-times"></i></a>
+                                @endif
+                            </div>
+                        </div>
+                    </form>
+                </x-slot>
                 <x-slot name="actions">
                     <x-btn :route="route('red.routers.create')" variant="light" size="sm" icon="fa-plus" title="Agregar Router" class="btn-add-icon"></x-btn>
                 </x-slot>
-                <form method="GET" action="{{ route('red.routers.index') }}" id="form-buscar-routers" class="mb-2">
-                    <div class="row">
-                        <div class="col-12 col-md-6 col-lg-4">
-                            <label class="small d-block mb-1">Buscar</label>
-                            <div class="input-group">
-                                <input
-                                    type="text"
-                                    name="buscar"
-                                    id="buscar-routers"
-                                    value="{{ request('buscar') }}"
-                                    placeholder="Buscar por nombre o IP..."
-                                    class="form-control"
-                                />
-                                <div class="input-group-append">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                    @if(request('buscar'))
-                                        <a href="{{ route('red.routers.index') }}" class="btn btn-outline-secondary">
-                                            <i class="fas fa-times"></i>
-                                        </a>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-
                     <!-- Vista móvil: Cards -->
                     <div class="d-md-none">
                         @forelse($routers as $router)

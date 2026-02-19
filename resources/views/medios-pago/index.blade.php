@@ -11,7 +11,7 @@
 
     <div class="row">
         <div class="col-12">
-            <x-card title="Medios de Pago" icon="fa-money-bill-wave" variant="primary">
+            <x-card title="Medios de Pago" icon="fa-money-bill-wave" variant="primary" :actionsOverlay="true" :hideTitle="true">
                 <x-slot name="actions">
                     <x-btn :route="route('sistema.medios-pago.create')" variant="light" size="sm" icon="fa-plus" title="Agregar Medio de Pago" class="btn-add-icon"></x-btn>
                 </x-slot>

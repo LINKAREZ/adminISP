@@ -11,7 +11,7 @@
 
     <div class="row">
         <div class="col-12">
-            <x-card title="Almacenes" icon="fa-warehouse" variant="primary">
+            <x-card title="Almacenes" icon="fa-warehouse" variant="primary" :actionsOverlay="true" :hideTitle="true">
                 <div class="table-responsive">
                     <table class="table table-hover table-striped mb-0">
                         <thead class="thead-light">

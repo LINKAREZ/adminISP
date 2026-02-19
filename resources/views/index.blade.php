@@ -178,8 +178,8 @@
 
                         <!-- Vista desktop: Tabla (sin DataTables para que se vean las filas) -->
                         <div class="table-responsive">
-                            <table id="tablaPermisos" class="table table-hover table-striped">
-                                <thead>
+                            <table id="tablaPermisos" class="table table-hover table-striped mb-0">
+                                <thead class="thead-light">
                                     <tr>
                                         <th class="align-middle" style="width: 20%;">Módulo</th>
                                         <th class="align-middle" style="width: 25%;">Submódulo</th>

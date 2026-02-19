@@ -10,7 +10,7 @@
     @include('almacen.tabs')
     <div class="row">
         <div class="col-12">
-            <x-card title="Artículos" icon="fa-boxes" variant="primary">
+            <x-card title="Artículos" icon="fa-boxes" variant="primary" :actionsOverlay="true" :hideTitle="true">
                 <x-slot name="actions">
                     @if(auth()->user()->hasPermission('almacen.create'))
                         <x-btn :route="route('almacen.articulos.create')" variant="light" size="sm" icon="fa-plus" title="Nuevo artículo" class="btn-add-icon"></x-btn>

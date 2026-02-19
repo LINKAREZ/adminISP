@@ -11,7 +11,7 @@
 @endsection
 
 @section('content')
-    <x-card title="IPTV" subtitle="Planes y servicios de televisión por IP" icon="fa-tv" variant="info">
+    <x-card title="IPTV" subtitle="Planes y servicios de televisión por IP" icon="fa-tv" variant="info" :actionsOverlay="true" :hideTitle="true">
         <div class="text-center py-5">
             <i class="fas fa-tv fa-4x text-muted mb-4 opacity-50"></i>
             <h5 class="text-muted">Próximamente</h5>

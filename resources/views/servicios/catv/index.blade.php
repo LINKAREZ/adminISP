@@ -11,7 +11,7 @@
 @endsection
 
 @section('content')
-    <x-card title="CATV" subtitle="Planes y servicios de televisión por cable" icon="fa-satellite-dish" variant="info">
+    <x-card title="CATV" subtitle="Planes y servicios de televisión por cable" icon="fa-satellite-dish" variant="info" :actionsOverlay="true" :hideTitle="true">
         <div class="text-center py-5">
             <i class="fas fa-satellite-dish fa-4x text-muted mb-4 opacity-50"></i>
             <h5 class="text-muted">Próximamente</h5>

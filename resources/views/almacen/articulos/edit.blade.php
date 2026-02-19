@@ -9,7 +9,7 @@
     <div class="row">
         <div class="col-12 col-md-8">
             <x-card title="Editar artículo" icon="fa-edit" variant="primary">
-                <form method="POST" action="{{ route('almacen.articulos.update', $articulo) }}">
+                <form method="POST" action="{{ route('almacen.articulos.update', $articulo) }}" id="form-articulo-edit">
                     @csrf
                     @method('PUT')
                     <div class="form-group">
@@ -49,10 +49,11 @@
                             @endforeach
                         </select>
                     </div>
-                    <hr>
-                    <x-btn :route="route('almacen.articulos.index')" variant="secondary" icon="fa-times">Cancelar</x-btn>
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-1"></i>Guardar</button>
                 </form>
+                <x-slot name="footer">
+                    <x-btn :route="route('almacen.articulos.index')" variant="secondary" icon="fa-times">Cancelar</x-btn>
+                    <x-btn type="submit" variant="primary" icon="fa-save" class="float-right" form="form-articulo-edit">Guardar</x-btn>
+                </x-slot>
             </x-card>
         </div>
     </div>

@@ -11,7 +11,7 @@
 
     <div class="row">
         <div class="col-12">
-            <x-card title="Servicios Provisionales" subtitle="Servicios creados con credenciales por defecto que requieren activación definitiva" icon="fa-clock" variant="warning">
+            <x-card title="Servicios Provisionales" subtitle="Servicios creados con credenciales por defecto que requieren activación definitiva" icon="fa-clock" variant="warning" :actionsOverlay="true" :hideTitle="true">
                 <x-slot name="actions">
                     <span class="badge badge-warning">{{ $serviciosProvisionales->total() }} servicios provisionales</span>
                 </x-slot>

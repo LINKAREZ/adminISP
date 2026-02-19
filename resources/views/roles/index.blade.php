@@ -92,8 +92,8 @@
 
                     <!-- Tabla de roles: visible siempre (sin d-none) -->
                     <div class="table-responsive">
-                        <table id="tablaRoles" class="table table-hover table-striped">
-                            <thead>
+                        <table id="tablaRoles" class="table table-hover table-striped mb-0">
+                            <thead class="thead-light">
                                 <tr>
                                     <th class="align-middle" style="width: 30%;">Rol</th>
                                     <th class="align-middle" style="width: 45%;">Descripción</th>

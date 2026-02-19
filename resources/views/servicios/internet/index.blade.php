@@ -11,7 +11,7 @@
 
     <div class="row">
         <div class="col-12">
-            <x-card title="Internet Fibra Óptica" subtitle="Planes y servicios" icon="fa-network-wired" variant="primary">
+            <x-card title="Internet Fibra Óptica" subtitle="Planes y servicios" icon="fa-network-wired" variant="primary" :actionsOverlay="true" :hideTitle="true">
                 <x-slot name="actions">
                     <a href="{{ route('servicios.provisionales') }}" class="btn btn-outline-warning btn-sm">
                         <i class="fas fa-clock mr-1"></i> Provisionales

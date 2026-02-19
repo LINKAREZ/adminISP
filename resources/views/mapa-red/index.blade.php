@@ -34,7 +34,7 @@
 @section('content')
     <div class="row">
         <div class="col-12">
-            <x-card title="Mapa de Red FTTH" icon="fa-project-diagram" variant="primary">
+            <x-card title="Mapa de Red FTTH" icon="fa-project-diagram" variant="primary" :actionsOverlay="true" :hideTitle="true">
                 <x-slot name="actions">
                     <button type="button" id="btn-nuevo-proyecto" class="btn btn-sm btn-primary"><i class="fas fa-plus mr-1"></i> Nuevo proyecto</button>
                 </x-slot>

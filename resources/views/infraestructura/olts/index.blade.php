@@ -11,7 +11,7 @@
 
     <div class="row">
         <div class="col-12">
-            <x-card title="OLTs" icon="fa-server" variant="primary">
+            <x-card title="OLTs" icon="fa-server" variant="primary" :actionsOverlay="true" :hideTitle="true">
                 <x-slot name="actions">
                     @if(auth()->user()->hasPermission('infraestructura.create'))
                         <x-btn :route="route('infraestructura.olts.create')" variant="light" size="sm" icon="fa-plus" title="Nuevo OLT" class="btn-add-icon"></x-btn>

@@ -12,7 +12,7 @@
 @section('content')
     <div class="row">
         <div class="col-12">
-            <x-card title="Plantillas de Mensajes" subtitle="Gestiona las plantillas de mensajes de WhatsApp" icon="fa-whatsapp" variant="primary">
+            <x-card title="Plantillas de Mensajes" subtitle="Gestiona las plantillas de mensajes de WhatsApp" icon="fa-whatsapp" variant="primary" :actionsOverlay="true" :hideTitle="true">
                 <!-- Vista móvil: Cards -->
                 <div class="d-md-none">
                     @forelse($plantillas as $plantilla)
@@ -52,8 +52,8 @@
 
                 <!-- Vista desktop: Tabla -->
                 <div class="table-responsive d-none d-md-block">
-                    <table class="table table-hover" data-datatable="true">
-                        <thead>
+                    <table class="table table-hover table-striped mb-0" data-datatable="true">
+                        <thead class="thead-light">
                             <tr>
                                 <th>Tipo</th>
                                 <th>Nombre</th>

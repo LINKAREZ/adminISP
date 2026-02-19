@@ -12,7 +12,7 @@
 
     <div class="row">
         <div class="col-12">
-            <x-card title="Modelos ONU" subtitle="Gestión de credenciales por defecto para cada modelo de ONU" icon="fa-server" variant="primary">
+            <x-card title="Modelos ONU" subtitle="Gestión de credenciales por defecto para cada modelo de ONU" icon="fa-server" variant="primary" :actionsOverlay="true" :hideTitle="true">
                 <x-slot name="actions">
                     <x-btn :route="route('sistema.equipo.modelos.create')" variant="light" size="sm" icon="fa-plus" title="Nuevo Modelo" class="btn-add-icon"></x-btn>
                 </x-slot>

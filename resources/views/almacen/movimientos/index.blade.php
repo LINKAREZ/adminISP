@@ -11,7 +11,7 @@
 
     <div class="row">
         <div class="col-12">
-            <x-card title="Movimientos" icon="fa-exchange-alt" variant="primary">
+            <x-card title="Movimientos" icon="fa-exchange-alt" variant="primary" :actionsOverlay="true" :hideTitle="true">
                 <form method="GET" action="{{ route('almacen.movimientos.index') }}" class="mb-2">
                     <div class="row">
                         <div class="col-12 col-md-4 col-lg-3">

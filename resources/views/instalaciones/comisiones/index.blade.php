@@ -15,7 +15,7 @@
             @if(session('error'))
                 <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
-            <x-card title="Liquidar comisiones (3er mes)" icon="fa-money-bill-wave" variant="primary">
+            <x-card title="Liquidar comisiones (3er mes)" icon="fa-money-bill-wave" variant="primary" :actionsOverlay="true" :hideTitle="true">
                 <x-slot name="actions">
                     <a href="{{ route('instalaciones.altas') }}" class="btn btn-light btn-sm">Seguimiento de altas</a>
                     <x-btn :route="route('instalaciones.index')" variant="light" size="sm" icon="fa-arrow-left" title="Volver"></x-btn>

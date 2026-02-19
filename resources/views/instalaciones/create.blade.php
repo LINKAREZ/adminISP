@@ -14,10 +14,7 @@
     <div class="row">
         <div class="col-12">
             <x-card title="Nueva Orden de Instalación" icon="fa-tools" variant="primary">
-                <x-slot name="actions">
-                    <x-btn :route="route('instalaciones.index')" variant="secondary" size="sm" icon="fa-arrow-left">Volver</x-btn>
-                </x-slot>
-                <form action="{{ route('instalaciones.store') }}" method="POST">
+                <form action="{{ route('instalaciones.store') }}" method="POST" id="form-instalacion-create">
                     @csrf
                     <div class="row">
                         <div class="col-md-6">
@@ -124,10 +121,11 @@
                             </div>
                         </div>
                     </div>
-                    <hr>
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Crear orden</button>
-                    <a href="{{ route('instalaciones.index') }}" class="btn btn-secondary">Cancelar</a>
                 </form>
+                <x-slot name="footer">
+                    <x-btn :route="route('instalaciones.index')" variant="secondary" icon="fa-times">Cancelar</x-btn>
+                    <x-btn type="submit" variant="primary" icon="fa-save" class="float-right" form="form-instalacion-create">Crear orden</x-btn>
+                </x-slot>
             </x-card>
         </div>
     </div>

@@ -9,7 +9,7 @@
 @section('content')
     <div class="row">
         <div class="col-12">
-            <x-card title="Seguimiento de altas nuevas" icon="fa-chart-line" variant="primary">
+            <x-card title="Seguimiento de altas nuevas" icon="fa-chart-line" variant="primary" :actionsOverlay="true" :hideTitle="true">
                 <x-slot name="actions">
                     <a href="{{ route('instalaciones.comisiones.index') }}" class="btn btn-light btn-sm"><i class="fas fa-money-bill-wave mr-1"></i>Liquidar comisiones</a>
                     <x-btn :route="route('instalaciones.index')" variant="light" size="sm" icon="fa-arrow-left" title="Volver"></x-btn>

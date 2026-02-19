@@ -93,7 +93,7 @@
     </x-card>
 
     <!-- Tabla de comprobantes -->
-    <x-card title="Lista de Comprobantes" icon="fa-file-invoice" variant="primary">
+    <x-card title="Lista de Comprobantes" icon="fa-file-invoice" variant="primary" :actionsOverlay="true" :hideTitle="true">
         <x-slot name="actions">
             <x-btn :route="route('comprobantes.series')" variant="light" size="sm" icon="fa-list-ol" title="Series"></x-btn>
             <x-btn :route="route('comprobantes.create')" variant="light" size="sm" icon="fa-plus" title="Nuevo Comprobante" class="btn-add-icon"></x-btn>

@@ -13,7 +13,7 @@
 @section('content')
     @include('comprobantes.tabs')
 
-    <x-card title="Carga masiva de pagos" icon="fa-file-csv">
+    <x-card title="Carga masiva de pagos" icon="fa-file-csv" variant="primary" :actionsOverlay="true" :hideTitle="true">
         <p class="text-muted">Suba un archivo CSV con columnas: <code>cliente_id, recibo_id, periodo, monto, fecha_pago, medio_pago, numero_operacion</code>. Puede dejar recibo_id vacío y usar periodo (ej. 2025-02) para asignar al primer recibo pendiente del cliente.</p>
         <a href="{{ route('comprobantes.importar-pagos.plantilla') }}" class="btn btn-outline-secondary btn-sm mb-3"><i class="fas fa-download mr-1"></i> Descargar plantilla CSV</a>
 

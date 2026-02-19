@@ -59,11 +59,11 @@
                             <label class="custom-control-label" for="activo">Activo</label>
                         </div>
                     </div>
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-primary">Guardar</button>
-                        <a href="{{ route('sistema.avisos.index') }}" class="btn btn-secondary">Cancelar</a>
-                    </div>
                 </form>
+                <x-slot name="footer">
+                    <x-btn :route="route('sistema.avisos.index')" variant="secondary" icon="fa-times">Cancelar</x-btn>
+                    <x-btn type="submit" variant="primary" icon="fa-save" class="float-right" form="form-aviso">Guardar</x-btn>
+                </x-slot>
             </x-card>
         </div>
     </div>

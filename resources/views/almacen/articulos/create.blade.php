@@ -9,7 +9,7 @@
     <div class="row">
         <div class="col-12 col-md-8">
             <x-card title="Nuevo artículo" icon="fa-plus" variant="primary">
-                <form method="POST" action="{{ route('almacen.articulos.store') }}">
+                <form method="POST" action="{{ route('almacen.articulos.store') }}" id="form-articulo-create">
                     @csrf
                     <div class="form-group">
                         <label>Nombre <span class="text-danger">*</span></label>
@@ -48,10 +48,11 @@
                             @endforeach
                         </select>
                     </div>
-                    <hr>
-                    <x-btn :route="route('almacen.articulos.index')" variant="secondary" icon="fa-times">Cancelar</x-btn>
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-1"></i>Guardar</button>
                 </form>
+                <x-slot name="footer">
+                    <x-btn :route="route('almacen.articulos.index')" variant="secondary" icon="fa-times">Cancelar</x-btn>
+                    <x-btn type="submit" variant="primary" icon="fa-save" class="float-right" form="form-articulo-create">Guardar</x-btn>
+                </x-slot>
             </x-card>
         </div>
     </div>

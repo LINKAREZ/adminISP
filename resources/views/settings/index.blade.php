@@ -6,7 +6,7 @@
 @section('content')
     <div class="row">
         <div class="col-12">
-            <x-card title="Configuración del Sistema" icon="fa-cog" variant="primary">
+            <x-card title="Configuración del Sistema" icon="fa-cog" variant="primary" :actionsOverlay="true" :hideTitle="true">
                     <div class="row">
                         <!-- Accesos rápidos -->
                         <div class="col-md-4 mb-3">

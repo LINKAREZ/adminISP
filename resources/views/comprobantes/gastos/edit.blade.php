@@ -13,8 +13,10 @@
 
 @section('content')
     @include('comprobantes.tabs')
-    <x-card title="Editar gasto" icon="fa-edit">
-        <form method="POST" action="{{ route('comprobantes.gastos.update', $gasto) }}">
+    <div class="row">
+        <div class="col-12">
+    <x-card title="Editar gasto" icon="fa-edit" variant="primary">
+        <form method="POST" action="{{ route('comprobantes.gastos.update', $gasto) }}" id="form-gasto-edit">
             @csrf
             @method('PUT')
             <div class="row">
@@ -48,8 +50,12 @@
                 <label>Descripción</label>
                 <textarea name="descripcion" class="form-control" rows="2">{{ old('descripcion', $gasto->descripcion) }}</textarea>
             </div>
-            <button type="submit" class="btn btn-primary">Actualizar</button>
-            <a href="{{ route('comprobantes.gastos.index') }}" class="btn btn-secondary">Cancelar</a>
         </form>
+        <x-slot name="footer">
+            <x-btn :route="route('comprobantes.gastos.index')" variant="secondary" icon="fa-times">Cancelar</x-btn>
+            <x-btn type="submit" variant="primary" icon="fa-save" class="float-right" form="form-gasto-edit">Actualizar</x-btn>
+        </x-slot>
     </x-card>
+        </div>
+    </div>
 @endsection

@@ -101,8 +101,8 @@
 
                     <!-- Vista desktop: Tabla (sin DataTables para que se vean las filas) -->
                     <div class="table-responsive">
-                        <table id="tablaUsuarios" class="table table-hover table-striped">
-                            <thead>
+                        <table id="tablaUsuarios" class="table table-hover table-striped mb-0">
+                            <thead class="thead-light">
                                 <tr>
                                     <th>Nombre</th>
                                     <th>Email</th>

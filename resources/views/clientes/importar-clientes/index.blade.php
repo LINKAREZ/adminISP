@@ -15,7 +15,7 @@
 
     <div class="row">
         <div class="col-12">
-            <x-card title="Importar clientes" subtitle="Carga masiva desde CSV. Se crean cliente, ubicación y servicio por fila." icon="fa-file-csv" variant="primary">
+            <x-card title="Importar clientes" subtitle="Carga masiva desde CSV. Se crean cliente, ubicación y servicio por fila." icon="fa-file-csv" variant="primary" :actionsOverlay="true" :hideTitle="true">
                 <p class="text-muted small">Columnas: documento, tipo_documento (dni/ruc/ce), nombre, direccion, telefonos, usuario_pppoe, password_pppoe. Si el cliente ya existe por documento, solo se crea ubicación/servicio si no existían.</p>
                 <a href="{{ route('clientes.importar-clientes.plantilla') }}" class="btn btn-outline-secondary btn-sm mb-3"><i class="fas fa-download mr-1"></i> Descargar plantilla CSV</a>
 

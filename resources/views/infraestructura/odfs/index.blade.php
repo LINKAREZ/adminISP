@@ -11,7 +11,7 @@
 
     <div class="row">
         <div class="col-12">
-            <x-card title="ODFs" icon="fa-plug" variant="primary">
+            <x-card title="ODFs" icon="fa-plug" variant="primary" :actionsOverlay="true" :hideTitle="true">
                 <x-slot name="actions">
                     @if(auth()->user()->hasPermission('infraestructura.create'))
                         <x-btn :route="route('infraestructura.odfs.create')" variant="light" size="sm" icon="fa-plus" title="Nuevo ODF" class="btn-add-icon"></x-btn>

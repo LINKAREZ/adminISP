@@ -6,7 +6,7 @@
 @section('content')
     <div class="row">
         <div class="col-12">
-            <x-card title="Tipos de Servicio" subtitle="Selecciona el tipo de servicio a gestionar" icon="fa-wifi" variant="primary">
+            <x-card title="Tipos de Servicio" subtitle="Selecciona el tipo de servicio a gestionar" icon="fa-wifi" variant="primary" :actionsOverlay="true" :hideTitle="true">
                 <div class="row">
                     @php
                         $tipos = [

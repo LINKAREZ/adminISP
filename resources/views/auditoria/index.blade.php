@@ -9,7 +9,7 @@
 @section('content')
     <div class="row">
         <div class="col-12">
-            <x-card title="Registros de Auditoría" subtitle="Historial completo de acciones realizadas en el sistema" icon="fa-history" variant="primary">
+            <x-card title="Registros de Auditoría" subtitle="Historial completo de acciones realizadas en el sistema" icon="fa-history" variant="primary" :actionsOverlay="true" :hideTitle="true">
                     <!-- Filtros -->
                     <form method="GET" action="{{ route('auditoria.index') }}" class="mb-2">
                         <div class="row">

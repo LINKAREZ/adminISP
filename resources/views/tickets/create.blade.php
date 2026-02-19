@@ -8,8 +8,10 @@
 @endsection
 
 @section('content')
+    <div class="row">
+        <div class="col-12">
     <x-card title="Nuevo ticket" icon="fa-ticket-alt" variant="primary">
-        <form method="POST" action="{{ route('tickets.store') }}">
+        <form method="POST" action="{{ route('tickets.store') }}" id="form-ticket-create">
             @csrf
             <div class="form-group">
                 <label for="cliente_id">Cliente <span class="text-danger">*</span></label>
@@ -41,8 +43,12 @@
                 </select>
                 @error('asignado_a')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
-            <button type="submit" class="btn btn-primary">Crear</button>
-            <a href="{{ route('tickets.index') }}" class="btn btn-secondary">Cancelar</a>
         </form>
+        <x-slot name="footer">
+            <x-btn :route="route('tickets.index')" variant="secondary" icon="fa-times">Cancelar</x-btn>
+            <x-btn type="submit" variant="primary" icon="fa-save" class="float-right" form="form-ticket-create">Crear</x-btn>
+        </x-slot>
     </x-card>
+        </div>
+    </div>
 @endsection

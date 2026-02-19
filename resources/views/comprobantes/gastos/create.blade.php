@@ -13,8 +13,10 @@
 
 @section('content')
     @include('comprobantes.tabs')
-    <x-card title="Registrar gasto" icon="fa-plus">
-        <form method="POST" action="{{ route('comprobantes.gastos.store') }}">
+    <div class="row">
+        <div class="col-12">
+    <x-card title="Registrar gasto" icon="fa-plus" variant="primary">
+        <form method="POST" action="{{ route('comprobantes.gastos.store') }}" id="form-gasto-create">
             @csrf
             <div class="row">
                 <div class="col-md-4">
@@ -48,8 +50,12 @@
                 <label>Descripción</label>
                 <textarea name="descripcion" class="form-control" rows="2">{{ old('descripcion') }}</textarea>
             </div>
-            <button type="submit" class="btn btn-primary">Guardar</button>
-            <a href="{{ route('comprobantes.gastos.index') }}" class="btn btn-secondary">Cancelar</a>
         </form>
+        <x-slot name="footer">
+            <x-btn :route="route('comprobantes.gastos.index')" variant="secondary" icon="fa-times">Cancelar</x-btn>
+            <x-btn type="submit" variant="primary" icon="fa-save" class="float-right" form="form-gasto-create">Guardar</x-btn>
+        </x-slot>
     </x-card>
+        </div>
+    </div>
 @endsection

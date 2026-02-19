@@ -11,7 +11,7 @@
 
     <div class="row">
         <div class="col-12">
-            <x-card :title="'Stock: ' . $almacen->nombre" icon="fa-boxes" variant="primary">
+            <x-card :title="'Stock: ' . $almacen->nombre" icon="fa-boxes" variant="primary" :actionsOverlay="true" :hideTitle="true">
                 <x-slot name="actions">
                     <x-btn :route="route('almacen.almacenes.index')" variant="light" size="sm" icon="fa-arrow-left" title="Volver"></x-btn>
                 </x-slot>

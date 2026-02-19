@@ -10,7 +10,7 @@
 @section('content')
     <div class="row">
         <div class="col-12">
-            <x-card title="Órdenes de instalación" icon="fa-tools" variant="primary">
+            <x-card title="Órdenes de instalación" icon="fa-tools" variant="primary" :actionsOverlay="true" :hideTitle="true">
                 <x-slot name="actions">
                     @hasPermission('instalaciones.read')
                     <a href="{{ route('instalaciones.altas') }}" class="btn btn-sm btn-outline-primary mr-1"><i class="fas fa-chart-line mr-1"></i>Seguimiento de altas</a>
