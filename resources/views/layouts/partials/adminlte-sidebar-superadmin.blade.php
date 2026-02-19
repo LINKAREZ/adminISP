@@ -68,6 +68,16 @@
                 </li>
                 @endif
 
+                <!-- Sistema (monedas, medios de pago, etc.) -->
+                @if(Route::has('sistema.index'))
+                <li class="nav-item">
+                    <a href="{{ route('sistema.index') }}" class="nav-link {{ request()->is('sistema*') || request()->is('medios-pago*') ? 'active' : '' }}" title="Sistema">
+                        <i class="nav-icon fas fa-cog"></i>
+                        <p>Sistema</p>
+                    </a>
+                </li>
+                @endif
+
                 <!-- Exportar Datos -->
                 <li class="nav-item">
                     <a href="{{ route('superadmin.export') }}" class="nav-link {{ request()->is('superadmin/export*') ? 'active' : '' }}" title="Exportar Datos">
