@@ -17,19 +17,23 @@
                 </x-slot>
                 <p class="text-muted mb-3">Planes de la plataforma (límites por router, clientes, precios). Gratuito: 1 router, 50 clientes. De pago: por router (100, 250, 500, 1000 clientes).</p>
 
-                <div class="d-md-none">
+                <div class="d-lg-none">
                     @if($plans->count() > 0)
                         @foreach($plans as $plan)
                             <div class="card card-outline card-primary mb-2">
-                                <div class="card-header py-2">
+                                <div class="card-header py-2 d-flex justify-content-between align-items-center flex-wrap">
                                     <h6 class="card-title mb-0 font-weight-bold">
-                                        <a href="{{ route('superadmin.plans.edit', $plan) }}">{{ $plan->name }}</a>
+                                        <a href="{{ route('superadmin.plans.show', $plan) }}">{{ $plan->name }}</a>
                                     </h6>
-                                    @if($plan->is_active)
-                                        <span class="badge badge-success">Activo</span>
-                                    @else
-                                        <span class="badge badge-secondary">Inactivo</span>
-                                    @endif
+                                    <div class="d-flex align-items-center">
+                                        @if($plan->is_active)
+                                            <span class="badge badge-success mr-1">Activo</span>
+                                        @else
+                                            <span class="badge badge-secondary mr-1">Inactivo</span>
+                                        @endif
+                                        <a href="{{ route('superadmin.plans.show', $plan) }}" class="btn btn-sm btn-outline-primary mr-1" title="Ver detalle"><i class="fas fa-eye"></i></a>
+                                        <a href="{{ route('superadmin.plans.edit', $plan) }}" class="btn btn-sm btn-outline-secondary" title="Editar"><i class="fas fa-edit"></i></a>
+                                    </div>
                                 </div>
                                 <div class="card-body py-2">
                                     <p class="mb-1 small">Routers máx: {{ $plan->max_routers !== null ? number_format($plan->max_routers) : 'Ilimitado' }}</p>
@@ -45,7 +49,7 @@
                     @endif
                 </div>
 
-                <div class="table-responsive d-none d-md-block">
+                <div class="table-responsive d-none d-lg-block">
                     <table class="table table-hover table-striped mb-0">
                         <thead class="thead-light">
                             <tr>

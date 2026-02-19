@@ -2,6 +2,7 @@
 
 use App\Modules\Sistema\Controllers\SistemaController;
 use App\Modules\Sistema\Controllers\MedioPagoController;
+use App\Modules\Sistema\Controllers\MonedaController;
 use App\Modules\Sistema\Controllers\OnuModeloController;
 use App\Modules\Sistema\Controllers\ApiController;
 use App\Modules\Sistema\Controllers\OnuMarcaController;
@@ -15,7 +16,7 @@ Route::middleware(['web', 'auth'])->prefix('sistema')->name('sistema.')->group(f
     // Ruta principal del módulo Sistema
     Route::get('/', [SistemaController::class, 'index'])->name('index');
     Route::resource('avisos', AvisoController::class)->parameters(['avisos' => 'aviso']);
-
+    Route::resource('monedas', MonedaController::class);
     Route::resource('medios-pago', MedioPagoController::class)->parameters(['medios-pago' => 'mediosPago']);
     Route::post('apis/init', [ApiController::class, 'initDefaults'])->name('apis.init');
     Route::resource('apis', ApiController::class)->parameters(['apis' => 'api'])->only(['index', 'edit', 'update']);

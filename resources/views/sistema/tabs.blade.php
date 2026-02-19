@@ -8,6 +8,14 @@
         'active' => request()->routeIs('sistema.index') || (request()->is('sistema') && !request()->is('sistema/*')),
     ],
     [
+        'name' => 'monedas',
+        'label' => 'Monedas',
+        'icon' => 'fas fa-coins',
+        'route' => route('sistema.monedas.index'),
+        'permission' => 'sistema.read',
+        'active' => request()->is('sistema/monedas*'),
+    ],
+    [
         'name' => 'medios-pago',
         'label' => 'Medios de Pago',
         'icon' => 'fas fa-credit-card',

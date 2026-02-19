@@ -3,8 +3,10 @@
 namespace App\Modules\Sistema;
 
 use App\Modules\Sistema\Models\MedioPago;
+use App\Modules\Sistema\Models\Moneda;
 use App\Modules\Sistema\Models\OnuMarca;
 use App\Modules\Sistema\Policies\MedioPagoPolicy;
+use App\Modules\Sistema\Policies\MonedaPolicy;
 use App\Modules\Sistema\Policies\OnuMarcaPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -34,6 +36,7 @@ class ModuleServiceProvider extends ServiceProvider
 
         // Registrar políticas del módulo
         Gate::policy(MedioPago::class, MedioPagoPolicy::class);
+        Gate::policy(Moneda::class, MonedaPolicy::class);
         Gate::policy(OnuMarca::class, OnuMarcaPolicy::class);
     }
 }
