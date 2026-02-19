@@ -90,14 +90,21 @@
                     </a>
                 </li>
                 @endhasPermission
-                @hasAnyPermission(['sistema.read', 'sistema.apis.read'])
+                @php
+                    $u = auth()->user();
+                    if ($u && !$u->relationLoaded('role')) {
+                        $u->load('role');
+                    }
+                    $showSistema = $u && ($u->hasAnyPermission(['sistema.read', 'sistema.apis.read']) || $u->role?->name === 'administrador');
+                @endphp
+                @if($showSistema)
                 <li class="nav-item nav-item-mobile">
                     <a href="{{ route('sistema.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('sistema*') || request()->is('medios-pago*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-cog"></i>
                         <p>Sistema</p>
                     </a>
                 </li>
-                @endhasAnyPermission
+                @endif
                 @hasPermission('auditoria.read')
                 <li class="nav-item nav-item-mobile">
                     <a href="{{ route('auditoria.index') }}" class="nav-link nav-link-sidebar-mobile {{ request()->is('auditoria*') ? 'active' : '' }}">
