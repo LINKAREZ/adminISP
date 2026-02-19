@@ -13,7 +13,9 @@ use App\Modules\Sistema\Requests\UpdateIspRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
@@ -40,7 +42,45 @@ class IspController extends Controller
             abort(403, 'Solo los super administradores pueden gestionar ISPs.');
         }
 
-        // users está en BD central; clientes y nodos en BD tenant → no usar withCount para tenant (usa una sola conexión)
+        // Evitar contexto tenant residual en el contenedor para esta petición (p. ej. tras crear ISP)
+        app()->forgetInstance('current_isp_id');
+
+        try {
+            return $this->indexLoad($request);
+        } catch (\Throwable $e) {
+            Log::error('Error en listado superadmin ISPs', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            $perPage = (int) config('isp.paginacion.default', 15);
+            $isps = new LengthAwarePaginator([], 0, $perPage, 1, ['path' => $request->url(), 'query' => $request->query()]);
+            $totalIsps = 0;
+            $ispsActivos = 0;
+            $ispsInactivos = 0;
+            if ($request->ajax()) {
+                return response()->json([
+                    'listHtml' => view('sistema.isps.partials.list', compact('isps'))->render()
+                        . '<div class="alert alert-danger mt-2">Error al cargar el listado. Revisa los logs del servidor.</div>',
+                    'paginationHtml' => view('sistema.isps.partials.pagination', compact('isps'))->render(),
+                    'totalIsps' => 0,
+                    'ispsActivos' => 0,
+                    'ispsInactivos' => 0,
+                    'currentCount' => 0,
+                    'totalCount' => 0,
+                ]);
+            }
+            return view('sistema.isps.index', compact('isps', 'totalIsps', 'ispsActivos', 'ispsInactivos'))
+                ->with('error', 'Error al cargar el listado de ISPs. Revisa los logs del servidor.');
+        }
+    }
+
+    /**
+     * Carga del listado de ISPs (extraído para try-catch en index).
+     */
+    private function indexLoad(IndexIspRequest $request): View|JsonResponse
+    {
         $query = Isp::withoutGlobalScope(\App\Core\Scopes\IspScope::class)
             ->withCount('users');
 
@@ -51,7 +91,7 @@ class IspController extends Controller
             });
         }
 
-        if ($request->filled('estado') && Schema::connection(\App\Core\Services\TenantConnectionService::centralConnection())->hasColumn('isps', 'activo')) {
+        if ($request->filled('estado') && Schema::connection(TenantConnectionService::centralConnection())->hasColumn('isps', 'activo')) {
             $query->where('activo', $request->estado === 'activo');
         }
 
@@ -72,14 +112,13 @@ class IspController extends Controller
         }
 
         $totalIsps = (clone $query)->count();
-        $hasActivo = Schema::connection(\App\Core\Services\TenantConnectionService::centralConnection())->hasColumn('isps', 'activo');
+        $hasActivo = Schema::connection(TenantConnectionService::centralConnection())->hasColumn('isps', 'activo');
         $ispsActivos = $hasActivo ? (clone $query)->where('activo', true)->count() : $totalIsps;
         $ispsInactivos = $totalIsps - $ispsActivos;
 
         $perPage = (int) config('isp.paginacion.default', 15);
         $isps = $query->paginate($perPage)->withQueryString();
 
-        // Conteos de clientes y nodos por ISP (cada uno en su BD tenant)
         $previousIspId = session('current_isp_id');
         foreach ($isps->getCollection() as $isp) {
             if (empty($isp->database_name)) {
@@ -92,7 +131,7 @@ class IspController extends Controller
                 $isp->setAttribute('clientes_count', \App\Modules\Clientes\Models\Cliente::count());
                 $isp->setAttribute('nodos_count', \App\Modules\Red\Models\Nodo::count());
             } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::warning('No se pudo obtener conteos del tenant del ISP ' . $isp->id . ': ' . $e->getMessage());
+                Log::warning('No se pudo obtener conteos del tenant del ISP ' . $isp->id . ': ' . $e->getMessage());
                 $isp->setAttribute('clientes_count', 0);
                 $isp->setAttribute('nodos_count', 0);
             }

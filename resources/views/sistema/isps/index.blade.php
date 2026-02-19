@@ -9,6 +9,13 @@
 @section('content')
     @include('sistema.isps.tabs')
 
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div class="row">
         <div class="col-12">
             <x-card title="ISPs" icon="fa-building" variant="primary" :actionsOverlay="true" :hideTitle="true">
