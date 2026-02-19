@@ -38,14 +38,11 @@ class IspController extends Controller
      */
     public function index(IndexIspRequest $request): View|JsonResponse
     {
-        if (!$this->isSuperAdmin()) {
-            abort(403, 'Solo los super administradores pueden gestionar ISPs.');
-        }
-
-        // Evitar contexto tenant residual en el contenedor para esta petición (p. ej. tras crear ISP)
-        app()->forgetInstance('current_isp_id');
-
         try {
+            if (!$this->isSuperAdmin()) {
+                abort(403, 'Solo los super administradores pueden gestionar ISPs.');
+            }
+            app()->forgetInstance('current_isp_id');
             return $this->indexLoad($request);
         } catch (\Throwable $e) {
             Log::error('Error en listado superadmin ISPs', [
@@ -54,16 +51,11 @@ class IspController extends Controller
                 'line' => $e->getLine(),
                 'trace' => $e->getTraceAsString(),
             ]);
-            $perPage = (int) config('isp.paginacion.default', 15);
-            $isps = new LengthAwarePaginator([], 0, $perPage, 1, ['path' => $request->url(), 'query' => $request->query()]);
-            $totalIsps = 0;
-            $ispsActivos = 0;
-            $ispsInactivos = 0;
+            $msg = 'Error al cargar el listado de ISPs. ' . (config('app.debug') ? $e->getMessage() . ' en ' . $e->getFile() . ':' . $e->getLine() : 'Revisa los logs del servidor.');
             if ($request->ajax()) {
                 return response()->json([
-                    'listHtml' => view('sistema.isps.partials.list', compact('isps'))->render()
-                        . '<div class="alert alert-danger mt-2">Error al cargar el listado. Revisa los logs del servidor.</div>',
-                    'paginationHtml' => view('sistema.isps.partials.pagination', compact('isps'))->render(),
+                    'listHtml' => '<div class="alert alert-danger">' . e($msg) . '</div>',
+                    'paginationHtml' => '',
                     'totalIsps' => 0,
                     'ispsActivos' => 0,
                     'ispsInactivos' => 0,
@@ -71,8 +63,16 @@ class IspController extends Controller
                     'totalCount' => 0,
                 ]);
             }
-            return view('sistema.isps.index', compact('isps', 'totalIsps', 'ispsActivos', 'ispsInactivos'))
-                ->with('error', 'Error al cargar el listado de ISPs. Revisa los logs del servidor.');
+            // Respuesta HTML mínima para no depender de vistas (evita 500 en cadena)
+            $url = route('superadmin.isps.index');
+            return response(
+                '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Error</title></head><body style="font-family:sans-serif;padding:2rem;">'
+                . '<h1>Error al cargar el listado</h1><p>' . htmlspecialchars($msg) . '</p>'
+                . '<p><a href="' . e($url) . '">Volver a intentar</a> | <a href="' . e(route('superadmin.dashboard')) . '">Dashboard</a></p>'
+                . '</body></html>',
+                200,
+                ['Content-Type' => 'text/html; charset=utf-8']
+            );
         }
     }
 
