@@ -150,10 +150,12 @@ class RolePermissionSeeder extends Seeder
             );
         }
 
-        // Permisos especiales (record-level y field-level)
+        // Permisos especiales (record-level, field-level y submódulos sin SUBMODULES)
         $extra = [
             ['name' => 'clientes.own_only', 'display_name' => 'Solo clientes asignados a mí', 'module' => 'Clientes', 'description' => 'Restringe listado y acciones a clientes cuyo asignado_a coincide con el usuario.'],
             ['name' => 'clientes.ver_costo', 'display_name' => 'Ver costo en clientes/servicios', 'module' => 'Clientes', 'description' => 'Permite ver campos de costo o montos sensibles. Sin este permiso se ocultan o son solo lectura.'],
+            // Sistema – APIs (pestaña y acceso a configuración de APIs)
+            ['name' => 'sistema.apis.read', 'display_name' => 'Ver APIs', 'module' => 'Sistema', 'description' => 'Acceso a la pestaña y configuración de APIs externas en Sistema.'],
         ];
         foreach ($extra as $p) {
             Permission::updateOrCreate(
