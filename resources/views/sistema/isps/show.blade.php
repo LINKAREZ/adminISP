@@ -238,34 +238,46 @@
         <div class="col-12">
             <x-card title="Licencias (por router)" icon="fa-id-card" variant="info" :outline="true">
                 <x-slot name="actions">
-                    <a href="{{ route('superadmin.plans.create') }}" class="btn btn-info btn-sm">
-                        <i class="fas fa-plus mr-1"></i> Agregar licencia
-                    </a>
-                    <a href="{{ route('superadmin.plans.index') }}" class="btn btn-outline-info btn-sm ml-1">
-                        <i class="fas fa-list mr-1"></i> Gestionar licencias
-                    </a>
                     @if($isp->database_name)
-                        <a href="{{ route('session.switch-isp', ['isp_id' => $isp->id, 'redirect_route' => 'red.routers.create']) }}" class="btn btn-outline-secondary btn-sm ml-1">
+                        <a href="{{ route('session.switch-isp', ['isp_id' => $isp->id, 'redirect_route' => 'red.routers.create']) }}" class="btn btn-info btn-sm">
                             <i class="fas fa-plus mr-1"></i> Agregar router
                         </a>
-                        <a href="{{ route('session.switch-isp', ['isp_id' => $isp->id, 'redirect_route' => 'red.routers.index']) }}" class="btn btn-outline-secondary btn-sm ml-1">
+                        <a href="{{ route('session.switch-isp', ['isp_id' => $isp->id, 'redirect_route' => 'red.routers.index']) }}" class="btn btn-outline-info btn-sm ml-1">
                             <i class="fas fa-network-wired mr-1"></i> Ver routers
                         </a>
                     @endif
                 </x-slot>
-                <h6 class="text-muted mb-2">Licencias disponibles</h6>
-                @if(isset($licenciasDisponibles) && $licenciasDisponibles->isNotEmpty())
+                <h6 class="text-muted mb-2">Licencias asignadas a este ISP (previo pago)</h6>
+                @if(isset($licenciasAsignadas) && $licenciasAsignadas->isNotEmpty())
                     <ul class="list-unstyled mb-3">
-                        @foreach($licenciasDisponibles as $lic)
+                        @foreach($licenciasAsignadas as $lic)
                             <li class="mb-1 d-flex flex-wrap align-items-center">
-                                <a href="{{ route('superadmin.plans.edit', $lic) }}" class="font-weight-bold text-decoration-none">{{ $lic->name }}</a>
+                                <span class="font-weight-bold">{{ $lic->name }}</span>
                                 <span class="text-muted small ml-2">— Routers: {{ $lic->max_routers !== null ? number_format($lic->max_routers) : 'Ilimitado' }} · Clientes: {{ $lic->max_clientes ? number_format($lic->max_clientes) : 'Ilimitado' }}</span>
-                                <a href="{{ route('superadmin.plans.edit', $lic) }}" class="btn btn-link btn-sm py-0 ml-1">Editar licencia</a>
+                                <form action="{{ route('superadmin.isps.licencias.destroy', [$isp, $lic]) }}" method="POST" class="d-inline ml-2" onsubmit="return confirm('¿Quitar esta licencia de este ISP?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-link btn-sm py-0 text-danger">Quitar</button>
+                                </form>
                             </li>
                         @endforeach
                     </ul>
                 @else
-                    <p class="text-muted small mb-3">No hay licencias. Usa <strong>Agregar licencia</strong> para crear una (ej. Licencia gratuita = 1 router).</p>
+                    <p class="text-muted small mb-2">No tiene licencias asignadas. Asigne licencias a este ISP (previo pago) para que puedan usarlas en los routers.</p>
+                @endif
+                @if(isset($planesDisponiblesParaAsignar) && $planesDisponiblesParaAsignar->isNotEmpty())
+                    <form action="{{ route('superadmin.isps.licencias.store', $isp) }}" method="POST" class="form-inline mb-3">
+                        @csrf
+                        <label for="plan_id_asignar" class="mr-2">Asignar licencia:</label>
+                        <select name="plan_id" id="plan_id_asignar" class="form-control form-control-sm mr-2" style="min-width: 180px;">
+                            @foreach($planesDisponiblesParaAsignar as $p)
+                                <option value="{{ $p->id }}">{{ $p->name }} ({{ $p->max_routers !== null ? number_format($p->max_routers) : '∞' }} routers)</option>
+                            @endforeach
+                        </select>
+                        <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-plus mr-1"></i> Asignar</button>
+                    </form>
+                @elseif(isset($licenciasAsignadas) && $licenciasAsignadas->isEmpty())
+                    <p class="text-muted small mb-3">Para asignar licencias, créelas antes en <a href="{{ route('superadmin.plans.index') }}">Super Admin → Licencias</a>.</p>
                 @endif
                 <hr class="my-3">
                 @if(isset($licenseRouters) && $licenseRouters->isNotEmpty())

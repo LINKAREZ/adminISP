@@ -3,6 +3,7 @@
 namespace App\Modules\Sistema\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
@@ -36,8 +37,15 @@ class Plan extends Model
         'price_yearly' => 'decimal:2',
     ];
 
+    /** ISPs que tienen este plan como plan_id (legacy). */
     public function isps(): HasMany
     {
         return $this->hasMany(Isp::class);
+    }
+
+    /** ISPs a los que se ha asignado esta licencia (pivot isp_plan, previo pago). */
+    public function assignedToIsps(): BelongsToMany
+    {
+        return $this->belongsToMany(Isp::class, 'isp_plan')->withTimestamps();
     }
 }

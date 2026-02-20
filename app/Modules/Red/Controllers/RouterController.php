@@ -61,7 +61,10 @@ class RouterController extends Controller
         $nodos = Nodo::on($conn)->withoutGlobalScopes()->where('estado', true)
             ->orderBy('nombre')
             ->get(['id', 'nombre']);
-        $saasPlans = Plan::on('mysql')->where('is_active', true)->orderBy('sort_order')->orderBy('name')->get();
+        $ispId = session('current_isp_id');
+        $saasPlans = $ispId
+            ? Plan::on('mysql')->where('is_active', true)->whereHas('assignedToIsps', fn ($q) => $q->where('isps.id', $ispId))->orderBy('sort_order')->orderBy('name')->get()
+            : collect();
         return view('red.routers.create', compact('nodos', 'saasPlans'));
     }
 
@@ -396,7 +399,10 @@ class RouterController extends Controller
         $nodos = Nodo::on($conn)->withoutGlobalScopes()->where('estado', true)
             ->orderBy('nombre')
             ->get(['id', 'nombre']);
-        $saasPlans = Plan::on('mysql')->where('is_active', true)->orderBy('sort_order')->orderBy('name')->get();
+        $ispId = session('current_isp_id');
+        $saasPlans = $ispId
+            ? Plan::on('mysql')->where('is_active', true)->whereHas('assignedToIsps', fn ($q) => $q->where('isps.id', $ispId))->orderBy('sort_order')->orderBy('name')->get()
+            : collect();
         return view('red.routers.edit', compact('router', 'nodos', 'saasPlans'));
     }
 

@@ -5,6 +5,7 @@ namespace App\Modules\Sistema\Models;
 use App\Core\Traits\Auditable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Isp extends Model
@@ -40,6 +41,14 @@ class Isp extends Model
     public function plan(): BelongsTo
     {
         return $this->belongsTo(Plan::class);
+    }
+
+    /**
+     * Licencias asignadas a este ISP (previo pago). Solo estas pueden usarse en los routers del ISP.
+     */
+    public function assignedPlans(): BelongsToMany
+    {
+        return $this->belongsToMany(Plan::class, 'isp_plan')->withTimestamps();
     }
 
     /**

@@ -100,6 +100,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('isps', \App\Modules\Sistema\Controllers\IspController::class)->parameters(['isps' => 'isp']);
         Route::post('isps/{isp}/create-database', [\App\Modules\Sistema\Controllers\IspController::class, 'createDatabase'])->name('isps.create-database');
         Route::patch('isps/{isp}/toggle', [\App\Modules\Sistema\Controllers\IspController::class, 'toggleStatus'])->name('isps.toggle');
+        Route::post('isps/{isp}/licencias', [\App\Modules\Sistema\Controllers\IspController::class, 'assignLicense'])->name('isps.licencias.store');
+        Route::delete('isps/{isp}/licencias/{plan}', [\App\Modules\Sistema\Controllers\IspController::class, 'unassignLicense'])->name('isps.licencias.destroy');
 
         // Debug: comprobar que la app ve roles en la BD central (solo superadmin)
         Route::get('/debug-roles', function () {

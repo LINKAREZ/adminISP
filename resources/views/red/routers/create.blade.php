@@ -216,6 +216,10 @@
                                 </div>
                             </div>
                         </div>
+                        @else
+                        <div class="alert alert-light border mb-3">
+                            <small class="text-muted">No hay licencias asignadas a este ISP. El super administrador debe asignarlas desde la ficha del ISP (previo pago).</small>
+                        </div>
                         @endif
 
                         <!-- Estado -->
