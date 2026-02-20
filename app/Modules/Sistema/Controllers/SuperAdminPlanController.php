@@ -3,6 +3,7 @@
 namespace App\Modules\Sistema\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Sistema\Models\Moneda;
 use App\Modules\Sistema\Models\Plan;
 use App\Modules\Sistema\Requests\StorePlanRequest;
 use App\Modules\Sistema\Requests\UpdatePlanRequest;
@@ -44,7 +45,8 @@ class SuperAdminPlanController extends Controller
 
     public function create(): View
     {
-        return view('superadmin.plans.create');
+        $monedas = Moneda::activos()->get();
+        return view('superadmin.plans.create', compact('monedas'));
     }
 
     public function store(StorePlanRequest $request): RedirectResponse
@@ -65,7 +67,8 @@ class SuperAdminPlanController extends Controller
 
     public function edit(Plan $plan): View
     {
-        return view('superadmin.plans.edit', compact('plan'));
+        $monedas = Moneda::activos()->get();
+        return view('superadmin.plans.edit', compact('plan', 'monedas'));
     }
 
     public function update(UpdatePlanRequest $request, Plan $plan): RedirectResponse

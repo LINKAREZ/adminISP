@@ -72,7 +72,21 @@
                         <div class="col-12 col-md-4">
                             <div class="form-group">
                                 <label for="currency">Moneda</label>
-                                <input type="text" id="currency" name="currency" class="form-control @error('currency') is-invalid @enderror" value="{{ old('currency', $plan->currency ?? 'USD') }}" maxlength="3">
+                                <select id="currency" name="currency" class="form-control @error('currency') is-invalid @enderror">
+                                    @php
+                                        $monedasList = $monedas ?? collect();
+                                        $currentCurrency = old('currency', $plan->currency ?? 'USD');
+                                    @endphp
+                                    @forelse($monedasList as $m)
+                                        <option value="{{ $m->codigo }}" {{ $currentCurrency === $m->codigo ? 'selected' : '' }}>{{ $m->codigo }} — {{ $m->simbolo }} ({{ $m->nombre }})</option>
+                                    @empty
+                                        <option value="USD" {{ $currentCurrency === 'USD' ? 'selected' : '' }}>USD</option>
+                                        <option value="PEN" {{ $currentCurrency === 'PEN' ? 'selected' : '' }}>PEN</option>
+                                    @endforelse
+                                    @if($monedasList->isNotEmpty() && !$monedasList->pluck('codigo')->contains($currentCurrency))
+                                        <option value="{{ $currentCurrency }}" selected>{{ $currentCurrency }}</option>
+                                    @endif
+                                </select>
                                 @error('currency')<span class="invalid-feedback">{{ $message }}</span>@enderror
                             </div>
                         </div>
