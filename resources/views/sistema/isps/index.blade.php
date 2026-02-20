@@ -181,12 +181,30 @@
                     </table>
                 </div>
                 <style>
+                    /* Dropdown visible encima y sin crear scroll: menú con position fixed y z-index alto */
                     .table-responsive-dropdown { overflow-x: auto; overflow-y: visible; }
-                    .table-responsive-dropdown .td-dropdown-actions { overflow: visible; position: relative; min-width: 44px; }
-                    .table-responsive-dropdown .dropdown-menu { position: absolute !important; }
+                    .table-responsive-dropdown .td-dropdown-actions { overflow: visible; min-width: 44px; }
                     #tablaIsps thead th:last-child,
                     #tablaIsps tbody td:last-child { min-width: 44px; white-space: nowrap; }
+                    #tablaIsps .dropdown-menu.show {
+                        position: fixed !important;
+                        z-index: 1060 !important;
+                    }
                 </style>
+                <script>
+                    (function() {
+                        document.querySelectorAll('#tablaIsps .btn-group').forEach(function(btnGroup) {
+                            var toggle = btnGroup.querySelector('[data-toggle="dropdown"]');
+                            var menu = btnGroup.querySelector('.dropdown-menu');
+                            if (!toggle || !menu) return;
+                            btnGroup.addEventListener('shown.bs.dropdown', function() {
+                                var rect = toggle.getBoundingClientRect();
+                                menu.style.top = (rect.bottom + 2) + 'px';
+                                menu.style.left = (rect.right - menu.offsetWidth) + 'px';
+                            });
+                        });
+                    })();
+                </script>
 
                 <x-slot name="footer">
                     <div class="text-md-right">
