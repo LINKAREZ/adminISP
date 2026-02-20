@@ -76,26 +76,15 @@
                                         @else
                                             <span class="badge badge-danger">Inactivo</span>
                                         @endif
-                                        <div class="ml-2">
-                                            <x-action-buttons
-                                                :show-route="'superadmin.isps.show'"
-                                                :show-params="[$isp]"
-                                                :edit-route="'superadmin.isps.edit'"
-                                                :edit-params="[$isp]"
-                                                :delete-route="'superadmin.isps.destroy'"
-                                                :delete-params="[$isp]"
-                                                size="sm"
-                                                layout="dropdown"
-                                                :delete-message="'¿Eliminar el ISP «' . addslashes($isp->nombre) . '»? No se puede deshacer.'"
-                                                :custom-actions="[
-                                                    [
-                                                        'label' => $activo ? 'Desactivar' : 'Activar',
-                                                        'icon' => $activo ? 'fa-toggle-off' : 'fa-toggle-on',
-                                                        'href' => '#',
-                                                        'onclick' => "event.preventDefault(); var f=document.createElement('form'); f.method='POST'; f.action='" . route('superadmin.isps.toggle', $isp) . "'; var t=document.createElement('input'); t.name='_token'; t.value=document.querySelector('meta[name=csrf-token]')?.getAttribute('content')||''; f.appendChild(t); var m=document.createElement('input'); m.name='_method'; m.value='PATCH'; f.appendChild(m); document.body.appendChild(f); f.submit();"
-                                                    ]
-                                                ]"
-                                            />
+                                        <div class="ml-2 btn-group btn-group-sm">
+                                            <a href="{{ route('superadmin.isps.show', $isp) }}" class="btn btn-info btn-sm" title="Ver"><i class="fas fa-eye"></i></a>
+                                            <a href="{{ route('superadmin.isps.edit', $isp) }}" class="btn btn-warning btn-sm" title="Editar"><i class="fas fa-edit"></i></a>
+                                            <a href="#" class="btn btn-secondary btn-sm" title="{{ $activo ? 'Desactivar' : 'Activar' }}" onclick="event.preventDefault(); var f=document.createElement('form'); f.method='POST'; f.action='{{ route('superadmin.isps.toggle', $isp) }}'; var t=document.createElement('input'); t.name='_token'; t.value=document.querySelector('meta[name=csrf-token]')?.getAttribute('content')||''; f.appendChild(t); var m=document.createElement('input'); m.name='_method'; m.value='PATCH'; f.appendChild(m); document.body.appendChild(f); f.submit();"><i class="fas {{ $activo ? 'fa-toggle-off' : 'fa-toggle-on' }}"></i></a>
+                                            <form action="{{ route('superadmin.isps.destroy', $isp) }}" method="POST" class="d-inline" onsubmit="return confirm({{ json_encode('¿Eliminar el ISP «' . $isp->nombre . '»? No se puede deshacer.') }});">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger btn-sm" title="Eliminar"><i class="fas fa-trash"></i></button>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
@@ -162,25 +151,16 @@
                                             @endif
                                         </td>
                                         <td class="align-middle text-right">
-                                            <x-action-buttons
-                                                :show-route="'superadmin.isps.show'"
-                                                :show-params="[$isp]"
-                                                :edit-route="'superadmin.isps.edit'"
-                                                :edit-params="[$isp]"
-                                                :delete-route="'superadmin.isps.destroy'"
-                                                :delete-params="[$isp]"
-                                                size="sm"
-                                                layout="dropdown"
-                                                :delete-message="'¿Eliminar el ISP «' . addslashes($isp->nombre) . '»? No se puede deshacer.'"
-                                                :custom-actions="[
-                                                    [
-                                                        'label' => $activo ? 'Desactivar' : 'Activar',
-                                                        'icon' => $activo ? 'fa-toggle-off' : 'fa-toggle-on',
-                                                        'href' => '#',
-                                                        'onclick' => "event.preventDefault(); var f=document.createElement('form'); f.method='POST'; f.action='" . route('superadmin.isps.toggle', $isp) . "'; var t=document.createElement('input'); t.name='_token'; t.value=document.querySelector('meta[name=csrf-token]')?.getAttribute('content')||''; f.appendChild(t); var m=document.createElement('input'); m.name='_method'; m.value='PATCH'; f.appendChild(m); document.body.appendChild(f); f.submit();"
-                                                    ]
-                                                ]"
-                                            />
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <a href="{{ route('superadmin.isps.show', $isp) }}" class="btn btn-info" title="Ver" aria-label="Ver"><i class="fas fa-eye"></i></a>
+                                                <a href="{{ route('superadmin.isps.edit', $isp) }}" class="btn btn-warning" title="Editar" aria-label="Editar"><i class="fas fa-edit"></i></a>
+                                                <a href="#" class="btn btn-secondary" title="{{ $activo ? 'Desactivar' : 'Activar' }}" onclick="event.preventDefault(); var f=document.createElement('form'); f.method='POST'; f.action='{{ route('superadmin.isps.toggle', $isp) }}'; var t=document.createElement('input'); t.name='_token'; t.value=document.querySelector('meta[name=csrf-token]')?.getAttribute('content')||''; f.appendChild(t); var m=document.createElement('input'); m.name='_method'; m.value='PATCH'; f.appendChild(m); document.body.appendChild(f); f.submit();"><i class="fas {{ $activo ? 'fa-toggle-off' : 'fa-toggle-on' }}"></i></a>
+                                                <form action="{{ route('superadmin.isps.destroy', $isp) }}" method="POST" class="d-inline" onsubmit="return confirm({{ json_encode('¿Eliminar el ISP «' . $isp->nombre . '»? No se puede deshacer.') }});">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-danger" title="Eliminar" aria-label="Eliminar"><i class="fas fa-trash"></i></button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach
