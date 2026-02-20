@@ -85,7 +85,7 @@
                                                 :delete-route="'superadmin.isps.destroy'"
                                                 :delete-params="[$isp]"
                                                 size="sm"
-                                                layout="inline"
+                                                layout="dropdown"
                                                 :delete-message="'¿Eliminar el ISP «' . addslashes($isp->nombre) . '»? No se puede deshacer.'"
                                                 :custom-actions="[
                                                     [
@@ -123,15 +123,15 @@
                     @endif
                 </div>
 
-                <!-- Vista desktop: Tabla (mismo patrón que Control de acceso) -->
-                <div class="table-responsive">
+                <!-- Vista desktop: Tabla (idéntica estructura que roles/index) -->
+                <div class="table-responsive table-responsive-dropdown">
                     <table id="tablaIsps" class="table table-hover table-striped mb-0">
                         <thead class="thead-light">
                             <tr>
                                 <th class="align-middle" style="width: 35%;">Nombre</th>
                                 <th class="align-middle" style="width: 40%;">Base de datos</th>
                                 <th class="align-middle text-center" style="width: 15%;">Estado</th>
-                                <th class="align-middle text-right text-nowrap" style="width: 1%; min-width: 140px;">Acciones</th>
+                                <th class="align-middle text-right" style="width: 10%;"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -162,7 +162,7 @@
                                                 <span class="badge badge-danger">Inactivo</span>
                                             @endif
                                         </td>
-                                        <td class="align-middle text-right text-nowrap">
+                                        <td class="align-middle text-right td-dropdown-actions">
                                             <x-action-buttons
                                                 :show-route="'superadmin.isps.show'"
                                                 :show-params="[$isp]"
@@ -171,7 +171,7 @@
                                                 :delete-route="'superadmin.isps.destroy'"
                                                 :delete-params="[$isp]"
                                                 size="sm"
-                                                layout="inline"
+                                                layout="dropdown"
                                                 :delete-message="'¿Eliminar el ISP «' . addslashes($isp->nombre) . '»? No se puede deshacer.'"
                                                 :custom-actions="[
                                                     [
@@ -198,6 +198,13 @@
                         </tbody>
                     </table>
                 </div>
+                <style>
+                    .table-responsive-dropdown { overflow-x: auto; overflow-y: visible; }
+                    .table-responsive-dropdown .td-dropdown-actions { overflow: visible; position: relative; min-width: 44px; }
+                    .table-responsive-dropdown .dropdown-menu { position: absolute !important; }
+                    #tablaIsps thead th:last-child,
+                    #tablaIsps tbody td:last-child { min-width: 44px; white-space: nowrap; }
+                </style>
 
                 <x-slot name="footer">
                     <div class="text-md-right">
