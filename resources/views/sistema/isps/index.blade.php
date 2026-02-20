@@ -85,7 +85,7 @@
                                                 :delete-route="'superadmin.isps.destroy'"
                                                 :delete-params="[$isp]"
                                                 size="sm"
-                                                layout="dropdown"
+                                                layout="inline"
                                                 :delete-message="'¿Eliminar el ISP «' . addslashes($isp->nombre) . '»? No se puede deshacer.'"
                                                 :custom-actions="[
                                                     [
@@ -131,12 +131,13 @@
                                 <th class="align-middle" style="width: 35%;">Nombre</th>
                                 <th class="align-middle" style="width: 40%;">Base de datos</th>
                                 <th class="align-middle text-center" style="width: 15%;">Estado</th>
-                                <th class="align-middle text-right" style="width: 10%;"></th>
+                                <th class="align-middle text-right text-nowrap" style="width: 1%; min-width: 140px;">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             @if($isps->count() > 0)
                                 @foreach($isps->items() as $isp)
+                                    @php $activo = $isp->activo ?? true; @endphp
                                     <tr>
                                         <td class="align-middle"><strong>{{ $isp->nombre }}</strong></td>
                                         <td class="align-middle">
@@ -148,7 +149,7 @@
                                             @endif
                                         </td>
                                         <td class="align-middle text-center">
-                                            @php $status = $isp->status ?? 'active'; $activo = $isp->activo ?? true; @endphp
+                                            @php $status = $isp->status ?? 'active'; @endphp
                                             @if($status === 'active' && $activo)
                                                 <span class="badge badge-success">Activo</span>
                                             @elseif($status === 'suspended')
@@ -161,7 +162,7 @@
                                                 <span class="badge badge-danger">Inactivo</span>
                                             @endif
                                         </td>
-                                        <td class="align-middle text-right">
+                                        <td class="align-middle text-right text-nowrap">
                                             <x-action-buttons
                                                 :show-route="'superadmin.isps.show'"
                                                 :show-params="[$isp]"
@@ -170,7 +171,7 @@
                                                 :delete-route="'superadmin.isps.destroy'"
                                                 :delete-params="[$isp]"
                                                 size="sm"
-                                                layout="dropdown"
+                                                layout="inline"
                                                 :delete-message="'¿Eliminar el ISP «' . addslashes($isp->nombre) . '»? No se puede deshacer.'"
                                                 :custom-actions="[
                                                     [

@@ -31,7 +31,7 @@
                                 :delete-route="'superadmin.isps.destroy'"
                                 :delete-params="[$isp]"
                                 size="sm"
-                                layout="dropdown"
+                                layout="inline"
                                 :delete-message="'¿Eliminar el ISP «' . addslashes($isp->nombre) . '»? No se puede deshacer.'"
                                 :custom-actions="[
                                     [
@@ -86,7 +86,7 @@
                 <th class="align-middle">Nombre</th>
                 <th class="align-middle">Base de datos</th>
                 <th class="align-middle text-center">Estado</th>
-                <th class="align-middle text-right" style="width: 10%;"></th>
+                <th class="align-middle text-right text-nowrap" style="width: 1%; min-width: 140px;">Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -117,7 +117,7 @@
                                 <span class="badge badge-danger">Inactivo</span>
                             @endif
                         </td>
-                        <td class="align-middle text-right">
+                        <td class="align-middle text-right text-nowrap">
                             <x-action-buttons
                                 :show-route="'superadmin.isps.show'"
                                 :show-params="[$isp]"
@@ -126,7 +126,7 @@
                                 :delete-route="'superadmin.isps.destroy'"
                                 :delete-params="[$isp]"
                                 size="sm"
-                                layout="dropdown"
+                                layout="inline"
                                 :delete-message="'¿Eliminar el ISP «' . addslashes($isp->nombre) . '»? No se puede deshacer.'"
                                 :custom-actions="[
                                     [
