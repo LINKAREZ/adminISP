@@ -77,7 +77,7 @@
                                             <span class="badge badge-danger">Inactivo</span>
                                         @endif
                                         <div class="ml-2 btn-group">
-                                            <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fas fa-ellipsis-v mr-1"></i>Acciones</button>
+                                            <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" aria-expanded="false" aria-label="Acciones" title="Ver, Editar, Eliminar"><i class="fas fa-ellipsis-v"></i></button>
                                             <div class="dropdown-menu dropdown-menu-right">
                                                 <a class="dropdown-item" href="{{ route('superadmin.isps.show', $isp) }}"><i class="fas fa-eye mr-2"></i>Ver</a>
                                                 <a class="dropdown-item" href="{{ route('superadmin.isps.edit', $isp) }}"><i class="fas fa-edit mr-2"></i>Editar</a>
@@ -120,7 +120,7 @@
                                 <th class="align-middle" style="width: 35%;">Nombre</th>
                                 <th class="align-middle" style="width: 40%;">Base de datos</th>
                                 <th class="align-middle text-center" style="width: 15%;">Estado</th>
-                                <th class="align-middle text-right" style="width: 10%; min-width: 100px;">Acciones</th>
+                                <th class="align-middle text-right" style="width: 10%;"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -153,8 +153,8 @@
                                         </td>
                                         <td class="align-middle text-right td-dropdown-actions">
                                             <div class="btn-group">
-                                                <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" aria-expanded="false" aria-label="Acciones">
-                                                    <i class="fas fa-ellipsis-v mr-1"></i><span>Acciones</span>
+                                                <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" aria-expanded="false" aria-label="Acciones" title="Ver, Editar, Eliminar">
+                                                    <i class="fas fa-ellipsis-v"></i>
                                                 </button>
                                                 <div class="dropdown-menu dropdown-menu-right">
                                                     <a class="dropdown-item" href="{{ route('superadmin.isps.show', $isp) }}"><i class="fas fa-eye mr-2"></i>Ver</a>
@@ -185,7 +185,7 @@
                     .table-responsive-dropdown .td-dropdown-actions { overflow: visible; position: relative; min-width: 44px; }
                     .table-responsive-dropdown .dropdown-menu { position: absolute !important; }
                     #tablaIsps thead th:last-child,
-                    #tablaIsps tbody td:last-child { min-width: 100px; white-space: nowrap; }
+                    #tablaIsps tbody td:last-child { min-width: 44px; white-space: nowrap; }
                 </style>
 
                 <x-slot name="footer">
