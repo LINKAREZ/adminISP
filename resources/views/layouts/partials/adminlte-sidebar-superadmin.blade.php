@@ -39,11 +39,11 @@
                 </li>
 
                 @if(Route::has('superadmin.plans.index'))
-                <!-- Planes SaaS -->
+                <!-- Licencias -->
                 <li class="nav-item">
-                    <a href="{{ route('superadmin.plans.index') }}" class="nav-link {{ request()->is('superadmin/plans*') ? 'active' : '' }}" title="Planes SaaS">
-                        <i class="nav-icon fas fa-boxes"></i>
-                        <p>Planes SaaS</p>
+                    <a href="{{ route('superadmin.plans.index') }}" class="nav-link {{ request()->is('superadmin/plans*') ? 'active' : '' }}" title="Licencias">
+                        <i class="nav-icon fas fa-id-card"></i>
+                        <p>Licencias</p>
                     </a>
                 </li>
                 @endif

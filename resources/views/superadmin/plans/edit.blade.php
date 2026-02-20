@@ -1,12 +1,12 @@
 @extends('layouts.adminlte')
 
-@section('title', 'Editar plan: ' . $plan->name)
-@section('page-title', 'Editar plan')
+@section('title', 'Editar licencia: ' . $plan->name)
+@section('page-title', 'Editar licencia')
 
 @section('breadcrumb')
     <x-breadcrumb :items="[
         ['label' => 'Super Admin', 'route' => 'superadmin.dashboard'],
-        ['label' => 'Planes', 'route' => 'superadmin.plans.index'],
+        ['label' => 'Licencias', 'route' => 'superadmin.plans.index'],
         ['label' => $plan->name, 'route' => 'superadmin.plans.show', 'params' => [$plan]],
         ['label' => 'Editar']
     ]" />
@@ -18,7 +18,7 @@
             <form action="{{ route('superadmin.plans.update', $plan) }}" method="POST">
                 @csrf
                 @method('PUT')
-                <x-card title="Editar plan: {{ $plan->name }}" icon="fa-boxes" variant="primary">
+                <x-card title="Editar licencia: {{ $plan->name }}" icon="fa-id-card" variant="primary">
                     <div class="row">
                         <div class="col-12 col-md-6">
                             <div class="form-group">
@@ -111,7 +111,7 @@
                                 <div class="custom-control custom-switch">
                                     <input type="hidden" name="is_active" value="0">
                                     <input type="checkbox" name="is_active" id="is_active" class="custom-control-input" value="1" {{ old('is_active', $plan->is_active) ? 'checked' : '' }}>
-                                    <label class="custom-control-label" for="is_active">Plan activo</label>
+                                    <label class="custom-control-label" for="is_active">Licencia activa</label>
                                 </div>
                             </div>
                         </div>

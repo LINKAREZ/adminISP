@@ -1,12 +1,12 @@
 @extends('layouts.adminlte')
 
-@section('title', 'Crear plan SaaS')
-@section('page-title', 'Crear plan SaaS')
+@section('title', 'Crear licencia')
+@section('page-title', 'Crear licencia')
 
 @section('breadcrumb')
     <x-breadcrumb :items="[
         ['label' => 'Super Admin', 'route' => 'superadmin.dashboard'],
-        ['label' => 'Planes', 'route' => 'superadmin.plans.index'],
+        ['label' => 'Licencias', 'route' => 'superadmin.plans.index'],
         ['label' => 'Crear']
     ]" />
 @endsection
@@ -16,7 +16,7 @@
         <div class="col-12 col-lg-8">
             <form action="{{ route('superadmin.plans.store') }}" method="POST">
                 @csrf
-                <x-card title="Nuevo plan" icon="fa-boxes" variant="primary">
+                <x-card title="Nueva licencia" icon="fa-id-card" variant="primary">
                     <div class="row">
                         <div class="col-12 col-md-6">
                             <div class="form-group">
@@ -103,7 +103,7 @@
                                 <div class="custom-control custom-switch">
                                     <input type="hidden" name="is_active" value="0">
                                     <input type="checkbox" name="is_active" id="is_active" class="custom-control-input" value="1" {{ old('is_active', true) ? 'checked' : '' }}>
-                                    <label class="custom-control-label" for="is_active">Plan activo</label>
+                                    <label class="custom-control-label" for="is_active">Licencia activa</label>
                                 </div>
                             </div>
                         </div>

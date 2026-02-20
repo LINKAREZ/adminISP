@@ -238,15 +238,36 @@
         <div class="col-12">
             <x-card title="Licencias (por router)" icon="fa-id-card" variant="info" :outline="true">
                 <x-slot name="actions">
+                    <a href="{{ route('superadmin.plans.create') }}" class="btn btn-info btn-sm">
+                        <i class="fas fa-plus mr-1"></i> Agregar licencia
+                    </a>
+                    <a href="{{ route('superadmin.plans.index') }}" class="btn btn-outline-info btn-sm ml-1">
+                        <i class="fas fa-list mr-1"></i> Gestionar licencias
+                    </a>
                     @if($isp->database_name)
-                        <a href="{{ route('session.switch-isp', ['isp_id' => $isp->id, 'redirect_route' => 'red.routers.create']) }}" class="btn btn-info btn-sm">
+                        <a href="{{ route('session.switch-isp', ['isp_id' => $isp->id, 'redirect_route' => 'red.routers.create']) }}" class="btn btn-outline-secondary btn-sm ml-1">
                             <i class="fas fa-plus mr-1"></i> Agregar router
                         </a>
-                        <a href="{{ route('session.switch-isp', ['isp_id' => $isp->id, 'redirect_route' => 'red.routers.index']) }}" class="btn btn-outline-info btn-sm ml-1">
-                            <i class="fas fa-list mr-1"></i> Ver routers
+                        <a href="{{ route('session.switch-isp', ['isp_id' => $isp->id, 'redirect_route' => 'red.routers.index']) }}" class="btn btn-outline-secondary btn-sm ml-1">
+                            <i class="fas fa-network-wired mr-1"></i> Ver routers
                         </a>
                     @endif
                 </x-slot>
+                <h6 class="text-muted mb-2">Licencias disponibles</h6>
+                @if(isset($licenciasDisponibles) && $licenciasDisponibles->isNotEmpty())
+                    <ul class="list-unstyled mb-3">
+                        @foreach($licenciasDisponibles as $lic)
+                            <li class="mb-1 d-flex flex-wrap align-items-center">
+                                <a href="{{ route('superadmin.plans.edit', $lic) }}" class="font-weight-bold text-decoration-none">{{ $lic->name }}</a>
+                                <span class="text-muted small ml-2">— Routers: {{ $lic->max_routers !== null ? number_format($lic->max_routers) : 'Ilimitado' }} · Clientes: {{ $lic->max_clientes ? number_format($lic->max_clientes) : 'Ilimitado' }}</span>
+                                <a href="{{ route('superadmin.plans.edit', $lic) }}" class="btn btn-link btn-sm py-0 ml-1">Editar licencia</a>
+                            </li>
+                        @endforeach
+                    </ul>
+                @else
+                    <p class="text-muted small mb-3">No hay licencias. Usa <strong>Agregar licencia</strong> para crear una (ej. Licencia gratuita = 1 router).</p>
+                @endif
+                <hr class="my-3">
                 @if(isset($licenseRouters) && $licenseRouters->isNotEmpty())
                     <p class="text-muted small mb-3">Routers del ISP con plan y vigencia de licencia.</p>
                     <div class="table-responsive d-none d-md-block">
@@ -254,7 +275,7 @@
                             <thead class="thead-light">
                                 <tr>
                                     <th>Router</th>
-                                    <th>Plan</th>
+                                    <th>Licencia</th>
                                     <th>Vigencia desde</th>
                                     <th>Vigencia hasta</th>
                                     <th class="text-center">Estado</th>
@@ -279,7 +300,7 @@
                                                     <span class="badge badge-danger">Vencida</span>
                                                 @endif
                                             @else
-                                                <span class="badge badge-secondary">Sin plan</span>
+                                                <span class="badge badge-secondary">Sin licencia</span>
                                             @endif
                                         </td>
                                     </tr>
@@ -306,7 +327,7 @@
                                             <span class="badge badge-danger">Vencida</span>
                                         @endif
                                     @else
-                                        <span class="badge badge-secondary">Sin plan</span>
+                                        <span class="badge badge-secondary">Sin licencia</span>
                                     @endif
                                 </div>
                             </div>

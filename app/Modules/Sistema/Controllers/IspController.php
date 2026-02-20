@@ -251,7 +251,8 @@ class IspController extends Controller
             }
         }
 
-        return view('sistema.isps.show', compact('isp', 'defaultAdmins', 'stats', 'licenseRouters', 'planNamesById'));
+        $licenciasDisponibles = Plan::on('mysql')->where('is_active', true)->orderBy('sort_order')->orderBy('name')->get();
+        return view('sistema.isps.show', compact('isp', 'defaultAdmins', 'stats', 'licenseRouters', 'planNamesById', 'licenciasDisponibles'));
     }
 
     /**

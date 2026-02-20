@@ -189,7 +189,7 @@
                                 <div class="row">
                                     <div class="col-12 col-md-4">
                                         <div class="form-group mb-2 mb-md-0">
-                                            <label for="plan_id">Plan de capacidad</label>
+                                            <label for="plan_id">Licencia</label>
                                             <select id="plan_id" name="plan_id" class="form-control @error('plan_id') is-invalid @enderror">
                                                 <option value="">Sin licencia</option>
                                                 @foreach($saasPlans as $p)

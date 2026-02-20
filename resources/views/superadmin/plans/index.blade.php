@@ -1,6 +1,6 @@
 @extends('layouts.adminlte')
 
-@section('title', 'Planes SaaS')
+@section('title', 'Licencias')
 @section('page-title', '')
 @section('breadcrumb')
 @endsection
@@ -24,7 +24,7 @@
 
     <div class="row">
         <div class="col-12">
-            <x-card title="Planes SaaS" icon="fa-boxes" variant="primary" :actionsOverlay="true" :hideTitle="true">
+            <x-card title="Licencias" icon="fa-id-card" variant="primary" :actionsOverlay="true" :hideTitle="true">
                 <x-slot name="headerPrefix">
                     <form method="GET" action="{{ route('superadmin.plans.index') }}" id="form-buscar-plans" class="w-100" style="max-width: 280px;">
                         <div class="input-group input-group-sm">
@@ -50,7 +50,7 @@
                     </form>
                 </x-slot>
                 <x-slot name="actions">
-                    <x-btn :route="route('superadmin.plans.create')" variant="light" size="sm" icon="fa-plus" title="Crear plan" class="btn-add-icon"></x-btn>
+                    <x-btn :route="route('superadmin.plans.create')" variant="light" size="sm" icon="fa-plus" title="Crear licencia" class="btn-add-icon"></x-btn>
                 </x-slot>
 
                 <!-- Vista móvil: Cards (mismo patrón que Control de acceso) -->
@@ -76,7 +76,7 @@
                                                 :delete-params="[$plan]"
                                                 size="sm"
                                                 layout="dropdown"
-                                                :delete-message="'¿Eliminar el plan «' . addslashes($plan->name) . '»? No se puede deshacer.'"
+                                                :delete-message="'¿Eliminar la licencia «' . addslashes($plan->name) . '»? No se puede deshacer.'"
                                             />
                                         </div>
                                     </div>
@@ -95,16 +95,16 @@
                         </div>
                     @empty
                         <x-empty-state
-                            icon="fa-boxes"
-                            title="No hay planes registrados"
-                            description="Aún no hay planes en el sistema"
-                            action-label="Crear plan"
+                            icon="fa-id-card"
+                            title="No hay licencias registradas"
+                            description="Aún no hay licencias en el sistema"
+                            action-label="Crear licencia"
                             action-route="superadmin.plans.create"
                         />
                     @endforelse
                 </div>
 
-                <!-- Tabla de planes: visible desde md (igual que Control de acceso) -->
+                <!-- Tabla de licencias: visible desde md (igual que Control de acceso) -->
                 <div class="table-responsive table-responsive-dropdown">
                     <table id="tablaPlans" class="table table-hover table-striped mb-0">
                         <thead class="thead-light">
@@ -146,17 +146,17 @@
                                                 :delete-params="[$plan]"
                                                 size="sm"
                                                 layout="dropdown"
-                                                :delete-message="'¿Eliminar el plan «' . addslashes($plan->name) . '»? No se puede deshacer.'"
+                                                :delete-message="'¿Eliminar la licencia «' . addslashes($plan->name) . '»? No se puede deshacer.'"
                                             />
                                         </td>
                                     </tr>
                                 @endforeach
                             @else
                                 <x-empty-state
-                                    icon="fa-boxes"
-                                    title="No hay planes registrados"
-                                    description="Aún no hay planes en el sistema"
-                                    action-label="Crear plan"
+                                    icon="fa-id-card"
+                                    title="No hay licencias registradas"
+                                    description="Aún no hay licencias en el sistema"
+                                    action-label="Crear licencia"
                                     action-route="superadmin.plans.create"
                                     colspan="9"
                                 />
@@ -194,7 +194,7 @@
 
     @include('components.crud-actions-script', [
         'baseRoute' => route('superadmin.plans.index'),
-        'entityName' => 'plan',
-        'confirmMessage' => '¿Está seguro de eliminar este plan?'
+        'entityName' => 'licencia',
+        'confirmMessage' => '¿Está seguro de eliminar esta licencia?'
     ])
 @endsection

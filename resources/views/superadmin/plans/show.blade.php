@@ -1,12 +1,12 @@
 @extends('layouts.adminlte')
 
-@section('title', 'Plan: ' . $plan->name)
-@section('page-title', 'Plan: ' . $plan->name)
+@section('title', 'Licencia: ' . $plan->name)
+@section('page-title', 'Licencia: ' . $plan->name)
 
 @section('breadcrumb')
     <x-breadcrumb :items="[
         ['label' => 'Super Admin', 'route' => 'superadmin.dashboard'],
-        ['label' => 'Planes', 'route' => 'superadmin.plans.index'],
+        ['label' => 'Licencias', 'route' => 'superadmin.plans.index'],
         ['label' => $plan->name]
     ]" />
 @endsection
@@ -14,7 +14,7 @@
 @section('content')
     <div class="row">
         <div class="col-12 col-lg-8">
-            <x-card title="{{ $plan->name }}" icon="fa-boxes" variant="primary">
+            <x-card title="{{ $plan->name }}" icon="fa-id-card" variant="primary">
                 <x-slot name="actions">
                     <a href="{{ route('superadmin.plans.edit', $plan) }}" class="btn btn-sm btn-outline-light">Editar</a>
                 </x-slot>
@@ -39,7 +39,7 @@
                             <span class="badge badge-secondary">Inactivo</span>
                         @endif
                     </dd>
-                    <dt class="col-sm-3 text-muted">ISPs con este plan</dt>
+                    <dt class="col-sm-3 text-muted">ISPs con esta licencia</dt>
                     <dd class="col-sm-9">{{ $plan->isps_count ?? 0 }}</dd>
                 </dl>
                 <x-slot name="footer">

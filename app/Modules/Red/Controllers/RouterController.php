@@ -61,7 +61,7 @@ class RouterController extends Controller
         $nodos = Nodo::on($conn)->withoutGlobalScopes()->where('estado', true)
             ->orderBy('nombre')
             ->get(['id', 'nombre']);
-        $saasPlans = Plan::on('mysql')->where('is_active', true)->where('slug', '!=', 'gratuito')->orderBy('sort_order')->orderBy('max_clientes')->get();
+        $saasPlans = Plan::on('mysql')->where('is_active', true)->orderBy('sort_order')->orderBy('name')->get();
         return view('red.routers.create', compact('nodos', 'saasPlans'));
     }
 
@@ -396,7 +396,7 @@ class RouterController extends Controller
         $nodos = Nodo::on($conn)->withoutGlobalScopes()->where('estado', true)
             ->orderBy('nombre')
             ->get(['id', 'nombre']);
-        $saasPlans = Plan::on('mysql')->where('is_active', true)->where('slug', '!=', 'gratuito')->orderBy('sort_order')->orderBy('max_clientes')->get();
+        $saasPlans = Plan::on('mysql')->where('is_active', true)->orderBy('sort_order')->orderBy('name')->get();
         return view('red.routers.edit', compact('router', 'nodos', 'saasPlans'));
     }
 
