@@ -76,26 +76,15 @@
                                         @else
                                             <span class="badge badge-danger">Inactivo</span>
                                         @endif
-                                        <div class="ml-2">
-                                            <x-action-buttons
-                                                :show-route="'superadmin.isps.show'"
-                                                :show-params="[$isp]"
-                                                :edit-route="'superadmin.isps.edit'"
-                                                :edit-params="[$isp]"
-                                                :delete-route="'superadmin.isps.destroy'"
-                                                :delete-params="[$isp]"
-                                                size="sm"
-                                                layout="dropdown"
-                                                :delete-message="'¿Eliminar el ISP «' . addslashes($isp->nombre) . '»? No se puede deshacer.'"
-                                                :custom-actions="[
-                                                    [
-                                                        'label' => $activo ? 'Desactivar' : 'Activar',
-                                                        'icon' => $activo ? 'fa-toggle-off' : 'fa-toggle-on',
-                                                        'href' => '#',
-                                                        'onclick' => "event.preventDefault(); var f=document.createElement('form'); f.method='POST'; f.action='" . route('superadmin.isps.toggle', $isp) . "'; var t=document.createElement('input'); t.name='_token'; t.value=document.querySelector('meta[name=csrf-token]')?.getAttribute('content')||''; f.appendChild(t); var m=document.createElement('input'); m.name='_method'; m.value='PATCH'; f.appendChild(m); document.body.appendChild(f); f.submit();"
-                                                    ]
-                                                ]"
-                                            />
+                                        <div class="ml-2 btn-group">
+                                            <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fas fa-ellipsis-v mr-1"></i>Acciones</button>
+                                            <div class="dropdown-menu dropdown-menu-right">
+                                                <a class="dropdown-item" href="{{ route('superadmin.isps.show', $isp) }}"><i class="fas fa-eye mr-2"></i>Ver</a>
+                                                <a class="dropdown-item" href="{{ route('superadmin.isps.edit', $isp) }}"><i class="fas fa-edit mr-2"></i>Editar</a>
+                                                <a class="dropdown-item" href="#" onclick="event.preventDefault(); var f=document.createElement('form'); f.method='POST'; f.action='{{ route('superadmin.isps.toggle', $isp) }}'; var t=document.createElement('input'); t.name='_token'; t.value=document.querySelector('meta[name=csrf-token]')?.getAttribute('content')||''; f.appendChild(t); var m=document.createElement('input'); m.name='_method'; m.value='PATCH'; f.appendChild(m); document.body.appendChild(f); f.submit();"><i class="fas {{ $activo ? 'fa-toggle-off' : 'fa-toggle-on' }} mr-2"></i>{{ $activo ? 'Desactivar' : 'Activar' }}</a>
+                                                <div class="dropdown-divider"></div>
+                                                <a class="dropdown-item text-danger" href="#" onclick="event.preventDefault(); if(!confirm({{ json_encode('¿Eliminar el ISP «' . $isp->nombre . '»? No se puede deshacer.') }})) return false; var f=document.createElement('form'); f.method='POST'; f.action='{{ route('superadmin.isps.destroy', $isp) }}'; var t=document.createElement('input'); t.name='_token'; t.value=document.querySelector('meta[name=csrf-token]')?.getAttribute('content')||''; f.appendChild(t); var m=document.createElement('input'); m.name='_method'; m.value='DELETE'; f.appendChild(m); document.body.appendChild(f); f.submit();"><i class="fas fa-trash mr-2"></i>Eliminar</a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -131,7 +120,7 @@
                                 <th class="align-middle" style="width: 35%;">Nombre</th>
                                 <th class="align-middle" style="width: 40%;">Base de datos</th>
                                 <th class="align-middle text-center" style="width: 15%;">Estado</th>
-                                <th class="align-middle text-right" style="width: 10%;"></th>
+                                <th class="align-middle text-right" style="width: 10%; min-width: 100px;">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -163,25 +152,18 @@
                                             @endif
                                         </td>
                                         <td class="align-middle text-right td-dropdown-actions">
-                                            <x-action-buttons
-                                                :show-route="'superadmin.isps.show'"
-                                                :show-params="[$isp]"
-                                                :edit-route="'superadmin.isps.edit'"
-                                                :edit-params="[$isp]"
-                                                :delete-route="'superadmin.isps.destroy'"
-                                                :delete-params="[$isp]"
-                                                size="sm"
-                                                layout="dropdown"
-                                                :delete-message="'¿Eliminar el ISP «' . addslashes($isp->nombre) . '»? No se puede deshacer.'"
-                                                :custom-actions="[
-                                                    [
-                                                        'label' => $activo ? 'Desactivar' : 'Activar',
-                                                        'icon' => $activo ? 'fa-toggle-off' : 'fa-toggle-on',
-                                                        'href' => '#',
-                                                        'onclick' => "event.preventDefault(); var f=document.createElement('form'); f.method='POST'; f.action='" . route('superadmin.isps.toggle', $isp) . "'; var t=document.createElement('input'); t.name='_token'; t.value=document.querySelector('meta[name=csrf-token]')?.getAttribute('content')||''; f.appendChild(t); var m=document.createElement('input'); m.name='_method'; m.value='PATCH'; f.appendChild(m); document.body.appendChild(f); f.submit();"
-                                                    ]
-                                                ]"
-                                            />
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" aria-expanded="false" aria-label="Acciones">
+                                                    <i class="fas fa-ellipsis-v mr-1"></i><span>Acciones</span>
+                                                </button>
+                                                <div class="dropdown-menu dropdown-menu-right">
+                                                    <a class="dropdown-item" href="{{ route('superadmin.isps.show', $isp) }}"><i class="fas fa-eye mr-2"></i>Ver</a>
+                                                    <a class="dropdown-item" href="{{ route('superadmin.isps.edit', $isp) }}"><i class="fas fa-edit mr-2"></i>Editar</a>
+                                                    <a class="dropdown-item" href="#" onclick="event.preventDefault(); var f=document.createElement('form'); f.method='POST'; f.action='{{ route('superadmin.isps.toggle', $isp) }}'; var t=document.createElement('input'); t.name='_token'; t.value=document.querySelector('meta[name=csrf-token]')?.getAttribute('content')||''; f.appendChild(t); var m=document.createElement('input'); m.name='_method'; m.value='PATCH'; f.appendChild(m); document.body.appendChild(f); f.submit();"><i class="fas {{ $activo ? 'fa-toggle-off' : 'fa-toggle-on' }} mr-2"></i>{{ $activo ? 'Desactivar' : 'Activar' }}</a>
+                                                    <div class="dropdown-divider"></div>
+                                                    <a class="dropdown-item text-danger" href="#" role="button" onclick="event.preventDefault(); if(!confirm({{ json_encode('¿Eliminar el ISP «' . $isp->nombre . '»? No se puede deshacer.') }})) return false; var f=document.createElement('form'); f.method='POST'; f.action='{{ route('superadmin.isps.destroy', $isp) }}'; var t=document.createElement('input'); t.name='_token'; t.value=document.querySelector('meta[name=csrf-token]')?.getAttribute('content')||''; f.appendChild(t); var m=document.createElement('input'); m.name='_method'; m.value='DELETE'; f.appendChild(m); document.body.appendChild(f); f.submit();"><i class="fas fa-trash mr-2"></i>Eliminar</a>
+                                                </div>
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -203,7 +185,7 @@
                     .table-responsive-dropdown .td-dropdown-actions { overflow: visible; position: relative; min-width: 44px; }
                     .table-responsive-dropdown .dropdown-menu { position: absolute !important; }
                     #tablaIsps thead th:last-child,
-                    #tablaIsps tbody td:last-child { min-width: 44px; white-space: nowrap; }
+                    #tablaIsps tbody td:last-child { min-width: 100px; white-space: nowrap; }
                 </style>
 
                 <x-slot name="footer">
