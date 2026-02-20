@@ -77,4 +77,16 @@ class SuperAdminPlanController extends Controller
         $plan->update($data);
         return redirect()->route('superadmin.plans.index')->with('success', 'Plan actualizado correctamente.');
     }
+
+    public function destroy(Plan $plan): RedirectResponse
+    {
+        $plan->loadCount('isps');
+        if (($plan->isps_count ?? 0) > 0) {
+            return redirect()
+                ->route('superadmin.plans.index')
+                ->with('error', 'No se puede eliminar el plan «' . $plan->name . '» porque tiene ISPs asignados.');
+        }
+        $plan->delete();
+        return redirect()->route('superadmin.plans.index')->with('success', 'Plan eliminado correctamente.');
+    }
 }

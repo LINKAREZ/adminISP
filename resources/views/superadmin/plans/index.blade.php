@@ -9,6 +9,19 @@
 @section('content')
     @include('superadmin.plans.tabs')
 
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ session('success') }}
+        </div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div class="row">
         <div class="col-12">
             <x-card title="Planes SaaS" icon="fa-boxes" variant="primary" :actionsOverlay="true" :hideTitle="true">
@@ -59,8 +72,11 @@
                                                 :show-params="[$plan]"
                                                 :edit-route="'superadmin.plans.edit'"
                                                 :edit-params="[$plan]"
+                                                :delete-route="'superadmin.plans.destroy'"
+                                                :delete-params="[$plan]"
                                                 size="sm"
                                                 layout="dropdown"
+                                                :delete-message="'¿Eliminar el plan «' . addslashes($plan->name) . '»? No se puede deshacer.'"
                                             />
                                         </div>
                                     </div>
@@ -121,8 +137,11 @@
                                                 :show-params="[$plan]"
                                                 :edit-route="'superadmin.plans.edit'"
                                                 :edit-params="[$plan]"
+                                                :delete-route="'superadmin.plans.destroy'"
+                                                :delete-params="[$plan]"
                                                 size="sm"
                                                 layout="dropdown"
+                                                :delete-message="'¿Eliminar el plan «' . addslashes($plan->name) . '»? No se puede deshacer.'"
                                             />
                                         </td>
                                     </tr>
