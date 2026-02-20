@@ -19,7 +19,7 @@ class StoreIspRequest extends FormRequest
             'moneda' => 'required|string|size:3',
             'simbolo_moneda' => 'required|string|max:10',
             'igv' => 'required|numeric|min:0|max:100',
-            'plan_id' => 'nullable|exists:plans,id',
+            'licencia_id' => 'nullable|exists:licencias,id',
         ];
     }
 }

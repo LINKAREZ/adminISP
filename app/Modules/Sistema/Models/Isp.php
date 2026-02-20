@@ -27,7 +27,7 @@ class Isp extends Model
         'simbolo_moneda',
         'igv',
         'status',
-        'plan_id',
+        'licencia_id',
     ];
 
     protected $casts = [
@@ -36,19 +36,19 @@ class Isp extends Model
     ];
 
     /**
-     * Plan SaaS (límites: max_clientes, max_usuarios). Tabla central plans.
+     * Licencia SaaS (legacy: isps.licencia_id). Tabla central licencias.
      */
-    public function plan(): BelongsTo
+    public function licencia(): BelongsTo
     {
-        return $this->belongsTo(Plan::class);
+        return $this->belongsTo(Licencia::class);
     }
 
     /**
      * Licencias asignadas a este ISP (previo pago). Solo estas pueden usarse en los routers del ISP.
      */
-    public function assignedPlans(): BelongsToMany
+    public function assignedLicencias(): BelongsToMany
     {
-        return $this->belongsToMany(Plan::class, 'isp_plan')->withTimestamps();
+        return $this->belongsToMany(Licencia::class, 'isp_licencia')->withTimestamps();
     }
 
     /**

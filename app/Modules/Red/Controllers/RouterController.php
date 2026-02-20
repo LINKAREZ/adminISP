@@ -15,7 +15,7 @@ use App\Modules\Red\Requests\StoreReglaRequest;
 use App\Modules\Red\Requests\UpdateReglaRequest;
 use App\Core\Services\TenantConnectionService;
 use App\Modules\Sistema\Services\PlanLimitService;
-use App\Modules\Sistema\Models\Plan;
+use App\Modules\Sistema\Models\Licencia;
 use App\Modules\Red\Models\Router;
 use App\Modules\Red\Models\Nodo;
 use App\Modules\Red\Models\Regla;
@@ -62,10 +62,10 @@ class RouterController extends Controller
             ->orderBy('nombre')
             ->get(['id', 'nombre']);
         $ispId = session('current_isp_id');
-        $saasPlans = $ispId
-            ? Plan::on('mysql')->where('is_active', true)->whereHas('assignedToIsps', fn ($q) => $q->where('isps.id', $ispId))->orderBy('sort_order')->orderBy('name')->get()
+        $licencias = $ispId
+            ? Licencia::on('mysql')->where('is_active', true)->whereHas('assignedToIsps', fn ($q) => $q->where('isps.id', $ispId))->orderBy('sort_order')->orderBy('name')->get()
             : collect();
-        return view('red.routers.create', compact('nodos', 'saasPlans'));
+        return view('red.routers.create', compact('nodos', 'licencias'));
     }
 
     public function store(StoreRouterRequest $request, PlanLimitService $planLimitService)
@@ -400,10 +400,10 @@ class RouterController extends Controller
             ->orderBy('nombre')
             ->get(['id', 'nombre']);
         $ispId = session('current_isp_id');
-        $saasPlans = $ispId
-            ? Plan::on('mysql')->where('is_active', true)->whereHas('assignedToIsps', fn ($q) => $q->where('isps.id', $ispId))->orderBy('sort_order')->orderBy('name')->get()
+        $licencias = $ispId
+            ? Licencia::on('mysql')->where('is_active', true)->whereHas('assignedToIsps', fn ($q) => $q->where('isps.id', $ispId))->orderBy('sort_order')->orderBy('name')->get()
             : collect();
-        return view('red.routers.edit', compact('router', 'nodos', 'saasPlans'));
+        return view('red.routers.edit', compact('router', 'nodos', 'licencias'));
     }
 
     public function update(UpdateRouterRequest $request, Router $router)

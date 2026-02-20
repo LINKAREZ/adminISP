@@ -6,7 +6,7 @@ use App\Core\Services\TenantConnectionService;
 use App\Core\Services\TenantDatabaseService;
 use App\Http\Controllers\Controller;
 use App\Modules\Sistema\Models\Isp;
-use App\Modules\Sistema\Models\Plan;
+use App\Modules\Sistema\Models\Licencia;
 use App\Modules\Sistema\Requests\IndexIspRequest;
 use App\Modules\Sistema\Requests\StoreIspRequest;
 use App\Modules\Sistema\Requests\UpdateIspRequest;
@@ -235,28 +235,28 @@ class IspController extends Controller
         // Estadísticas del ISP (desde BD tenant de este ISP, no la sesión)
         $stats = ['usuarios' => $defaultAdmins->count(), 'clientes' => 0, 'nodos' => 0];
         $licenseRouters = collect();
-        $planNamesById = [];
+        $licenciaNamesById = [];
         $previousIspId = session('current_isp_id');
         if ($isp->database_name) {
             TenantConnectionService::setCurrentIspId($isp->id);
             $stats['clientes'] = \App\Modules\Clientes\Models\Cliente::count();
             $stats['nodos'] = \App\Modules\Red\Models\Nodo::count();
-            $licenseRouters = \App\Modules\Red\Models\Router::select('id', 'nombre', 'plan_id', 'license_starts_at', 'license_expires_at')->get();
-            $planIds = $licenseRouters->pluck('plan_id')->filter()->unique()->values();
-            if ($planIds->isNotEmpty()) {
-                $planNamesById = Plan::on('mysql')->whereIn('id', $planIds)->pluck('name', 'id')->all();
+            $licenseRouters = \App\Modules\Red\Models\Router::select('id', 'nombre', 'licencia_id', 'license_starts_at', 'license_expires_at')->get();
+            $licenciaIds = $licenseRouters->pluck('licencia_id')->filter()->unique()->values();
+            if ($licenciaIds->isNotEmpty()) {
+                $licenciaNamesById = Licencia::on('mysql')->whereIn('id', $licenciaIds)->pluck('name', 'id')->all();
             }
             if ($previousIspId !== null) {
                 TenantConnectionService::setCurrentIspId((int) $previousIspId);
             }
         }
 
-        $licenciasAsignadas = $isp->assignedPlans()->orderBy('sort_order')->orderBy('name')->get();
+        $licenciasAsignadas = $isp->assignedLicencias()->orderBy('sort_order')->orderBy('name')->get();
         $idsAsignados = $licenciasAsignadas->pluck('id')->all();
-        $planesDisponiblesParaAsignar = Plan::on('mysql')->where('is_active', true)
+        $licenciasDisponiblesParaAsignar = Licencia::on('mysql')->where('is_active', true)
             ->when(!empty($idsAsignados), fn ($q) => $q->whereNotIn('id', $idsAsignados))
             ->orderBy('sort_order')->orderBy('name')->get();
-        return view('sistema.isps.show', compact('isp', 'defaultAdmins', 'stats', 'licenseRouters', 'planNamesById', 'licenciasAsignadas', 'planesDisponiblesParaAsignar'));
+        return view('sistema.isps.show', compact('isp', 'defaultAdmins', 'stats', 'licenseRouters', 'licenciaNamesById', 'licenciasAsignadas', 'licenciasDisponiblesParaAsignar'));
     }
 
     /**
@@ -268,25 +268,25 @@ class IspController extends Controller
             abort(403);
         }
         $isp = Isp::withoutGlobalScope(\App\Core\Scopes\IspScope::class)->findOrFail($isp->id);
-        $request->validate(['plan_id' => 'required|exists:plans,id']);
-        $planId = (int) $request->plan_id;
-        if ($isp->assignedPlans()->where('plans.id', $planId)->exists()) {
+        $request->validate(['licencia_id' => 'required|exists:licencias,id']);
+        $licenciaId = (int) $request->licencia_id;
+        if ($isp->assignedLicencias()->where('licencias.id', $licenciaId)->exists()) {
             return redirect()->route('superadmin.isps.show', $isp)->with('info', 'Esa licencia ya está asignada a este ISP.');
         }
-        $isp->assignedPlans()->attach($planId);
+        $isp->assignedLicencias()->attach($licenciaId);
         return redirect()->route('superadmin.isps.show', $isp)->with('success', 'Licencia asignada correctamente.');
     }
 
     /**
      * Quitar una licencia asignada al ISP.
      */
-    public function unassignLicense(Isp $isp, Plan $plan): RedirectResponse
+    public function unassignLicense(Isp $isp, Licencia $licencia): RedirectResponse
     {
         if (!$this->isSuperAdmin()) {
             abort(403);
         }
         $isp = Isp::withoutGlobalScope(\App\Core\Scopes\IspScope::class)->findOrFail($isp->id);
-        $isp->assignedPlans()->detach($plan->id);
+        $isp->assignedLicencias()->detach($licencia->id);
         return redirect()->route('superadmin.isps.show', $isp)->with('success', 'Licencia quitada del ISP.');
     }
 

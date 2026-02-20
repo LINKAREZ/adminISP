@@ -7,7 +7,7 @@
 @section('hide-content-header', true)
 
 @section('content')
-    @include('superadmin.plans.tabs')
+    @include('superadmin.licencias.tabs')
 
     @if(session('success'))
         <div class="alert alert-success alert-dismissible">
@@ -26,12 +26,12 @@
         <div class="col-12">
             <x-card title="Licencias" icon="fa-id-card" variant="primary" :actionsOverlay="true" :hideTitle="true">
                 <x-slot name="headerPrefix">
-                    <form method="GET" action="{{ route('superadmin.plans.index') }}" id="form-buscar-plans" class="w-100" style="max-width: 280px;">
+                    <form method="GET" action="{{ route('superadmin.licencias.index') }}" id="form-buscar-licencias" class="w-100" style="max-width: 280px;">
                         <div class="input-group input-group-sm">
                             <input
                                 type="text"
                                 name="buscar"
-                                id="buscar-plans"
+                                id="buscar-licencias"
                                 value="{{ request('buscar') }}"
                                 placeholder="Buscar por nombre o slug..."
                                 class="form-control form-control-sm"
@@ -41,7 +41,7 @@
                                     <i class="fas fa-search"></i>
                                 </button>
                                 @if(request('buscar'))
-                                    <a href="{{ route('superadmin.plans.index') }}" class="btn btn-light">
+                                    <a href="{{ route('superadmin.licencias.index') }}" class="btn btn-light">
                                         <i class="fas fa-times"></i>
                                     </a>
                                 @endif
@@ -50,46 +50,46 @@
                     </form>
                 </x-slot>
                 <x-slot name="actions">
-                    <x-btn :route="route('superadmin.plans.create')" variant="light" size="sm" icon="fa-plus" title="Crear licencia" class="btn-add-icon"></x-btn>
+                    <x-btn :route="route('superadmin.licencias.create')" variant="light" size="sm" icon="fa-plus" title="Crear licencia" class="btn-add-icon"></x-btn>
                 </x-slot>
 
                 <!-- Vista móvil: Cards (mismo patrón que Control de acceso) -->
                 <div class="d-md-none">
-                    @forelse($plans as $plan)
+                    @forelse($licencias as $licencia)
                         <div class="card card-outline card-primary mb-2">
                             <div class="card-header">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h6 class="card-title mb-0">
-                                        <a href="{{ route('superadmin.plans.show', $plan) }}" class="text-dark font-weight-bold text-decoration-none">
-                                            {{ $plan->name }}
+                                        <a href="{{ route('superadmin.licencias.show', $licencia) }}" class="text-dark font-weight-bold text-decoration-none">
+                                            {{ $licencia->name }}
                                         </a>
                                     </h6>
                                     <div class="d-flex align-items-center">
-                                        <x-status-badge :status="$plan->is_active ? 'activo' : 'inactivo'" type="usuario" />
+                                        <x-status-badge :status="$licencia->is_active ? 'activo' : 'inactivo'" type="usuario" />
                                         <div class="ml-2">
                                             <x-action-buttons
-                                                :show-route="'superadmin.plans.show'"
-                                                :show-params="[$plan]"
-                                                :edit-route="'superadmin.plans.edit'"
-                                                :edit-params="[$plan]"
-                                                :delete-route="'superadmin.plans.destroy'"
-                                                :delete-params="[$plan]"
+                                                :show-route="'superadmin.licencias.show'"
+                                                :show-params="[$licencia]"
+                                                :edit-route="'superadmin.licencias.edit'"
+                                                :edit-params="[$licencia]"
+                                                :delete-route="'superadmin.licencias.destroy'"
+                                                :delete-params="[$licencia]"
                                                 size="sm"
                                                 layout="dropdown"
-                                                :delete-message="'¿Eliminar la licencia «' . addslashes($plan->name) . '»? No se puede deshacer.'"
+                                                :delete-message="'¿Eliminar la licencia «' . addslashes($licencia->name) . '»? No se puede deshacer.'"
                                             />
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="card-body py-2">
-                                <p class="mb-2 small text-muted"><code class="bg-light px-1 rounded">{{ $plan->slug }}</code></p>
+                                <p class="mb-2 small text-muted"><code class="bg-light px-1 rounded">{{ $licencia->slug }}</code></p>
                                 <ul class="list-unstyled mb-0 small">
-                                    <li class="mb-1"><i class="fas fa-server text-muted mr-2" style="width: 1.25rem;"></i>Routers: {{ $plan->max_routers !== null ? number_format($plan->max_routers) : 'Ilimitado' }}</li>
-                                    <li class="mb-1"><i class="fas fa-users text-muted mr-2" style="width: 1.25rem;"></i>Clientes: {{ $plan->max_clientes ? number_format($plan->max_clientes) : 'Ilimitado' }}</li>
-                                    <li class="mb-1"><i class="fas fa-user-friends text-muted mr-2" style="width: 1.25rem;"></i>Usuarios: {{ $plan->max_usuarios ? number_format($plan->max_usuarios) : 'Ilimitado' }}</li>
-                                    <li class="mb-2"><i class="fas fa-dollar-sign text-muted mr-2" style="width: 1.25rem;"></i><strong>{{ $plan->currency ?? 'USD' }} {{ number_format($plan->price_monthly ?? 0, 2) }}</strong><span class="text-muted">/mes</span></li>
-                                    <li class="mb-0"><span class="badge badge-info">{{ $plan->isps_count ?? 0 }} ISP(s)</span></li>
+                                    <li class="mb-1"><i class="fas fa-server text-muted mr-2" style="width: 1.25rem;"></i>Routers: {{ $licencia->max_routers !== null ? number_format($licencia->max_routers) : 'Ilimitado' }}</li>
+                                    <li class="mb-1"><i class="fas fa-users text-muted mr-2" style="width: 1.25rem;"></i>Clientes: {{ $licencia->max_clientes ? number_format($licencia->max_clientes) : 'Ilimitado' }}</li>
+                                    <li class="mb-1"><i class="fas fa-user-friends text-muted mr-2" style="width: 1.25rem;"></i>Usuarios: {{ $licencia->max_usuarios ? number_format($licencia->max_usuarios) : 'Ilimitado' }}</li>
+                                    <li class="mb-2"><i class="fas fa-dollar-sign text-muted mr-2" style="width: 1.25rem;"></i><strong>{{ $licencia->currency ?? 'USD' }} {{ number_format($licencia->price_monthly ?? 0, 2) }}</strong><span class="text-muted">/mes</span></li>
+                                    <li class="mb-0"><span class="badge badge-info">{{ $licencia->isps_count ?? 0 }} ISP(s)</span></li>
                                 </ul>
                             </div>
                         </div>
@@ -99,14 +99,14 @@
                             title="No hay licencias registradas"
                             description="Aún no hay licencias en el sistema"
                             action-label="Crear licencia"
-                            action-route="superadmin.plans.create"
+                            action-route="superadmin.licencias.create"
                         />
                     @endforelse
                 </div>
 
                 <!-- Tabla de licencias: visible desde md (igual que Control de acceso) -->
                 <div class="table-responsive table-responsive-dropdown">
-                    <table id="tablaPlans" class="table table-hover table-striped mb-0">
+                    <table id="tablaLicencias" class="table table-hover table-striped mb-0">
                         <thead class="thead-light">
                             <tr>
                                 <th class="align-middle" style="width: 20%;">Nombre</th>
@@ -121,32 +121,32 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @if($plans->count() > 0)
-                                @foreach($plans as $plan)
+                            @if($licencias->count() > 0)
+                                @foreach($licencias as $licencia)
                                     <tr>
                                         <td class="align-middle">
-                                            <strong><a href="{{ route('superadmin.plans.show', $plan) }}" class="text-dark text-decoration-none">{{ $plan->name }}</a></strong>
+                                            <strong><a href="{{ route('superadmin.licencias.show', $licencia) }}" class="text-dark text-decoration-none">{{ $licencia->name }}</a></strong>
                                         </td>
-                                        <td class="align-middle"><code class="small bg-light px-1 rounded">{{ $plan->slug }}</code></td>
-                                        <td class="align-middle text-center"><span class="text-nowrap">{{ $plan->max_routers !== null ? number_format($plan->max_routers) : '—' }}</span></td>
-                                        <td class="align-middle text-center"><span class="text-nowrap">{{ $plan->max_clientes ? number_format($plan->max_clientes) : '—' }}</span></td>
-                                        <td class="align-middle text-center"><span class="text-nowrap">{{ $plan->max_usuarios ? number_format($plan->max_usuarios) : '—' }}</span></td>
-                                        <td class="align-middle text-right"><strong class="text-primary">{{ $plan->currency ?? 'USD' }} {{ number_format($plan->price_monthly ?? 0, 2) }}</strong></td>
-                                        <td class="align-middle text-center"><span class="badge badge-info badge-pill">{{ $plan->isps_count ?? 0 }}</span></td>
+                                        <td class="align-middle"><code class="small bg-light px-1 rounded">{{ $licencia->slug }}</code></td>
+                                        <td class="align-middle text-center"><span class="text-nowrap">{{ $licencia->max_routers !== null ? number_format($licencia->max_routers) : '—' }}</span></td>
+                                        <td class="align-middle text-center"><span class="text-nowrap">{{ $licencia->max_clientes ? number_format($licencia->max_clientes) : '—' }}</span></td>
+                                        <td class="align-middle text-center"><span class="text-nowrap">{{ $licencia->max_usuarios ? number_format($licencia->max_usuarios) : '—' }}</span></td>
+                                        <td class="align-middle text-right"><strong class="text-primary">{{ $licencia->currency ?? 'USD' }} {{ number_format($licencia->price_monthly ?? 0, 2) }}</strong></td>
+                                        <td class="align-middle text-center"><span class="badge badge-info badge-pill">{{ $licencia->isps_count ?? 0 }}</span></td>
                                         <td class="align-middle text-center">
-                                            <x-status-badge :status="$plan->is_active ? 'activo' : 'inactivo'" type="usuario" />
+                                            <x-status-badge :status="$licencia->is_active ? 'activo' : 'inactivo'" type="usuario" />
                                         </td>
                                         <td class="align-middle text-right td-dropdown-actions">
                                             <x-action-buttons
-                                                :show-route="'superadmin.plans.show'"
-                                                :show-params="[$plan]"
-                                                :edit-route="'superadmin.plans.edit'"
-                                                :edit-params="[$plan]"
-                                                :delete-route="'superadmin.plans.destroy'"
-                                                :delete-params="[$plan]"
+                                                :show-route="'superadmin.licencias.show'"
+                                                :show-params="[$licencia]"
+                                                :edit-route="'superadmin.licencias.edit'"
+                                                :edit-params="[$licencia]"
+                                                :delete-route="'superadmin.licencias.destroy'"
+                                                :delete-params="[$licencia]"
                                                 size="sm"
                                                 layout="dropdown"
-                                                :delete-message="'¿Eliminar la licencia «' . addslashes($plan->name) . '»? No se puede deshacer.'"
+                                                :delete-message="'¿Eliminar la licencia «' . addslashes($licencia->name) . '»? No se puede deshacer.'"
                                             />
                                         </td>
                                     </tr>
@@ -157,7 +157,7 @@
                                     title="No hay licencias registradas"
                                     description="Aún no hay licencias en el sistema"
                                     action-label="Crear licencia"
-                                    action-route="superadmin.plans.create"
+                                    action-route="superadmin.licencias.create"
                                     colspan="9"
                                 />
                             @endif
@@ -167,16 +167,16 @@
                 <style>
                     .table-responsive-dropdown { overflow-x: auto; overflow-y: visible; }
                     .table-responsive-dropdown .td-dropdown-actions { overflow: visible; min-width: 44px; }
-                    #tablaPlans thead th:last-child,
-                    #tablaPlans tbody td:last-child { min-width: 44px; white-space: nowrap; }
-                    #tablaPlans .dropdown-menu.show { position: fixed !important; z-index: 1060 !important; }
-                    #tablaPlans thead th { font-weight: 600; font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.02em; color: #495057; }
-                    #tablaPlans tbody td { vertical-align: middle !important; padding: 0.65rem 0.75rem; }
-                    #tablaPlans tbody tr:hover { background-color: rgba(0,123,255,0.04); }
+                    #tablaLicencias thead th:last-child,
+                    #tablaLicencias tbody td:last-child { min-width: 44px; white-space: nowrap; }
+                    #tablaLicencias .dropdown-menu.show { position: fixed !important; z-index: 1060 !important; }
+                    #tablaLicencias thead th { font-weight: 600; font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.02em; color: #495057; }
+                    #tablaLicencias tbody td { vertical-align: middle !important; padding: 0.65rem 0.75rem; }
+                    #tablaLicencias tbody tr:hover { background-color: rgba(0,123,255,0.04); }
                 </style>
                 <script>
                     (function() {
-                        document.querySelectorAll('#tablaPlans .btn-group').forEach(function(btnGroup) {
+                        document.querySelectorAll('#tablaLicencias .btn-group').forEach(function(btnGroup) {
                             var toggle = btnGroup.querySelector('[data-toggle="dropdown"]');
                             var menu = btnGroup.querySelector('.dropdown-menu');
                             if (!toggle || !menu) return;
@@ -193,7 +193,7 @@
     </div>
 
     @include('components.crud-actions-script', [
-        'baseRoute' => route('superadmin.plans.index'),
+        'baseRoute' => route('superadmin.licencias.index'),
         'entityName' => 'licencia',
         'confirmMessage' => '¿Está seguro de eliminar esta licencia?'
     ])

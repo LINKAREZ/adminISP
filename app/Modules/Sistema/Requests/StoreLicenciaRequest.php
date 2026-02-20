@@ -3,8 +3,9 @@
 namespace App\Modules\Sistema\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class StorePlanRequest extends FormRequest
+class StoreLicenciaRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -15,7 +16,7 @@ class StorePlanRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'slug' => ['nullable', 'string', 'max:50', 'unique:mysql.plans,slug'],
+            'slug' => ['nullable', 'string', 'max:50', 'unique:mysql.licencias,slug'],
             'max_routers' => ['nullable', 'integer', 'min:0'],
             'max_clientes' => ['nullable', 'integer', 'min:0'],
             'max_usuarios' => ['nullable', 'integer', 'min:0'],

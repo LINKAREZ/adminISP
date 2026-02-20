@@ -5,7 +5,7 @@ namespace App\Modules\Sistema\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdatePlanRequest extends FormRequest
+class UpdateLicenciaRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -14,10 +14,10 @@ class UpdatePlanRequest extends FormRequest
 
     public function rules(): array
     {
-        $plan = $this->route('plan');
+        $licencia = $this->route('licencia');
         return [
             'name' => ['required', 'string', 'max:255'],
-            'slug' => ['nullable', 'string', 'max:50', Rule::unique('mysql.plans', 'slug')->ignore($plan->id ?? null)],
+            'slug' => ['nullable', 'string', 'max:50', Rule::unique('mysql.licencias', 'slug')->ignore($licencia->id ?? null)],
             'max_routers' => ['nullable', 'integer', 'min:0'],
             'max_clientes' => ['nullable', 'integer', 'min:0'],
             'max_usuarios' => ['nullable', 'integer', 'min:0'],

@@ -27,9 +27,9 @@ class UpdateRouterRequest extends FormRequest
             'nodo_id' => ['nullable', 'integer', new ExistsInTenant('nodos')],
             'notas' => ['nullable', 'string', 'max:1000'],
             'estado' => ['nullable', 'boolean'],
-            'plan_id' => ['nullable', 'integer', function ($attr, $value, $fail) {
-                if ($value && !\App\Modules\Sistema\Models\Plan::on('mysql')->where('id', $value)->exists()) {
-                    $fail(__('Plan no válido.'));
+            'licencia_id' => ['nullable', 'integer', function ($attr, $value, $fail) {
+                if ($value && !\App\Modules\Sistema\Models\Licencia::on('mysql')->where('id', $value)->exists()) {
+                    $fail(__('Licencia no válida.'));
                 }
             }],
             'license_starts_at' => ['nullable', 'date'],

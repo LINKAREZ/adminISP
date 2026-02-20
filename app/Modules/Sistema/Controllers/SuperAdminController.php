@@ -9,7 +9,7 @@ use App\Modules\Clientes\Models\Cliente;
 use App\Modules\ControlAcceso\Models\User;
 use App\Modules\ControlAcceso\Models\Role;
 use App\Modules\Sistema\Models\Isp;
-use App\Modules\Sistema\Models\Plan;
+use App\Modules\Sistema\Models\Licencia;
 use App\Modules\Sistema\Models\TenantRequest;
 use App\Modules\Sistema\Services\IspExportService;
 use Illuminate\Http\RedirectResponse;
@@ -240,21 +240,21 @@ class SuperAdminController extends Controller
     }
 
     /**
-     * Listado de planes SaaS (central).
+     * Listado de licencias SaaS (central).
      */
-    public function plans(): View
+    public function licencias(): View
     {
         if (!$this->isSuperAdmin()) {
             abort(403);
         }
 
-        $plans = collect();
+        $licencias = collect();
         $conn = TenantConnectionService::centralConnection();
-        if (\Illuminate\Support\Facades\Schema::connection($conn)->hasTable('plans')) {
-            $plans = Plan::withCount('isps')->orderBy('sort_order')->orderBy('name')->get();
+        if (\Illuminate\Support\Facades\Schema::connection($conn)->hasTable('licencias')) {
+            $licencias = Licencia::withCount('isps')->orderBy('sort_order')->orderBy('name')->get();
         }
 
-        return view('superadmin.plans.index', compact('plans'));
+        return view('superadmin.licencias.index', compact('licencias'));
     }
 
     /**

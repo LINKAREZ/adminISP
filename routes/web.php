@@ -93,7 +93,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [\App\Modules\Sistema\Controllers\SuperAdminController::class, 'dashboard'])->name('dashboard');
         Route::get('/export', [\App\Modules\Sistema\Controllers\SuperAdminController::class, 'export'])->name('export');
         Route::get('/audit', [\App\Modules\Sistema\Controllers\SuperAdminAuditController::class, 'index'])->name('audit');
-        Route::resource('plans', \App\Modules\Sistema\Controllers\SuperAdminPlanController::class);
+        Route::resource('licencias', \App\Modules\Sistema\Controllers\SuperAdminLicenciaController::class)->parameters(['licencias' => 'licencia']);
         Route::get('/solicitudes', [\App\Modules\Sistema\Controllers\SuperAdminController::class, 'solicitudes'])->name('solicitudes.index');
 
         // ISPs (solo super admin)
@@ -101,7 +101,7 @@ Route::middleware('auth')->group(function () {
         Route::post('isps/{isp}/create-database', [\App\Modules\Sistema\Controllers\IspController::class, 'createDatabase'])->name('isps.create-database');
         Route::patch('isps/{isp}/toggle', [\App\Modules\Sistema\Controllers\IspController::class, 'toggleStatus'])->name('isps.toggle');
         Route::post('isps/{isp}/licencias', [\App\Modules\Sistema\Controllers\IspController::class, 'assignLicense'])->name('isps.licencias.store');
-        Route::delete('isps/{isp}/licencias/{plan}', [\App\Modules\Sistema\Controllers\IspController::class, 'unassignLicense'])->name('isps.licencias.destroy');
+        Route::delete('isps/{isp}/licencias/{licencia}', [\App\Modules\Sistema\Controllers\IspController::class, 'unassignLicense'])->name('isps.licencias.destroy');
 
         // Debug: comprobar que la app ve roles en la BD central (solo superadmin)
         Route::get('/debug-roles', function () {

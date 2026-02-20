@@ -69,14 +69,14 @@ Muchas vistas de create/edit ya tenían el slot `footer` y `form="form-xxx"` (us
 ### 2.1 Ubicación y rutas
 
 - **Panel:** Super Admin (`/superadmin`).
-- **Listado:** `https://panel.wan.pe/superadmin/plans` (menú “Planes SaaS”).
-- **Rutas:** `Route::resource('plans', SuperAdminPlanController::class)->except(['destroy'])` en `routes/web.php` (grupo `prefix('superadmin')`, middleware `superadmin`).
+- **Listado:** `https://panel.wan.pe/superadmin/licencias` (menú “Licencias SaaS”).
+- **Rutas:** `Route::resource('licencias', SuperAdminLicenciaController::class)` en `routes/web.php` (grupo `prefix('superadmin')`, middleware `superadmin`).
 
 ### 2.2 Backend
 
-- **Controlador:** `App\Modules\Sistema\Controllers\SuperAdminPlanController` (index, create, store, show, edit, update).
-- **Modelo:** `App\Modules\Sistema\Models\Plan` (BD central, tabla `plans`).
-- **Form requests:** `StorePlanRequest`, `UpdatePlanRequest`.
+- **Controlador:** `App\Modules\Sistema\Controllers\SuperAdminLicenciaController` (index, create, store, show, edit, update, destroy).
+- **Modelo:** `App\Modules\Sistema\Models\Licencia` (BD central, tabla `licencias`).
+- **Form requests:** `StoreLicenciaRequest`, `UpdateLicenciaRequest`.
 - **Servicio de límites:** `App\Modules\Sistema\Services\PlanLimitService`:
   - `canAddRouter(Isp $isp)`: plan Gratuito 1 router; de pago ilimitado.
   - `canAddClient(Isp $isp, ?Router $router)`: Gratuito &lt; 50 clientes totales; de pago por router.
@@ -88,7 +88,7 @@ Muchas vistas de create/edit ya tenían el slot `footer` y `form="form-xxx"` (us
 
 ### 2.3 Vistas
 
-- `resources/views/superadmin/plans/index.blade.php`: listado con cards (Gratuito, Plan 100, 250, 500, 1000), botón “Crear plan”.
+- `resources/views/superadmin/licencias/index.blade.php`: listado con cards (Gratuito, Plan 100, 250, 500, 1000), botón “Crear licencia”.
 - `create.blade.php`, `edit.blade.php`, `show.blade.php`: formularios y detalle con breadcrumb y slot footer.
 
 ### 2.4 Verificación en navegador (MCP)

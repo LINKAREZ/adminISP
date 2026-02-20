@@ -254,7 +254,7 @@
                             <li class="mb-1 d-flex flex-wrap align-items-center">
                                 <span class="font-weight-bold">{{ $lic->name }}</span>
                                 <span class="text-muted small ml-2">— Routers: {{ $lic->max_routers !== null ? number_format($lic->max_routers) : 'Ilimitado' }} · Clientes: {{ $lic->max_clientes ? number_format($lic->max_clientes) : 'Ilimitado' }}</span>
-                                <form action="{{ route('superadmin.isps.licencias.destroy', [$isp, $lic]) }}" method="POST" class="d-inline ml-2" onsubmit="return confirm('¿Quitar esta licencia de este ISP?');">
+                                <form action="{{ route('superadmin.isps.licencias.destroy', ['isp' => $isp, 'licencia' => $lic]) }}" method="POST" class="d-inline ml-2" onsubmit="return confirm('¿Quitar esta licencia de este ISP?');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-link btn-sm py-0 text-danger">Quitar</button>
@@ -265,19 +265,19 @@
                 @else
                     <p class="text-muted small mb-2">No tiene licencias asignadas. Asigne licencias a este ISP (previo pago) para que puedan usarlas en los routers.</p>
                 @endif
-                @if(isset($planesDisponiblesParaAsignar) && $planesDisponiblesParaAsignar->isNotEmpty())
+                @if(isset($licenciasDisponiblesParaAsignar) && $licenciasDisponiblesParaAsignar->isNotEmpty())
                     <form action="{{ route('superadmin.isps.licencias.store', $isp) }}" method="POST" class="form-inline mb-3">
                         @csrf
-                        <label for="plan_id_asignar" class="mr-2">Asignar licencia:</label>
-                        <select name="plan_id" id="plan_id_asignar" class="form-control form-control-sm mr-2" style="min-width: 180px;">
-                            @foreach($planesDisponiblesParaAsignar as $p)
+                        <label for="licencia_id_asignar" class="mr-2">Asignar licencia:</label>
+                        <select name="licencia_id" id="licencia_id_asignar" class="form-control form-control-sm mr-2" style="min-width: 180px;">
+                            @foreach($licenciasDisponiblesParaAsignar as $p)
                                 <option value="{{ $p->id }}">{{ $p->name }} ({{ $p->max_routers !== null ? number_format($p->max_routers) : '∞' }} routers)</option>
                             @endforeach
                         </select>
                         <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-plus mr-1"></i> Asignar</button>
                     </form>
                 @elseif(isset($licenciasAsignadas) && $licenciasAsignadas->isEmpty())
-                    <p class="text-muted small mb-3">Para asignar licencias, créelas antes en <a href="{{ route('superadmin.plans.index') }}">Super Admin → Licencias</a>.</p>
+                    <p class="text-muted small mb-3">Para asignar licencias, créelas antes en <a href="{{ route('superadmin.licencias.index') }}">Super Admin → Licencias</a>.</p>
                 @endif
                 <hr class="my-3">
                 @if(isset($licenseRouters) && $licenseRouters->isNotEmpty())
@@ -296,7 +296,7 @@
                             <tbody>
                                 @foreach($licenseRouters as $r)
                                     @php
-                                        $planName = $r->plan_id && isset($planNamesById[$r->plan_id]) ? $planNamesById[$r->plan_id] : '—';
+                                        $planName = $r->licencia_id && isset($licenciaNamesById[$r->licencia_id]) ? $licenciaNamesById[$r->licencia_id] : '—';
                                         $vigente = !$r->license_expires_at || $r->license_expires_at->isFuture() || $r->license_expires_at->isToday();
                                     @endphp
                                     <tr>
@@ -305,7 +305,7 @@
                                         <td>{{ $r->license_starts_at ? $r->license_starts_at->format('d/m/Y') : '—' }}</td>
                                         <td>{{ $r->license_expires_at ? $r->license_expires_at->format('d/m/Y') : 'Sin vencimiento' }}</td>
                                         <td class="text-center">
-                                            @if($r->plan_id)
+                                            @if($r->licencia_id)
                                                 @if($vigente)
                                                     <span class="badge badge-success">Vigente</span>
                                                 @else
@@ -323,7 +323,7 @@
                     <div class="d-md-none">
                         @foreach($licenseRouters as $r)
                             @php
-                                $planName = $r->plan_id && isset($planNamesById[$r->plan_id]) ? $planNamesById[$r->plan_id] : '—';
+                                $planName = $r->licencia_id && isset($licenciaNamesById[$r->licencia_id]) ? $licenciaNamesById[$r->licencia_id] : '—';
                                 $vigente = !$r->license_expires_at || $r->license_expires_at->isFuture() || $r->license_expires_at->isToday();
                             @endphp
                             <div class="card card-outline card-info mb-2">
@@ -332,7 +332,7 @@
                                     <div class="small text-muted mt-1">
                                         {{ $r->license_starts_at ? $r->license_starts_at->format('d/m/Y') : '—' }} – {{ $r->license_expires_at ? $r->license_expires_at->format('d/m/Y') : 'Sin vencimiento' }}
                                     </div>
-                                    @if($r->plan_id)
+                                    @if($r->licencia_id)
                                         @if($vigente)
                                             <span class="badge badge-success">Vigente</span>
                                         @else

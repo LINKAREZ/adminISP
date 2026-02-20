@@ -3,7 +3,7 @@
 namespace App\Modules\Sistema\Services;
 
 use App\Modules\Sistema\Models\Isp;
-use App\Modules\Sistema\Models\Plan;
+use App\Modules\Sistema\Models\Licencia;
 use App\Modules\Clientes\Models\Cliente;
 use App\Modules\ControlAcceso\Models\User;
 use App\Modules\Red\Models\Router;
@@ -11,40 +11,40 @@ use App\Core\Services\TenantConnectionService;
 
 class PlanLimitService
 {
-    /** Plan Gratuito (trial): 1 router, 50 clientes total. */
-    public function isGratuitoPlan(?Plan $plan): bool
+    /** Licencia gratuita (trial): 1 router, 50 clientes total. */
+    public function isGratuitaLicencia(?Licencia $licencia): bool
     {
-        return $plan && $plan->max_routers !== null && $plan->max_routers >= 0;
+        return $licencia && $licencia->max_routers !== null && $licencia->max_routers >= 0;
     }
 
     /**
-     * ¿El ISP puede añadir otro router? En plan Gratuito solo 1; de pago ilimitado.
+     * ¿El ISP puede añadir otro router? En licencia gratuita solo 1; de pago ilimitado.
      */
     public function canAddRouter(Isp $isp): bool
     {
-        $plan = $isp->plan;
-        if (!$plan || $plan->max_routers === null) {
+        $licencia = $isp->licencia;
+        if (!$licencia || $licencia->max_routers === null) {
             return true;
         }
         try {
             TenantConnectionService::registerConnectionForIspId($isp->id);
             $count = Router::count();
-            return $count < $plan->max_routers;
+            return $count < $licencia->max_routers;
         } catch (\Throwable $e) {
             return false;
         }
     }
 
     /**
-     * ¿Se puede añadir un cliente? Gratuito: total clientes < 50. De pago: por router (usar canAddClientToRouter).
+     * ¿Se puede añadir un cliente? Gratuita: total clientes < 50. De pago: por router (usar canAddClientToRouter).
      */
     public function canAddClient(Isp $isp, ?Router $router = null): bool
     {
-        $plan = $isp->plan;
-        if ($this->isGratuitoPlan($plan)) {
-            return $this->clientCount($isp) < (int) $plan->max_clientes;
+        $licencia = $isp->licencia;
+        if ($this->isGratuitaLicencia($licencia)) {
+            return $this->clientCount($isp) < (int) $licencia->max_clientes;
         }
-        if ($router && $router->plan_id) {
+        if ($router && $router->licencia_id) {
             return $this->canAddClientToRouter($router);
         }
         return true;
@@ -53,11 +53,11 @@ class PlanLimitService
     /** ¿Se puede añadir un cliente a este router? (límite por router). */
     public function canAddClientToRouter(Router $router): bool
     {
-        $plan = $router->saasPlan();
-        if (!$plan || $plan->max_clientes === null) {
+        $licencia = $router->licencia();
+        if (!$licencia || $licencia->max_clientes === null) {
             return true;
         }
-        return $this->clientCountForRouter($router) < $plan->max_clientes;
+        return $this->clientCountForRouter($router) < $licencia->max_clientes;
     }
 
     /** Cuenta de clientes con al menos una ubicación en este router. */
@@ -70,12 +70,12 @@ class PlanLimitService
 
     public function canAddUser(Isp $isp): bool
     {
-        $plan = $isp->plan;
-        if (!$plan || $plan->max_usuarios === null) {
+        $licencia = $isp->licencia;
+        if (!$licencia || $licencia->max_usuarios === null) {
             return true;
         }
         $count = User::on('mysql')->where('isp_id', $isp->id)->count();
-        return $count < $plan->max_usuarios;
+        return $count < $licencia->max_usuarios;
     }
 
     public function clientCount(Isp $isp): int

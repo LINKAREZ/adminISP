@@ -24,7 +24,7 @@ class Router extends Model
         'notas',
         'estado',
         'isp_id',
-        'plan_id',
+        'licencia_id',
         'license_starts_at',
         'license_expires_at',
     ];
@@ -38,14 +38,14 @@ class Router extends Model
     ];
 
     /**
-     * Plan SaaS (central). Resuelve desde BD central por plan_id (sin FK física).
+     * Licencia SaaS (central). Resuelve desde BD central por licencia_id.
      */
-    public function saasPlan(): ?\App\Modules\Sistema\Models\Plan
+    public function licencia(): ?\App\Modules\Sistema\Models\Licencia
     {
-        if (!$this->plan_id) {
+        if (!$this->licencia_id) {
             return null;
         }
-        return \App\Modules\Sistema\Models\Plan::on('mysql')->find($this->plan_id);
+        return \App\Modules\Sistema\Models\Licencia::on('mysql')->find($this->licencia_id);
     }
 
     /** Si la licencia está vigente (sin vencimiento o expires_at >= hoy). */
