@@ -166,12 +166,7 @@ class IspController extends Controller
             abort(403, 'Solo los super administradores pueden crear ISPs.');
         }
 
-        $plans = collect();
-        if (Schema::connection(\App\Core\Services\TenantConnectionService::centralConnection())->hasTable('plans')) {
-            $plans = Plan::where('is_active', true)->orderBy('sort_order')->orderBy('name')->get();
-        }
-
-        return view('sistema.isps.create', compact('plans'));
+        return view('sistema.isps.create');
     }
 
     /**
@@ -275,12 +270,7 @@ class IspController extends Controller
         $isp = Isp::withoutGlobalScope(\App\Core\Scopes\IspScope::class)
             ->findOrFail($isp->id);
 
-        $plans = collect();
-        if (Schema::connection(\App\Core\Services\TenantConnectionService::centralConnection())->hasTable('plans')) {
-            $plans = Plan::where('is_active', true)->orderBy('sort_order')->orderBy('name')->get();
-        }
-
-        return view('sistema.isps.edit', compact('isp', 'plans'));
+        return view('sistema.isps.edit', compact('isp'));
     }
 
     /**

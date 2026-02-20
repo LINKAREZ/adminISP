@@ -164,21 +164,10 @@
                         <div class="card card-outline card-secondary mt-3">
                             <div class="card-header">
                                 <h3 class="card-title">
-                                    <i class="fas fa-box mr-2"></i>Plan y estado
+                                    <i class="fas fa-toggle-on mr-2"></i>Estado
                                 </h3>
                             </div>
                             <div class="card-body">
-                                @if(isset($plans) && $plans->isNotEmpty())
-                                    <div class="form-group">
-                                        <label for="plan_id">Plan de la plataforma</label>
-                                        <select name="plan_id" id="plan_id" class="form-control">
-                                            <option value="">Sin plan</option>
-                                            @foreach($plans as $plan)
-                                                <option value="{{ $plan->id }}" {{ old('plan_id', $isp->plan_id) == $plan->id ? 'selected' : '' }}>{{ $plan->name }} @if($plan->max_clientes)(hasta {{ $plan->max_clientes }} clientes)@endif</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                @endif
                                 <div class="form-group">
                                     <label for="status">Estado de cuenta</label>
                                     <select name="status" id="status" class="form-control">
