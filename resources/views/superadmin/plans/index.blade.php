@@ -82,10 +82,15 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="card-body">
-                                <p class="mb-1 small text-muted"><code>{{ $plan->slug }}</code></p>
-                                <p class="mb-1 small">Routers máx: {{ $plan->max_routers !== null ? number_format($plan->max_routers) : 'Ilimitado' }} · Clientes máx: {{ $plan->max_clientes ? number_format($plan->max_clientes) : 'Ilimitado' }}</p>
-                                <p class="mb-0"><span class="badge badge-info">{{ $plan->isps_count ?? 0 }} ISP(s)</span></p>
+                            <div class="card-body py-2">
+                                <p class="mb-2 small text-muted"><code class="bg-light px-1 rounded">{{ $plan->slug }}</code></p>
+                                <ul class="list-unstyled mb-0 small">
+                                    <li class="mb-1"><i class="fas fa-server text-muted mr-2" style="width: 1.25rem;"></i>Routers: {{ $plan->max_routers !== null ? number_format($plan->max_routers) : 'Ilimitado' }}</li>
+                                    <li class="mb-1"><i class="fas fa-users text-muted mr-2" style="width: 1.25rem;"></i>Clientes: {{ $plan->max_clientes ? number_format($plan->max_clientes) : 'Ilimitado' }}</li>
+                                    <li class="mb-1"><i class="fas fa-user-friends text-muted mr-2" style="width: 1.25rem;"></i>Usuarios: {{ $plan->max_usuarios ? number_format($plan->max_usuarios) : 'Ilimitado' }}</li>
+                                    <li class="mb-2"><i class="fas fa-dollar-sign text-muted mr-2" style="width: 1.25rem;"></i><strong>{{ $plan->currency ?? 'USD' }} {{ number_format($plan->price_monthly ?? 0, 2) }}</strong><span class="text-muted">/mes</span></li>
+                                    <li class="mb-0"><span class="badge badge-info">{{ $plan->isps_count ?? 0 }} ISP(s)</span></li>
+                                </ul>
                             </div>
                         </div>
                     @empty
@@ -122,12 +127,12 @@
                                         <td class="align-middle">
                                             <strong><a href="{{ route('superadmin.plans.show', $plan) }}" class="text-dark text-decoration-none">{{ $plan->name }}</a></strong>
                                         </td>
-                                        <td class="align-middle"><code class="small">{{ $plan->slug }}</code></td>
-                                        <td class="align-middle text-center">{{ $plan->max_routers !== null ? number_format($plan->max_routers) : '—' }}</td>
-                                        <td class="align-middle text-center">{{ $plan->max_clientes ? number_format($plan->max_clientes) : '—' }}</td>
-                                        <td class="align-middle text-center">{{ $plan->max_usuarios ? number_format($plan->max_usuarios) : '—' }}</td>
-                                        <td class="align-middle text-right">{{ $plan->currency ?? 'USD' }} {{ number_format($plan->price_monthly ?? 0, 2) }}</td>
-                                        <td class="align-middle text-center">{{ $plan->isps_count ?? 0 }}</td>
+                                        <td class="align-middle"><code class="small bg-light px-1 rounded">{{ $plan->slug }}</code></td>
+                                        <td class="align-middle text-center"><span class="text-nowrap">{{ $plan->max_routers !== null ? number_format($plan->max_routers) : '—' }}</span></td>
+                                        <td class="align-middle text-center"><span class="text-nowrap">{{ $plan->max_clientes ? number_format($plan->max_clientes) : '—' }}</span></td>
+                                        <td class="align-middle text-center"><span class="text-nowrap">{{ $plan->max_usuarios ? number_format($plan->max_usuarios) : '—' }}</span></td>
+                                        <td class="align-middle text-right"><strong class="text-primary">{{ $plan->currency ?? 'USD' }} {{ number_format($plan->price_monthly ?? 0, 2) }}</strong></td>
+                                        <td class="align-middle text-center"><span class="badge badge-info badge-pill">{{ $plan->isps_count ?? 0 }}</span></td>
                                         <td class="align-middle text-center">
                                             <x-status-badge :status="$plan->is_active ? 'activo' : 'inactivo'" type="usuario" />
                                         </td>
@@ -165,6 +170,9 @@
                     #tablaPlans thead th:last-child,
                     #tablaPlans tbody td:last-child { min-width: 44px; white-space: nowrap; }
                     #tablaPlans .dropdown-menu.show { position: fixed !important; z-index: 1060 !important; }
+                    #tablaPlans thead th { font-weight: 600; font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.02em; color: #495057; }
+                    #tablaPlans tbody td { vertical-align: middle !important; padding: 0.65rem 0.75rem; }
+                    #tablaPlans tbody tr:hover { background-color: rgba(0,123,255,0.04); }
                 </style>
                 <script>
                     (function() {
