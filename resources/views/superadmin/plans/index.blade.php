@@ -17,13 +17,14 @@
                 </x-slot>
                 <p class="text-muted mb-3">Planes de la plataforma (límites por router, clientes, precios). Gratuito: 1 router, 50 clientes. De pago: por router (100, 250, 500, 1000 clientes).</p>
 
+                <!-- Vista móvil: Cards (mismo patrón que ISPs / Control de acceso) -->
                 <div class="d-lg-none">
                     @if($plans->count() > 0)
                         @foreach($plans as $plan)
                             <div class="card card-outline card-primary mb-2">
                                 <div class="card-header py-2 d-flex justify-content-between align-items-center flex-wrap">
                                     <h6 class="card-title mb-0 font-weight-bold">
-                                        <a href="{{ route('superadmin.plans.show', $plan) }}">{{ $plan->name }}</a>
+                                        <a href="{{ route('superadmin.plans.show', $plan) }}" class="text-dark text-decoration-none">{{ $plan->name }}</a>
                                     </h6>
                                     <div class="d-flex align-items-center">
                                         @if($plan->is_active)
@@ -31,8 +32,13 @@
                                         @else
                                             <span class="badge badge-secondary mr-1">Inactivo</span>
                                         @endif
-                                        <a href="{{ route('superadmin.plans.show', $plan) }}" class="btn btn-sm btn-outline-primary mr-1" title="Ver detalle"><i class="fas fa-eye"></i></a>
-                                        <a href="{{ route('superadmin.plans.edit', $plan) }}" class="btn btn-sm btn-outline-secondary" title="Editar"><i class="fas fa-edit"></i></a>
+                                        <div class="ml-2 btn-group btn-group-mobile">
+                                            <button type="button" class="btn btn-sm btn-light dropdown-toggle btn-mobile-touch" data-toggle="dropdown" aria-expanded="false" aria-label="Acciones" title="Ver, Editar"><i class="fas fa-ellipsis-v"></i></button>
+                                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-mobile dropdown-actions-fix dropdown-menu-scroll" style="min-width: 140px;">
+                                                <a class="dropdown-item dropdown-item-mobile" href="{{ route('superadmin.plans.show', $plan) }}"><i class="fas fa-eye mr-2"></i> Ver</a>
+                                                <a class="dropdown-item dropdown-item-mobile" href="{{ route('superadmin.plans.edit', $plan) }}"><i class="fas fa-edit mr-2"></i> Editar</a>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="card-body py-2">
@@ -49,48 +55,83 @@
                     @endif
                 </div>
 
-                <div class="table-responsive d-none d-lg-block">
-                    <table class="table table-hover table-striped mb-0">
+                <!-- Vista desktop: Tabla (idéntico a ISPs / Control de acceso: dropdown acciones + fix posición) -->
+                <div class="table-responsive table-responsive-dropdown d-none d-lg-block">
+                    <table id="tablaPlans" class="table table-hover table-striped mb-0">
                         <thead class="thead-light">
                             <tr>
-                                <th>Nombre</th>
-                                <th>Slug</th>
-                                <th class="text-center">Routers máx</th>
-                                <th class="text-center">Clientes máx</th>
-                                <th class="text-center">Usuarios máx</th>
-                                <th class="text-right">Precio/mes</th>
-                                <th class="text-center">ISPs</th>
-                                <th class="text-center">Estado</th>
-                                <th width="90"></th>
+                                <th class="align-middle">Nombre</th>
+                                <th class="align-middle">Slug</th>
+                                <th class="align-middle text-center">Routers máx</th>
+                                <th class="align-middle text-center">Clientes máx</th>
+                                <th class="align-middle text-center">Usuarios máx</th>
+                                <th class="align-middle text-right">Precio/mes</th>
+                                <th class="align-middle text-center">ISPs</th>
+                                <th class="align-middle text-center">Estado</th>
+                                <th class="align-middle text-right" style="width: 10%;"></th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($plans as $plan)
-                                <tr>
-                                    <td><strong><a href="{{ route('superadmin.plans.show', $plan) }}">{{ $plan->name }}</a></strong></td>
-                                    <td><code class="small">{{ $plan->slug }}</code></td>
-                                    <td class="text-center">{{ $plan->max_routers !== null ? number_format($plan->max_routers) : '—' }}</td>
-                                    <td class="text-center">{{ $plan->max_clientes ? number_format($plan->max_clientes) : '—' }}</td>
-                                    <td class="text-center">{{ $plan->max_usuarios ? number_format($plan->max_usuarios) : '—' }}</td>
-                                    <td class="text-right">{{ $plan->currency ?? 'USD' }} {{ number_format($plan->price_monthly ?? 0, 2) }}</td>
-                                    <td class="text-center">{{ $plan->isps_count ?? 0 }}</td>
-                                    <td class="text-center">
-                                        @if($plan->is_active)
-                                            <span class="badge badge-success">Activo</span>
-                                        @else
-                                            <span class="badge badge-secondary">Inactivo</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <a href="{{ route('superadmin.plans.edit', $plan) }}" class="btn btn-sm btn-outline-secondary" title="Editar"><i class="fas fa-edit"></i></a>
-                                    </td>
-                                </tr>
-                            @empty
+                            @if($plans->count() > 0)
+                                @foreach($plans as $plan)
+                                    <tr>
+                                        <td class="align-middle"><strong><a href="{{ route('superadmin.plans.show', $plan) }}" class="text-dark">{{ $plan->name }}</a></strong></td>
+                                        <td class="align-middle"><code class="small">{{ $plan->slug }}</code></td>
+                                        <td class="align-middle text-center">{{ $plan->max_routers !== null ? number_format($plan->max_routers) : '—' }}</td>
+                                        <td class="align-middle text-center">{{ $plan->max_clientes ? number_format($plan->max_clientes) : '—' }}</td>
+                                        <td class="align-middle text-center">{{ $plan->max_usuarios ? number_format($plan->max_usuarios) : '—' }}</td>
+                                        <td class="align-middle text-right">{{ $plan->currency ?? 'USD' }} {{ number_format($plan->price_monthly ?? 0, 2) }}</td>
+                                        <td class="align-middle text-center">{{ $plan->isps_count ?? 0 }}</td>
+                                        <td class="align-middle text-center">
+                                            @if($plan->is_active)
+                                                <span class="badge badge-success">Activo</span>
+                                            @else
+                                                <span class="badge badge-secondary">Inactivo</span>
+                                            @endif
+                                        </td>
+                                        <td class="align-middle text-right td-dropdown-actions">
+                                            <div class="btn-group btn-group-mobile">
+                                                <button type="button" class="btn btn-sm btn-light dropdown-toggle btn-mobile-touch" data-toggle="dropdown" aria-expanded="false" aria-label="Acciones" title="Ver, Editar">
+                                                    <i class="fas fa-ellipsis-v"></i>
+                                                </button>
+                                                <div class="dropdown-menu dropdown-menu-right dropdown-menu-mobile dropdown-actions-fix dropdown-menu-scroll" style="min-width: 140px;">
+                                                    <a class="dropdown-item dropdown-item-mobile" href="{{ route('superadmin.plans.show', $plan) }}"><i class="fas fa-eye mr-2"></i> Ver</a>
+                                                    <a class="dropdown-item dropdown-item-mobile" href="{{ route('superadmin.plans.edit', $plan) }}"><i class="fas fa-edit mr-2"></i> Editar</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @else
                                 <x-empty-state icon="fa-boxes" title="No hay planes registrados" description="Use el botón Crear plan o ejecute PlansSeeder" colspan="9" />
-                            @endforelse
+                            @endif
                         </tbody>
                     </table>
                 </div>
+                <style>
+                    .table-responsive-dropdown { overflow-x: auto; overflow-y: visible; }
+                    .table-responsive-dropdown .td-dropdown-actions { overflow: visible; min-width: 44px; }
+                    #tablaPlans thead th:last-child,
+                    #tablaPlans tbody td:last-child { min-width: 44px; white-space: nowrap; }
+                    #tablaPlans .dropdown-menu.show {
+                        position: fixed !important;
+                        z-index: 1060 !important;
+                    }
+                </style>
+                <script>
+                    (function() {
+                        document.querySelectorAll('#tablaPlans .btn-group').forEach(function(btnGroup) {
+                            var toggle = btnGroup.querySelector('[data-toggle="dropdown"]');
+                            var menu = btnGroup.querySelector('.dropdown-menu');
+                            if (!toggle || !menu) return;
+                            btnGroup.addEventListener('shown.bs.dropdown', function() {
+                                var rect = toggle.getBoundingClientRect();
+                                menu.style.top = (rect.bottom + 2) + 'px';
+                                menu.style.left = (rect.right - menu.offsetWidth) + 'px';
+                            });
+                        });
+                    })();
+                </script>
             </x-card>
         </div>
     </div>
