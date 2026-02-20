@@ -237,6 +237,16 @@
     <div class="row mt-3">
         <div class="col-12">
             <x-card title="Licencias (por router)" icon="fa-id-card" variant="info" :outline="true">
+                <x-slot name="actions">
+                    @if($isp->database_name)
+                        <a href="{{ route('session.switch-isp', ['isp_id' => $isp->id, 'redirect_route' => 'red.routers.create']) }}" class="btn btn-info btn-sm">
+                            <i class="fas fa-plus mr-1"></i> Agregar router
+                        </a>
+                        <a href="{{ route('session.switch-isp', ['isp_id' => $isp->id, 'redirect_route' => 'red.routers.index']) }}" class="btn btn-outline-info btn-sm ml-1">
+                            <i class="fas fa-list mr-1"></i> Ver routers
+                        </a>
+                    @endif
+                </x-slot>
                 @if(isset($licenseRouters) && $licenseRouters->isNotEmpty())
                     <p class="text-muted small mb-3">Routers del ISP con plan y vigencia de licencia.</p>
                     <div class="table-responsive d-none d-md-block">
@@ -303,7 +313,13 @@
                         @endforeach
                     </div>
                 @else
-                    <p class="text-muted mb-0">Este ISP no tiene routers con licencia registrada o aún no tiene base de datos. Los routers se gestionan desde el panel del ISP (menú Red).</p>
+                    <p class="text-muted mb-0">
+                        @if($isp->database_name)
+                            Este ISP aún no tiene routers. Usa <strong>Agregar router</strong> arriba para crear uno y asignarle plan y vigencia de licencia.
+                        @else
+                            Este ISP no tiene base de datos. Crea la BD primero; luego podrás agregar routers y gestionar licencias desde aquí.
+                        @endif
+                    </p>
                 @endif
             </x-card>
         </div>

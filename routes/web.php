@@ -59,6 +59,11 @@ Route::middleware('auth')->group(function () {
         }
         session(['current_isp_id' => $isp->id]);
         \App\Core\Services\TenantConnectionService::registerConnectionForIspId($isp->id);
+        $allowedRedirects = ['red.routers.index', 'red.routers.create'];
+        $redirectRoute = $request->query('redirect_route');
+        if ($redirectRoute && in_array($redirectRoute, $allowedRedirects, true)) {
+            return redirect()->route($redirectRoute)->with('success', "ISP cambiado a: {$isp->nombre}");
+        }
         return redirect()->back()->with('success', "ISP cambiado a: {$isp->nombre}");
     })->name('session.switch-isp');
 
