@@ -24,12 +24,20 @@ class SuperAdminPlanController extends Controller
         });
     }
 
-    public function index(): View
+    public function index(Request $request): View
     {
         $plans = collect();
         $conn = TenantConnectionService::centralConnection();
         if (\Illuminate\Support\Facades\Schema::connection($conn)->hasTable('plans')) {
-            $plans = Plan::withCount('isps')->orderBy('sort_order')->orderBy('name')->get();
+            $query = Plan::withCount('isps')->orderBy('sort_order')->orderBy('name');
+            if ($request->filled('buscar')) {
+                $buscar = $request->buscar;
+                $query->where(function ($q) use ($buscar) {
+                    $q->where('name', 'like', "%{$buscar}%")
+                        ->orWhere('slug', 'like', "%{$buscar}%");
+                });
+            }
+            $plans = $query->get();
         }
         return view('superadmin.plans.index', compact('plans'));
     }
