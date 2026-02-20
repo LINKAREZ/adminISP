@@ -35,15 +35,18 @@
                     </div>
                 </div>
             </div>
-            <div class="card-body">
-                <p class="mb-1 small">
+            <div class="card-body py-2">
+                <div class="d-flex flex-wrap align-items-center small">
                     @if($isp->database_name)
-                        <span class="badge badge-success">BD creada</span>
-                        <code class="small text-muted d-block mt-1">{{ $isp->database_name }}</code>
+                        <span class="badge badge-success badge-pill mr-2"><i class="fas fa-database fa-fw mr-1"></i>BD</span>
+                        <code class="small bg-light px-1 rounded mr-2">{{ $isp->database_name }}</code>
                     @else
-                        <span class="badge badge-warning">BD no creada</span>
+                        <span class="badge badge-warning mr-2">BD no creada</span>
                     @endif
-                </p>
+                    <span class="text-muted mr-2">·</span>
+                    <span class="mr-2"><i class="fas fa-users fa-fw text-info mr-1"></i>{{ $isp->clientes_count ?? 0 }} clientes</span>
+                    <span><i class="fas fa-sitemap fa-fw text-secondary mr-1"></i>{{ $isp->nodos_count ?? 0 }} nodos</span>
+                </div>
             </div>
         </div>
     @empty
@@ -67,15 +70,17 @@
     @endforelse
 </div>
 
-{{-- Vista desktop: Tabla (misma estructura que users/roles: thead-light, align-middle, columna acciones 10%) --}}
+{{-- Vista desktop: Tabla con columnas mejor presentadas --}}
 <div class="table-responsive d-none d-md-block">
     <table class="table table-hover table-striped mb-0">
         <thead class="thead-light">
             <tr>
-                <th class="align-middle">Nombre</th>
-                <th class="align-middle">Base de datos</th>
-                <th class="align-middle text-center">Estado</th>
-                <th class="align-middle text-right" style="width: 10%;"></th>
+                <th class="align-middle" style="width: 22%;">Nombre</th>
+                <th class="align-middle" style="width: 28%;">Base de datos</th>
+                <th class="align-middle text-center" style="width: 10%;">Clientes</th>
+                <th class="align-middle text-center" style="width: 10%;">Nodos</th>
+                <th class="align-middle text-center" style="width: 12%;">Estado</th>
+                <th class="align-middle text-right" style="width: 8%;"></th>
             </tr>
         </thead>
         <tbody>
@@ -83,14 +88,22 @@
                 @foreach($isps as $isp)
                     @php $activo = $isp->activo ?? true; @endphp
                     <tr>
-                        <td class="align-middle"><strong>{{ $isp->nombre }}</strong></td>
+                        <td class="align-middle">
+                            <a href="{{ route('superadmin.isps.show', $isp) }}" class="text-dark font-weight-bold text-decoration-none">{{ $isp->nombre }}</a>
+                        </td>
                         <td class="align-middle">
                             @if($isp->database_name)
-                                <span class="badge badge-success">BD creada</span>
-                                <code class="small text-muted d-block mt-1">{{ $isp->database_name }}</code>
+                                <span class="badge badge-success badge-pill mr-1"><i class="fas fa-database fa-fw mr-1"></i>BD</span>
+                                <code class="small bg-light px-1 rounded d-inline-block mt-1">{{ $isp->database_name }}</code>
                             @else
                                 <span class="badge badge-warning">BD no creada</span>
                             @endif
+                        </td>
+                        <td class="align-middle text-center">
+                            <span class="badge badge-info badge-pill">{{ $isp->clientes_count ?? 0 }}</span>
+                        </td>
+                        <td class="align-middle text-center">
+                            <span class="badge badge-secondary badge-pill">{{ $isp->nodos_count ?? 0 }}</span>
                         </td>
                         <td class="align-middle text-center">
                             @php $status = $isp->status ?? 'active'; @endphp
@@ -128,7 +141,7 @@
                         description="Prueba ajustando los filtros o limpiando la búsqueda."
                         action-label="Limpiar filtros"
                         :action-route="'superadmin.isps.index'"
-                        colspan="4"
+                        colspan="6"
                     />
                 @else
                     <x-empty-state
@@ -137,7 +150,7 @@
                         description="Comienza creando tu primer ISP en el sistema."
                         action-label="Crear Primer ISP"
                         :action-route="'superadmin.isps.create'"
-                        colspan="4"
+                        colspan="6"
                     />
                 @endif
             @endif
